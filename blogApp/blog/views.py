@@ -1,8 +1,12 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Post
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Post, Comment, Vote
+from .forms import CommentForm
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 
 def home(request):
     template_name = 'blog/home.html'
@@ -27,8 +31,54 @@ class UserPostListView(ListView):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         return Post.objects.filter(author=user).order_by('-created_at')
 
-class PostDetailView(DetailView):
-    model = Post
+class PostDetailView(View):
+    def get(self, *args, **kwargs):
+        post = get_object_or_404(Post, pk=self.kwargs.get('pk'))
+        comments = post.comments.filter(active=True).order_by('-created_at')
+        form = CommentForm()
+        context = {'post': post, 'comments': comments, 'form': form}
+        return render(self.request, "blog/post_detail.html", context)
+    
+    def post(self, *args, **kwargs):
+        form = CommentForm(self.request.POST or None)
+        if form.is_valid():
+            pk = self.kwargs.get('pk')
+            post = get_object_or_404(Post, pk=pk)
+            content = form.cleaned_data.get("content")
+            if content:
+                comment = Comment(
+                    content=content,
+                    author=self.request.user,
+                    post=post
+                )
+                comment.save()
+                return redirect('blog:post_detail', pk=pk)
+            else:
+                messages.info(self.request, "Please write some comment.")
+                return redirect('blog:post_detail', pk=pk)
+
+def vote(request, pk, slug):
+    if request.method=='POST':
+        try:
+            like = True if request.POST.get("like") is "1" else False
+            if slug == 'post':
+                post = Post.objects.get(pk=pk)
+                vote = Vote.objects.update_or_create(post=post, defaults={
+                    'author':request.user,
+                    'post':post,
+                    'like':like
+                })
+            elif slug == 'comment':
+                comment = Comment.objects.get(pk=pk)
+                vote = Vote.objects.update_or_create(comment=comment, defaults={
+                    'author':request.user,
+                    'comment':comment,
+                    'like':like
+                })
+            
+            return HttpResponse("OK")
+        except ObjectDoesNotExist:
+            return HttpResponse("NOTOK")
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
