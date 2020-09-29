@@ -20,6 +20,9 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('blog:post_detail', kwargs={'pk': self.pk})
 
+    def get_comments(self):
+        return self.comments.count()
+
     def get_votes(self):
         return self.votes.count()
 

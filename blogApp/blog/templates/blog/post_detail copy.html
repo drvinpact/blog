@@ -1,0 +1,119 @@
+{% extends "blog/base/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <article class="media content-section">
+        <img style="width: 100px;" class="rounded-circle article-img" src="{{ post.author.profile.image.url }}" />
+        <div class="media-body">
+            <div class="article-metadata">
+                <a class="mr-2" href="{% url 'blog:user_posts' post.author.username %}">{{ post.author }}</a>
+                <small class="text-muted">{{ post.created_at | date:'F d, Y H:i' }}</small>              
+            </div>
+            <h2 class="article-title">{{ post.title }}</h2>
+            <p class="article-content">{{ post.content }}</p>
+            {% if post.author == user %}
+            <div>
+                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'blog:post_update' post.id %}">Update</a>
+                <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'blog:post_delete' post.id %}">Delete</a>
+            </div>
+            {% endif %}
+            <div class="votes">
+                <a href="#" class="btn btn-danger btn-circle vote_btn dislike" data-like="0" data-url="{% url 'blog:vote' post.id 'post' %}" role="button">Dislike {{ post.get_dislikes }}</a>
+                <a href="#" class="btn btn-success btn-circle vote_btn like" data-like="1" data-url="{% url 'blog:vote' post.id 'post' %}" role="button">Like {{ post.get_likes }}</a>
+            </div>            
+        </div>
+        
+    </article>
+
+    {% if request.user.is_authenticated %}
+    <h4 class="article-title">Leave a Comment</h4>
+    <article class="media content-section mt-3">
+        <img style="width: 100px;" class="rounded-circle article-img" src="{{ request.user.profile.image.url }}" />
+        <div class="media-body">
+            <form method="POST">
+                {% csrf_token %}
+                {{ form | crispy }}
+                <button class="btn btn-primary mr-1 float-right" type="submit">Comment</button>
+            </form>
+        </div>
+    </article>
+    {% endif %}
+
+    <div class="d-none" id="replyForm">
+        <article class="media content-section mt-3 active_reply">
+            <img style="width: 100px;" class="rounded-circle comment-img" src="{{ request.user.profile.image.url }}" />
+            <div class="media-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form | crispy }}
+                    <button class="btn btn-primary mr-1 float-right" type="submit">Reply</button>
+                </form>
+            </div>
+        </article>
+    </div>
+
+    {% if comments %}
+
+    <h4 class="article-title">{{ comments.count }} comment{{ comments.count | pluralize }}</h4>
+
+    <article class="media content-section mt-3">        
+        <div class="media-body">
+            {% for item in comments.all %}
+                {%include "blog/comment_partial copy.html" %}
+            {% endfor %}
+        </div>
+    </article>
+
+    {% else %}
+
+    <h4 class="article-title">No comments yet</h4>
+
+    {% endif %}
+
+
+{% endblock content %}
+
+{% block extra_scripts %}
+<script>
+    $(document).ready(function(){
+        $(".vote_btn").click(function(e){
+            e.preventDefault();
+
+            var element =$(this);
+
+            var like = $(element).data("like");
+            var url = $(element).data("url");
+
+            $.ajax({
+                type: "POST",
+                url: url,            
+                data: {csrfmiddlewaretoken: "{{ csrf_token }}", 'like': like}
+            })
+            .done(function (response) {
+                if(response.success){
+                    if(like){
+                        $(element).text("Like " + response.likes)
+                        $(element).closest('.votes').find('.dislike').text("Dislike " + response.dislikes)                        
+                    }else{
+                        $(element).text("Dislike " + response.dislikes)
+                        $(element).closest('.votes').find('.like').text("Like " + response.likes)
+                    }
+                }else{
+                    message(response.msg, color)
+                }
+            })          
+        });
+
+        $(".reply").click(function(e){
+            e.preventDefault();
+            var id = $(this).data("id");
+            var html = $("#replyForm").children().clone();        
+            $(html).find("[name='parent_id']").val(id);
+            console.log($(this).parent())
+            $(this).parent().next('.reply_div').append(html);
+        });
+
+    });
+</script>
+{% endblock extra_scripts %}

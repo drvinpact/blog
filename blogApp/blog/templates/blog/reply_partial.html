@@ -1,0 +1,28 @@
+<ul class="children">
+  <li class="comment">
+    <div class="vcard bio">
+      <img src="{{ item.author.profile.image.url }}" alt="Image placeholder">
+    </div>
+    <div class="comment-body">
+      <h3>{{ item.author }}</h3>
+      <div class="meta">October 03, 2018 at 2:21pm</div>
+      <p>{{ item.content}}</p>
+      
+      <div class="votes">
+        <a href="#" class="btn vote_btn like" data-like="1" data-url="{% url 'blog:vote' item.id 'comment' %}" role="button"><i class="icon-thumbs-o-up"></i> {{ item.get_likes }}</a>
+        <a href="#" class="btn vote_btn dislike" data-like="0" data-url="{% url 'blog:vote' item.id 'comment' %}" role="button"><i class="icon-thumbs-o-down"></i> {{ item.get_dislikes }}</a>
+        <a href="#" class="reply" data-id="{{ item.id }}" role="button">Reply</a>
+      </div> 
+      <div class="reply_div"></div>
+    </div>
+
+    {%if item.replies.exists %}
+      {%for reply in item.replies.all %}
+        {%with item=reply template_name="blog/reply_partial.html" %}
+          {%include template_name%}
+        {%endwith%}
+      {%endfor%}
+    {%endif%}    
+
+  </li>
+</ul>

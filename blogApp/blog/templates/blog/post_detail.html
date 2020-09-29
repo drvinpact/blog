@@ -1,78 +1,103 @@
-{% extends "blog/base.html" %}
+{% extends "blog/base/base.html" %}
 
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <article class="media content-section">
-        <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}" />
-        <div class="media-body">
-            <div class="article-metadata">
-                <a class="mr-2" href="{% url 'blog:user_posts' post.author.username %}">{{ post.author }}</a>
-                <small class="text-muted">{{ post.created_at | date:'F d, Y H:i' }}</small>              
+
+    <section class="ftco-section ftco-no-pt ftco-no-pb">
+
+        <div class="container">
+
+            <div class="row d-flex">
+                <div class="col-lg-8 px-md-5 py-5">
+                    <div class="row pt-md-4">
+                        <h1 class="mb-3">{{ post.title }}</h1>
+
+                        <p>{{ post.content }}</p>
+                        
+                        <div class="tag-widget post-tag-container mb-5 mt-5">
+                            <div class="tagcloud">
+                                <a href="#" class="tag-cloud-link">Life</a>
+                                <a href="#" class="tag-cloud-link">Sport</a>
+                                <a href="#" class="tag-cloud-link">Tech</a>
+                                <a href="#" class="tag-cloud-link">Travel</a>
+                            </div>
+                        </div>
+                
+                        <div class="about-author d-flex p-4 bg-light">
+                            <div class="bio mr-5">
+                                <img src="{{ post.author.profile.image.url }}" alt="Image placeholder" class="img-fluid mb-4">
+                            </div>
+                            <div class="desc">
+                                <h3>{{ post.author }}</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus itaque, autem necessitatibus voluptate quod mollitia delectus aut, sunt placeat nam vero culpa sapiente consectetur similique, inventore eos fugit cupiditate numquam!</p>
+                            </div>
+                        </div>
+
+                        <div class="d-none" id="replyForm">
+                            <article class="media content-section mt-3 active_reply">
+                                <img style="width: 100px;" class="rounded-circle comment-img" src="{{ request.user.profile.image.url }}" />
+                                <div class="media-body">
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        {{ form | crispy }}
+                                        <button class="btn btn-primary mr-1 float-right" type="submit">Reply</button>
+                                    </form>
+                                </div>
+                            </article>
+                        </div>
+
+                        <div class="pt-5 mt-5">
+                            <h3 class="mb-5 font-weight-bold">{{ comments.count }} comment{{ comments.count | pluralize }}</h3>
+                            <ul class="comment-list">
+
+                                {% for item in comments.all %}
+                                    {%include "blog/comment_partial.html" %}
+                                {% endfor %}
+                                
+                            </ul>
+                        
+                            <div class="comment-form-wrap pt-5">
+                                <h3 class="mb-5">Leave a comment</h3>
+
+                                <form action="#" class="p-3 p-md-5 bg-light">
+
+                                    <div class="form-group">
+                                        <label for="name">Name *</label>
+                                        <input type="text" class="form-control" id="name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email">Email *</label>
+                                        <input type="email" class="form-control" id="email">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="website">Website</label>
+                                        <input type="url" class="form-control" id="website">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="message">Message</label>
+                                        <textarea name="" id="message" cols="30" rows="10" class="form-control"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="submit" value="Post Comment" class="btn py-3 px-4 btn-primary">
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% include "blog/base/sidebar.html" %}
+
             </div>
-            <h2 class="article-title">{{ post.title }}</h2>
-            <p class="article-content">{{ post.content }}</p>
-            {% if post.author == user %}
-            <div>
-                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'blog:post_update' post.id %}">Update</a>
-                <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'blog:post_delete' post.id %}">Delete</a>
-            </div>
-            {% endif %}
-            <div class="votes">
-                <a href="#" class="btn btn-danger btn-circle vote_btn dislike" data-like="0" data-url="{% url 'blog:vote' post.id 'post' %}" role="button">Dislike {{ post.get_dislikes }}</a>
-                <a href="#" class="btn btn-success btn-circle vote_btn like" data-like="1" data-url="{% url 'blog:vote' post.id 'post' %}" role="button">Like {{ post.get_likes }}</a>
-            </div>            
         </div>
-        
-    </article>
 
-    {% if request.user.is_authenticated %}
-    <h4 class="article-title">Leave a Comment</h4>
-    <article class="media content-section mt-3">
-        <img class="rounded-circle article-img" src="{{ request.user.profile.image.url }}" />
-        <div class="media-body">
-            <form method="POST">
-                {% csrf_token %}
-                {{ form | crispy }}
-                <button class="btn btn-primary mr-1 float-right" type="submit">Comment</button>
-            </form>
-        </div>
-    </article>
-    {% endif %}
-
-    <div class="d-none" id="replyForm">
-        <article class="media content-section mt-3 active_reply">
-            <img class="rounded-circle comment-img" src="{{ request.user.profile.image.url }}" />
-            <div class="media-body">
-                <form method="POST">
-                    {% csrf_token %}
-                    {{ form | crispy }}
-                    <button class="btn btn-primary mr-1 float-right" type="submit">Reply</button>
-                </form>
-            </div>
-        </article>
-    </div>
-
-    {% if comments %}
-
-    <h4 class="article-title">{{ comments.count }} comment{{ comments.count | pluralize }}</h4>
-
-    <article class="media content-section mt-3">        
-        <div class="media-body">
-            {% for item in comments.all %}
-                {%include "blog/comment_partial.html" %}
-            {% endfor %}
-        </div>
-    </article>
-
-    {% else %}
-
-    <h4 class="article-title">No comments yet</h4>
-
-    {% endif %}
-
-
+    </section>
+                
 {% endblock content %}
+
 
 {% block extra_scripts %}
 <script>
