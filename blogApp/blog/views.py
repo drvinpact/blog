@@ -1,10 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post, Comment, Vote
-from .forms import CommentForm
+from .forms import CommentForm, ReplyForm
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
-from django.http import HttpResponse
+from django.http import JsonResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 
@@ -31,10 +31,15 @@ class UserPostListView(ListView):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         return Post.objects.filter(author=user).order_by('-created_at')
 
+def ajax_form(request):
+    if request.method == "GET":
+        form = CommentForm()
+        return HttpResponse(form.as_p())
+
 class PostDetailView(View):
     def get(self, *args, **kwargs):
         post = get_object_or_404(Post, pk=self.kwargs.get('pk'))
-        comments = post.comments.filter(active=True).order_by('-created_at')
+        comments = post.comments.filter(active=True, parent=None).order_by('-created_at')
         form = CommentForm()
         context = {'post': post, 'comments': comments, 'form': form}
         return render(self.request, "blog/post_detail.html", context)
@@ -45,12 +50,20 @@ class PostDetailView(View):
             pk = self.kwargs.get('pk')
             post = get_object_or_404(Post, pk=pk)
             content = form.cleaned_data.get("content")
+            parent_id = form.cleaned_data.get("parent_id")
+            print(parent_id)
+
             if content:
                 comment = Comment(
                     content=content,
                     author=self.request.user,
                     post=post
                 )
+
+                if parent_id:
+                    parent_comment = Comment.objects.get(pk=parent_id)
+                    comment.parent = parent_comment
+                    
                 comment.save()
                 return redirect('blog:post_detail', pk=pk)
             else:
@@ -61,6 +74,7 @@ def vote(request, pk, slug):
     if request.method=='POST':
         try:
             like = True if request.POST.get("like") is "1" else False
+            votes = 0
             if slug == 'post':
                 post = Post.objects.get(pk=pk)
                 vote = Vote.objects.update_or_create(post=post, defaults={
@@ -68,6 +82,8 @@ def vote(request, pk, slug):
                     'post':post,
                     'like':like
                 })
+                likes = post.get_likes()
+                dislikes = post.get_dislikes()
             elif slug == 'comment':
                 comment = Comment.objects.get(pk=pk)
                 vote = Vote.objects.update_or_create(comment=comment, defaults={
@@ -75,10 +91,12 @@ def vote(request, pk, slug):
                     'comment':comment,
                     'like':like
                 })
+                likes = comment.get_likes()
+                dislikes = comment.get_dislikes()
             
-            return HttpResponse("OK")
+            return JsonResponse({'success': True, 'likes': likes, 'dislikes': dislikes}, safe=False)
         except ObjectDoesNotExist:
-            return HttpResponse("NOTOK")
+            return JsonResponse({'msg': 'The object does not exist', 'success': False}, safe=False)
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post

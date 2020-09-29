@@ -5,6 +5,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 
+from mptt.models import MPTTModel, TreeForeignKey
+
 class Post(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()

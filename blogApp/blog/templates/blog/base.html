@@ -89,6 +89,19 @@
     <script src="{% static 'blog/js/popper.min.js' %}"></script>
     <script src="{% static 'blog/js/bootstrap.min.js' %}"></script>
 
+    {% block control_modal %}
+    <script>
+      function message(msg, type='green'){
+        $.alert({
+          title: '',
+          theme: 'material',
+          type: type,
+          content: msg
+        });
+      }
+    </script>
+    {% endblock control_modal %}
+
     {% block extra_scripts %}{% endblock extra_scripts %}
   </body>
 </html>

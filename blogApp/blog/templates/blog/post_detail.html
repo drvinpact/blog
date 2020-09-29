@@ -18,9 +18,12 @@
                 <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'blog:post_delete' post.id %}">Delete</a>
             </div>
             {% endif %}
-            <a href="#" class="btn btn-danger btn-circle vote_btn" data-like="0" data-url="{% url 'blog:vote' post.id 'post' %}" role="button">Dislike {{ post.get_dislikes }}</a>
-            <a href="#" class="btn btn-success btn-circle vote_btn" data-like="1" data-url="{% url 'blog:vote' post.id 'post' %}" role="button">Like {{ post.get_likes }}</a>
+            <div class="votes">
+                <a href="#" class="btn btn-danger btn-circle vote_btn dislike" data-like="0" data-url="{% url 'blog:vote' post.id 'post' %}" role="button">Dislike {{ post.get_dislikes }}</a>
+                <a href="#" class="btn btn-success btn-circle vote_btn like" data-like="1" data-url="{% url 'blog:vote' post.id 'post' %}" role="button">Like {{ post.get_likes }}</a>
+            </div>            
         </div>
+        
     </article>
 
     {% if request.user.is_authenticated %}
@@ -37,6 +40,19 @@
     </article>
     {% endif %}
 
+    <div class="d-none" id="replyForm">
+        <article class="media content-section mt-3 active_reply">
+            <img class="rounded-circle comment-img" src="{{ request.user.profile.image.url }}" />
+            <div class="media-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form | crispy }}
+                    <button class="btn btn-primary mr-1 float-right" type="submit">Reply</button>
+                </form>
+            </div>
+        </article>
+    </div>
+
     {% if comments %}
 
     <h4 class="article-title">{{ comments.count }} comment{{ comments.count | pluralize }}</h4>
@@ -44,19 +60,7 @@
     <article class="media content-section mt-3">        
         <div class="media-body">
             {% for item in comments.all %}
-            <div class="media" style="margin-top: 30px;">
-                <img class="rounded-circle comment-img" src="{{ item.author.profile.image.url }}" />
-                <div class="media-body">
-                    <h6>
-                        <a class="mr-2" href="{% url 'blog:user_posts' item.author.username %}">
-                            {{ item.author }}
-                        </a>
-                        <small class="text-muted">{{ item.created_at | date:'F d, Y H:i' }}</small></h6>
-                    {{ item.content}}
-                </div>
-                <a href="#" class="btn btn-danger btn-circle vote_btn" data-like="0" data-url="{% url 'blog:vote' item.id 'comment' %}" role="button">Dislike {{ item.get_dislikes }}</a>
-                <a href="#" class="btn btn-success btn-circle vote_btn" data-like="1" data-url="{% url 'blog:vote' item.id 'comment' %}" role="button">Like {{ item.get_likes }}</a>
-            </div>
+                {%include "blog/comment_partial.html" %}
             {% endfor %}
         </div>
     </article>
@@ -76,8 +80,10 @@
         $(".vote_btn").click(function(e){
             e.preventDefault();
 
-            var like = $(this).data("like");
-            var url = $(this).data("url");
+            var element =$(this);
+
+            var like = $(element).data("like");
+            var url = $(element).data("url");
 
             $.ajax({
                 type: "POST",
@@ -85,9 +91,29 @@
                 data: {csrfmiddlewaretoken: "{{ csrf_token }}", 'like': like}
             })
             .done(function (response) {
-
+                if(response.success){
+                    if(like){
+                        $(element).text("Like " + response.likes)
+                        $(element).closest('.votes').find('.dislike').text("Dislike " + response.dislikes)                        
+                    }else{
+                        $(element).text("Dislike " + response.dislikes)
+                        $(element).closest('.votes').find('.like').text("Like " + response.likes)
+                    }
+                }else{
+                    message(response.msg, color)
+                }
             })          
         });
+
+        $(".reply").click(function(e){
+            e.preventDefault();
+            var id = $(this).data("id");
+            var html = $("#replyForm").children().clone();        
+            $(html).find("[name='parent_id']").val(id);
+            console.log($(this).parent())
+            $(this).parent().next('.reply_div').append(html);
+        });
+
     });
 </script>
 {% endblock extra_scripts %}
