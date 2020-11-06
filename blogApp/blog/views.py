@@ -2,13 +2,14 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post, Comment, Vote
 from .forms import CommentForm, ReplyForm
 from django.contrib import messages
+from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 
-def home(request):
+def home(request):    
     template_name = 'blog/home.html'
     posts = Post.objects.all()
     context = {'posts': posts}
@@ -21,10 +22,21 @@ class PostListView(ListView):
     ordering = ['-created_at']
     paginate_by = 10
 
+    def get_queryset(self):
+        search = self.request.GET.get('search')
+        if search and search is not None:
+            return Post.objects.filter(
+                Q(title__contains=search.strip()) | 
+                Q(content__contains=search.strip())
+            ).distinct()
+
+        return Post.objects.all()
+
 class UserPostListView(ListView):
-    template_name = 'blog/user_posts.html'
+    template_name = 'blog/home.html'
     model = Post
-    context_object_name = 'obj'    
+    context_object_name = 'obj'
+    ordering = ['-created_at']
     paginate_by = 10
 
     def get_queryset(self):
@@ -72,12 +84,12 @@ class PostDetailView(View):
 
 def vote(request, pk, slug):
     if request.method=='POST':
-        try:
-            like = True if request.POST.get("like") is "1" else False
+        try:            
+            like = True if request.POST.get("like") == "1" else False
             votes = 0
             if slug == 'post':
                 post = Post.objects.get(pk=pk)
-                vote = Vote.objects.update_or_create(post=post, defaults={
+                vote = Vote.objects.update_or_create(post=post, author=request.user, defaults={
                     'author':request.user,
                     'post':post,
                     'like':like
@@ -86,7 +98,7 @@ def vote(request, pk, slug):
                 dislikes = post.get_dislikes()
             elif slug == 'comment':
                 comment = Comment.objects.get(pk=pk)
-                vote = Vote.objects.update_or_create(comment=comment, defaults={
+                vote = Vote.objects.update_or_create(comment=comment, author=request.user, defaults={
                     'author':request.user,
                     'comment':comment,
                     'like':like
@@ -130,6 +142,42 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return True
         return False
 
+class PostsByCategory(ListView):
+    template_name = 'blog/home.html'
+    model = Post
+    context_object_name = 'obj'
+    ordering = ['-created_at']
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Post.objects.filter(category__name=self.kwargs.get('category')).order_by('-created_at')
+ 
+class PostsByTag(ListView):
+    template_name = 'blog/home.html'
+    model = Post
+    context_object_name = 'obj'
+    ordering = ['-created_at']
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Post.objects.filter(tags__name__in=[self.kwargs.get('tag')]).order_by('-created_at')
+
+class PostsByDate(ListView):
+    template_name = 'blog/home.html'
+    model = Post
+    context_object_name = 'obj'
+    ordering = ['-created_at']
+    paginate_by = 10
+
+    def get_queryset(self):
+        month = self.kwargs.get('month')
+        year = self.kwargs.get('year')            
+        return Post.objects.filter(created_at__year=year).filter(created_at__month=month).order_by('-created_at')
+ 
 def about(request):
     template_name = 'blog/about.html'
     return render(request, template_name, {'title': 'About'})
+
+def contact(request):
+    template_name = 'blog/contact.html'
+    return render(request, template_name, {'title': 'Contact'})

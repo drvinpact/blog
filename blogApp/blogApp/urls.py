@@ -49,6 +49,8 @@ urlpatterns = [
 
     path('', include(('blog.urls', 'blog'), namespace="blog")),
 
+    path('summernote/', include('django_summernote.urls')),
+
 ]
 
 if settings.DEBUG:

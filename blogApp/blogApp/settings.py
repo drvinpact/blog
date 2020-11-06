@@ -40,7 +40,10 @@ INSTALLED_APPS = [
     'crispy_forms',
     'blog.apps.BlogConfig',
     'users.apps.UsersConfig',
-    'storages'
+    'storages',
+
+    'django_summernote',
+    'taggit',
 ]
 
 MIDDLEWARE = [
@@ -66,6 +69,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+            ],
+            'builtins': [
+                'blog.templatetags.custom_tags',
+                'blog.templatetags.sidebar_template_tags',
             ],
         },
     },

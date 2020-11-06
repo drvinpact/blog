@@ -1,11 +1,24 @@
 from django.contrib import admin
-from .models import Post, Comment, Vote
+from django_summernote.admin import SummernoteModelAdmin
+from .models import Category, Post, Comment, Vote
 
-class PostAdmin(admin.ModelAdmin):
-    list_display = ['title', 'author', 'created_at']
-    list_display_links = ['title', 'author']
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'created_at']
+    list_display_links = ['name']    
+    readonly_fields = ['created_at']
+
+class PostAdmin(SummernoteModelAdmin, admin.ModelAdmin):
+    summernote_fields = ['content']
+    list_display = ['title', 'author', 'category', 'tag_list', 'created_at']
+    list_display_links = ['title', 'author', 'category']
     list_filter = ['author']
     readonly_fields = ['created_at']
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('tags')
+    
+    def tag_list(self, obj):
+        return ", ".join(o.name for o in obj.tags.all())
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = ['author', 'post', 'created_at']
@@ -22,4 +35,5 @@ class VoteAdmin(admin.ModelAdmin):
 admin.site.register(Post, PostAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Vote, VoteAdmin)
+admin.site.register(Category, CategoryAdmin)
 

@@ -5,14 +5,30 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 
+from taggit.managers import TaggableManager
+
 from mptt.models import MPTTModel, TreeForeignKey
+
+class Category(models.Model):
+    name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = 'categories'
+        ordering = ('name', )
 
 class Post(models.Model):
     title = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='blog/', default='default_post.jpg')
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
+    tags = TaggableManager(blank=True)
 
     def __str__(self):
         return self.title

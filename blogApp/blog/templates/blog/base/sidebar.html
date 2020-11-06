@@ -1,77 +1,91 @@
 {% load static %}
+{% get_popular_posts as popular_posts %}
+{% get_latest_posts as latest_posts %}
+{% get_categories_total as categories %}
+{% get_popular_tags as tags %}
+{% get_archives as archives %}
 
 {% block content %}
 
     <div class="col-xl-4 sidebar ftco-animate bg-light pt-5">
         <div class="sidebar-box pt-md-4">
-            <form action="#" class="search-form">
+            <form action="{% url 'blog:home' %}" method="GET" class="search-form">
                 <div class="form-group">
-                <span class="icon icon-search"></span>
-                <input type="text" class="form-control" placeholder="Type a keyword and hit enter">
+                    <i class="icon icon-search"></i>
+                    <input type="text" id="search" name="search" class="form-control" placeholder="Type a keyword and hit enter" value="{{ request.GET.search }}">
                 </div>
             </form>
         </div>
+
+        <div class="sidebar-box ftco-animate">
+            <h3 class="sidebar-heading">Popular</h3>
+            
+            {% for popular in popular_posts %}
+            <div class="block-21 mb-4 d-flex">
+                <a class="blog-img mr-4" style="background-image: url('{{ popular.image.url }}');"></a>
+                <div class="text">
+                    <h3 class="heading"><a href="{% url 'blog:post_detail' popular.id %}">{{ popular.title }}</a></h3>
+                    <div class="meta">
+                        <div><span class="icon-calendar"></span> {{ popular.created_at | date:'F d, Y' }}</div>
+                    </div>
+                    <div class="meta">
+                        <div>
+                            <a href="{% url 'blog:user_posts' popular.author %}">
+                                <span class="icon-person"></span> {{ popular.author }}
+                            </a>
+                        </div>
+                        <div><span class="icon-chat"></span> {{ popular.get_comments }}</div>
+                        <div><span class="icon-thumbs-o-up"></span> {{ popular.get_likes }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+
         <div class="sidebar-box ftco-animate">
             <h3 class="sidebar-heading">Categories</h3>
-            <ul class="categories">
-                <li><a href="#">Fashion <span>(6)</span></a></li>
-                <li><a href="#">Technology <span>(8)</span></a></li>
-                <li><a href="#">Travel <span>(2)</span></a></li>
-                <li><a href="#">Food <span>(2)</span></a></li>
-                <li><a href="#">Photography <span>(7)</span></a></li>
+            <ul class="categories">                
+                {% for category in categories %}
+                    <li><a href="{% url 'blog:post_by_category' category.name %}">{{ category.name }} <span>({{ category.posts_count }})</span></a></li>
+                {% endfor %}
             </ul>
         </div>
 
         <div class="sidebar-box ftco-animate">
-            <h3 class="sidebar-heading">Popular Articles</h3>
-            <div class="block-21 mb-4 d-flex">
-                <a class="blog-img mr-4" style="background-image: url(/static/blog/img/image_1.jpg);"></a>
-                <div class="text">
-                    <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control</a></h3>
-                    <div class="meta">
-                        <div><a href="#"><span class="icon-calendar"></span> June 28, 2019</a></div>
-                        <div><a href="#"><span class="icon-person"></span> Dave Lewis</a></div>
-                        <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-                    </div>
-                </div>
-            </div>
-            <div class="block-21 mb-4 d-flex">
-                <a class="blog-img mr-4" style="background-image: url(/static/blog/img/image_2.jpg);"></a>
-                <div class="text">
-                    <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control</a></h3>
-                    <div class="meta">
-                        <div><a href="#"><span class="icon-calendar"></span> June 28, 2019</a></div>
-                        <div><a href="#"><span class="icon-person"></span> Dave Lewis</a></div>
-                        <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-                    </div>
-                </div>
-            </div>
-            <div class="block-21 mb-4 d-flex">
-                <a class="blog-img mr-4" style="background-image: url(/static/blog/img/image_3.jpg);"></a>
-                <div class="text">
-                    <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control</a></h3>
-                    <div class="meta">
-                        <div><a href="#"><span class="icon-calendar"></span> June 28, 2019</a></div>
-                        <div><a href="#"><span class="icon-person"></span> Dave Lewis</a></div>
-                        <div><a href="#"><span class="icon-chat"></span> 19</a></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="sidebar-box ftco-animate">
-            <h3 class="sidebar-heading">Tag Cloud</h3>
+            <h3 class="sidebar-heading">Tags</h3>
             <ul class="tagcloud">
-                <a href="#" class="tag-cloud-link">animals</a>
-                <a href="#" class="tag-cloud-link">human</a>
-                <a href="#" class="tag-cloud-link">people</a>
-                <a href="#" class="tag-cloud-link">cat</a>
-                <a href="#" class="tag-cloud-link">dog</a>
-                <a href="#" class="tag-cloud-link">nature</a>
-                <a href="#" class="tag-cloud-link">leaves</a>
-                <a href="#" class="tag-cloud-link">food</a>
+                {% for tag in tags %}
+                    <a href="{% url 'blog:post_by_tag' tag.name %}" class="tag-cloud-link">{{ tag.name }}</a>
+                {% endfor %}
             </ul>
         </div>
+
+        <div class="sidebar-box ftco-animate">
+            <h3 class="sidebar-heading">Latest Posts</h3>
+            
+            {% for latest in latest_posts %}
+            <div class="block-21 mb-4 d-flex">
+                <a class="blog-img mr-4" style="background-image: url('{{ latest.image.url }}');"></a>
+                <div class="text">
+                    <h3 class="heading"><a href="{% url 'blog:post_detail' latest.id %}">{{ latest.title }}</a></h3>
+                    <div class="meta">
+                        <div><span class="icon-calendar"></span> {{ latest.created_at | date:'F d, Y' }}</div>
+                    </div>
+                    <div class="meta">
+                        <div>
+                            <a href="{% url 'blog:user_posts' latest.author %}">
+                                <span class="icon-person"></span> {{ latest.author }}
+                            </a>
+                        </div>
+                        <div><span class="icon-chat"></span> {{ latest.get_comments }}</div>
+                        <div><span class="icon-thumbs-o-up"></span> {{ latest.get_likes }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>        
 
         <div class="sidebar-box subs-wrap img py-4" style="background-image: url(/static/blog/img/bg_1.jpg);">
             <div class="overlay"></div>
@@ -89,12 +103,9 @@
         <div class="sidebar-box ftco-animate">
             <h3 class="sidebar-heading">Archives</h3>
             <ul class="categories">
-                <li><a href="#">Decob14 2018 <span>(10)</span></a></li>
-                <li><a href="#">September 2018 <span>(6)</span></a></li>
-                <li><a href="#">August 2018 <span>(8)</span></a></li>
-                <li><a href="#">July 2018 <span>(2)</span></a></li>
-                <li><a href="#">June 2018 <span>(7)</span></a></li>
-                <li><a href="#">May 2018 <span>(5)</span></a></li>
+                {% for archive in archives %}
+                    <li><a href="{% url 'blog:post_by_date' year=archive.year month=archive.month %}">{{ archive.month | month_name}} {{ archive.year }} <span>({{ archive.total }})</span></a></li>
+                {% endfor %}
             </ul>
         </div>
 
