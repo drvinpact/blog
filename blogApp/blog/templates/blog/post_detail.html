@@ -48,18 +48,18 @@
                         </div>
                 
                         <div class="about-author d-flex p-4 bg-light">
-                            <div class="bio mr-5">
+                            <div class="bio col-lg-4">
                                 <img src="{{ post.author.profile.image.url }}" alt="Image placeholder" class="img-fluid mb-4">
                             </div>
-                            <div class="desc">
+                            <div class="desc col-lg-8">
                                 <h3>{{ post.author }}</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ducimus itaque, autem necessitatibus voluptate quod mollitia delectus aut, sunt placeat nam vero culpa sapiente consectetur similique, inventore eos fugit cupiditate numquam!</p>
+                                <p>{{ post.author.profile.bio}}</p>
                             </div>
                         </div>
 
                         <div class="d-none" id="replyForm">
-                            <article class="media content-section mt-3 active_reply">
-                                <img style="width: 100px;" class="rounded-circle comment-img" src="{{ request.user.profile.image.url }}" />
+                            <article class="media comment content-section mt-3 active_reply">
+                                <img class="rounded-circle comment-img" src="{{ request.user.profile.image.url }}" />
                                 <div class="media-body">
                                     <form method="POST">
                                         {% csrf_token %}
@@ -80,33 +80,43 @@
                                 
                             </ul>
                         
-                            <div class="comment-form-wrap pt-5">
-                                <h3 class="mb-5">Leave a comment</h3>
+                            <div class="comment-form-wrap pt-5">                                
+                                <h4 class="article-title">Leave a Comment</h4>
+                                {% if user.is_authenticated %}                                    
+                                    <article class="media comment content-section mt-3">
+                                        <img class="rounded-circle article-img" src="{{ request.user.profile.image.url }}" />
+                                        <div class="media-body">
+                                            <form method="POST">
+                                                {% csrf_token %}
+                                                {{ form | crispy }}
+                                                <button class="btn btn-primary mr-1 float-right" type="submit">Comment</button>
+                                            </form>
+                                        </div>
+                                    </article>
+                                {% else %}
+                                    <form action="#" class="p-3 p-md-5 bg-light">
+                                        <div class="form-group">
+                                            <label for="name">Name *</label>
+                                            <input type="text" class="form-control" id="name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email">Email *</label>
+                                            <input type="email" class="form-control" id="email">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="website">Website</label>
+                                            <input type="url" class="form-control" id="website">
+                                        </div>
 
-                                <form action="#" class="p-3 p-md-5 bg-light">
-
-                                    <div class="form-group">
-                                        <label for="name">Name *</label>
-                                        <input type="text" class="form-control" id="name">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="email">Email *</label>
-                                        <input type="email" class="form-control" id="email">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="website">Website</label>
-                                        <input type="url" class="form-control" id="website">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="message">Message</label>
-                                        <textarea name="" id="message" cols="30" rows="10" class="form-control"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="submit" value="Post Comment" class="btn py-3 px-4 btn-primary">
-                                    </div>
-
-                                </form>
+                                        <div class="form-group">
+                                            <label for="message">Message</label>
+                                            <textarea name="" id="message" cols="30" rows="10" class="form-control"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="submit" value="Post Comment" class="btn py-3 px-4 btn-primary">
+                                        </div>
+                                    </form>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

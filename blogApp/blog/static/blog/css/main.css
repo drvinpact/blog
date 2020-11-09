@@ -4380,6 +4380,11 @@ input[type="button"].btn-block {
   -ms-flex: 1;
   flex: 1; }
 
+.comment img{
+  width: 60px;
+  margin-right: 10px;
+}
+
 .list-group {
   display: -webkit-box;
   display: -ms-flexbox;

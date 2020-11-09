@@ -8,6 +8,25 @@
 {% block content %}
 
     <div class="col-xl-4 sidebar ftco-animate bg-light pt-5">
+        <div class="sidebar-box">
+            {% if user.is_authenticated %}
+                <p>
+                    hellofriend, 
+                    <a href="{% url 'profile' %}">{{ user | title }}</a>
+                    <span class="float-right">
+                        <a href="{% url 'logout' %}">logout</a>
+                    </span>
+                </p>
+            {% else %}
+                <p>
+                    hellonewfriend
+                    <span class="float-right">
+                        <a href="{% url 'login' %}">login</a>
+                    </span>
+                </p>
+            {% endif %}
+        </div>
+
         <div class="sidebar-box pt-md-4">
             <form action="{% url 'blog:home' %}" method="GET" class="search-form">
                 <div class="form-group">

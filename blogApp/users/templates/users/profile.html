@@ -1,32 +1,58 @@
-{% extends "blog/base.html" %}
+{% extends "blog/base/base.html" %}
 
 {% load crispy_forms_tags %}
 
 {% block content %}
     
-    <div class="content-section">
-        <div class="media">
-            <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
-            <div class="media-body">
-                <h2 class="account-heading">{{ user.username }}</h2>
-                <p class="text-secondary">{{ user.email }}</p>
-                <p class="text-secondary">{{ user.profile.bio }}</p>
+    <section class="ftco-section ftco-no-pt ftco-no-pb">
+        <div class="container">
+            <div class="row d-flex contact-info">
+                <div class="col-md-12 mb-4">
+                    <h2 class="h3">Profile</h2>
+                </div>
             </div>
+
+            <div class="row d-flex">
+                <div class="col-lg-8 px-md-5 py-5">
+
+                    <div class="row">
+                        <div class="about-author d-flex p-4 bg-light">
+                            <div class="bio mr-5">
+                                <img src="{{ user.profile.image.url }}" alt="Image placeholder" class="img-fluid mb-4">
+                            </div>
+                            <div class="desc">
+                                <h2 class="account-heading">{{ user.username }}</h2>
+                                <p class="text-secondary">{{ user.email }}</p>
+                                <p class="text-secondary">{{ user.profile.bio }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-9 d-flex">
+                    <form method="POST" enctype="multipart/form-data" novalidate>
+
+                        {% csrf_token %}
+
+                        <fieldset class="form-group mb-5">
+                            <legend class="border-bottom mb-4">Info</legend>
+            
+                            {{ user_form | crispy }}
+            
+                            {{ profile_form | crispy }}
+                            
+                        </fieldset>
+                        
+                        <div class="form-group">
+                            <button class="btn btn-outline-info" type="submit">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
-        <form method="POST" enctype="multipart/form-data" novalidate>
-            {% csrf_token %}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Profile Info</legend>
-
-                {{ user_form | crispy }}
-
-                {{ profile_form | crispy }}
-                
-            </fieldset>
-            <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Update</button>
-            </div>
-        </form>
-    </div>
+    </section>
 
 {% endblock content %}

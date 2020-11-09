@@ -5,16 +5,29 @@
     <aside id="colorlib-aside" role="complementary" class="js-fullheight">
         <nav id="colorlib-main-menu" role="navigation">
             <ul>
-                <li class="{% if request.path == '/' %} colorlib-active {%endif%}"><a href="{% url 'blog:home' %}">Home</a></li>
-                <!--<li><a href="fashion.html">Fashion</a></li>
-                <li><a href="travel.html">Travel</a></li>-->
-                <li class="{% if request.path == '/about/' %} colorlib-active {%endif%}"><a href="{% url 'blog:about' %}">About</a></li>
-                <li class="{% if request.path == '/contact/' %} colorlib-active {%endif%}"><a href="{% url 'blog:contact' %}">Contact</a></li>
+                <li class="{% if request.path == '/' %} colorlib-active {%endif%}">
+                    <a href="{% url 'blog:home' %}">Home</a>
+                </li>
+                <li class="{% if request.path == '/about/' %} colorlib-active {%endif%}">
+                    <a href="{% url 'blog:about' %}">About</a>
+                </li>
+                <li class="{% if request.path == '/contact/' %} colorlib-active {%endif%}">
+                    <a href="{% url 'blog:contact' %}">Contact</a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="{% if request.path == '/profile/' %} colorlib-active {%endif%}">
+                    <a href="{% url 'profile' %}">Me</a>
+                </li>
+                {% endif %}
             </ul>
         </nav>
 
         <div class="colorlib-footer">
-            <h1 id="colorlib-logo" class="mb-4"><a href="{% url 'blog:home' %}" style="background-image: url(/static/blog/img/bg_1.jpg);">Blog <span>Ñoño</span></a></h1>
+            <h1 id="colorlib-logo" class="mb-5">
+                <a href="{% url 'blog:home' %}" style="background-image: url(/static/blog/img/bg_1.jpg);">
+                    Ñoño <span>Blog</span>
+                </a>
+            </h1>
             <div class="mb-4">
                 <h3>Subscribe for newsletter</h3>
                 <form action="#" class="colorlib-subscribe-form">

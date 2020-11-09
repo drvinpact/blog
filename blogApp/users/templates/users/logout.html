@@ -1,12 +1,23 @@
-{% extends "blog/base.html" %}
+{% extends "blog/base/base.html" %}
 
 {% block content %}
 
-    <h2>You have been logged out!</h2>
-    <div class="border-top pt-3">
-        <small class="text-muted">
-            <a class="ml-2" href="{% url 'login' %}">Log In again</a>
-        </small>
-    </div>
+    <section class="ftco-section contact-section px-md-4">
+        <div class="container">
+            <div class="row d-flex mb-5 contact-info">
+                <div class="col-md-12 mb-4">
+                    <h2 class="h3">You have been logged out!</h2>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="border-top pt-3">
+                    <small class="text-muted">
+                        <a class="ml-2" href="{% url 'login' %}">Login</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </section>
 
 {% endblock content %}

@@ -57,6 +57,7 @@ class PostDetailView(View):
         return render(self.request, "blog/post_detail.html", context)
     
     def post(self, *args, **kwargs):
+        print(CommentForm(self.request.POST))
         form = CommentForm(self.request.POST or None)
         if form.is_valid():
             pk = self.kwargs.get('pk')
