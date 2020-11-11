@@ -1,0 +1,115 @@
+{% extends 'blog/base/base.html' %}
+{% load static %}
+
+{% block content %}
+
+  <section class="ftco-section contact-section px-md-4">
+    <div class="container">
+      <div class="row d-flex mb-5 contact-info">
+          <div class="col-md-12 mb-4">
+              <h2 class="h3">Messenger</h2>
+          </div>
+      </div>
+
+      <div class="row">
+        <!-- Hilos de conversación -->
+        <div class="col-md-4">
+          <!-- Con una búsqueda inversa user.threads también podemos conseguir los hilos de un usuario -->
+          {% for thread in request.user.threads.all %}
+            <!-- Sólo mostraremos un Thread si tiene como mínimo 1 mensaje -->
+            {% if thread.messages.all|length > 0 %}
+              <div class="mb-3">
+                <!-- Recorremos los miembros del hilo menos el propio request.user -->
+                {% for user in thread.users.all %}
+                  {% if user != request.user %}     
+                    <!-- Mostramos el avatar del miembro -->                
+                    <img src="{{ user.profile.image.url }}" class="avatar" />
+                    <!-- Mostramos la información del miembro --> 
+                    <div>
+                      <a href="{% url 'messenger:detail' thread.pk %}">{{ user }}</a><br>
+                      <small><i>About {{ thread.messages.last.created_at | timesince }}</i></small>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+        <!-- Hilo de conversación -->
+        <div class="col-md-8">
+          <!-- Recorremos los miembros del hilo menos el propio request.user -->
+          {% for user in thread.users.all %}
+            {% if user != request.user %}       
+              <h4 class="mb-4">Conversation with <a href="{% url 'blog:user_profile' user %} ">{{ user }}</a></h4>
+            {% endif %}
+          {% endfor %}
+          <!-- Mostramos los mensajes en una capa que tiene un overflow vertical de 300 píxeles -->
+          <div class="thread" id="thread">
+            {% for message in object.messages.all %}
+              <!-- Dependiendo del usuario asignamos una clase con un color de fondo u otro en el mensaje -->
+              <div {% if request.user == message.user %}class="mine mb-3"{% else %}class="other mb-3"{% endif %}>
+                <img src="{{message.user.profile.image.url}}" class="avatar-message">
+                <small><i>About {{ thread.messages.last.created_at | timesince }}</i></small><br>
+                {{ message.content }}
+              </div>
+            {% endfor %}
+          </div>
+          <!-- Aquí crearemos el formulario -->
+          <textarea id="content" class="form-control mb-2" rows="2" placeholder="Write here"></textarea>
+          <button id="send" class="btn btn-primary btn-sm btn-block" disabled>Send</button>
+          
+        </div>
+      </div>
+    </div>
+  </section>
+  
+{% endblock content %}
+
+
+{% block extra_scripts %}
+
+  <script>
+    var send_btn = document.getElementById("send");
+    var content_input = document.getElementById("content");
+    send_btn.addEventListener("click", function(){
+      var content = content_input.value;
+      content = encodeURIComponent(content); // Quitar caracteres especiales
+      if(content.length > 0){
+        content_input.value = '';
+        send_btn.disabled = true;
+        const url = "{% url 'messenger:add' thread.pk %}" + "?content=" + content;
+        fetch(url, {'credentials': 'include'}).then(response => response.json()).then(function(data){
+          if(data.created){
+            // Si el mensaje es el primero
+            if (data.first){
+              window.location.href = "{% url 'messenger:detail' thread.pk %}";
+            }
+
+            var message = document.createElement("div");
+            message.classList.add("mine", "mb-3");
+            message.innerHTML = '<img src="{{ user.profile.image.url }}" class="avatar-message"><small><i>About a few seconds</i></small><br />' + decodeURIComponent(content);
+            document.getElementById("thread").appendChild(message);
+            ScrollBottomInThread();
+          }else{
+            alert("Something weng wrong...")
+          }
+        })
+      }
+    });
+    content_input.addEventListener("keyup", function(){
+      if(!this.checkValidity() || !this.value){
+        send_btn.disabled = true;
+      }else{
+        send_btn.disabled = false;
+      }
+    });
+
+    // Forzar el Scroll
+    function ScrollBottomInThread(){
+      var thread = document.getElementById("thread");
+      thread.scrollTop = thread.scrollHeight;
+    }
+    ScrollBottomInThread();
+  </script>
+
+{% endblock extra_scripts %}

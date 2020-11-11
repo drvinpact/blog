@@ -38,8 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crispy_forms',
+
     'blog.apps.BlogConfig',
     'users.apps.UsersConfig',
+    'messenger.apps.MessengerConfig',
+
     'storages',
 
     'django_summernote',

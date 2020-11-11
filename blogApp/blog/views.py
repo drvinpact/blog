@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post, Comment, Vote
 from .forms import CommentForm, ReplyForm
+from django import forms
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -48,11 +49,18 @@ def ajax_form(request):
         form = CommentForm()
         return HttpResponse(form.as_p())
 
-class PostDetailView(View):
+class PostDetailView(DetailView):
     def get(self, *args, **kwargs):
         post = get_object_or_404(Post, pk=self.kwargs.get('pk'))
         comments = post.comments.filter(active=True, parent=None).order_by('-created_at')
         form = CommentForm()
+
+        if self.request.user.is_authenticated:
+            form.fields['name'].widget = forms.HiddenInput()
+            form.fields['email'].widget = forms.HiddenInput()
+            form.fields['website'].widget = forms.HiddenInput()
+            form.fields['content'].label = ''
+
         context = {'post': post, 'comments': comments, 'form': form}
         return render(self.request, "blog/post_detail.html", context)
     
@@ -62,16 +70,28 @@ class PostDetailView(View):
         if form.is_valid():
             pk = self.kwargs.get('pk')
             post = get_object_or_404(Post, pk=pk)
+            name = form.cleaned_data.get("name")
+            email = form.cleaned_data.get("email")
+            website = form.cleaned_data.get("website")
             content = form.cleaned_data.get("content")
             parent_id = form.cleaned_data.get("parent_id")
             print(parent_id)
 
             if content:
-                comment = Comment(
-                    content=content,
-                    author=self.request.user,
-                    post=post
-                )
+                if self.request.user.is_authenticated:                
+                    comment = Comment(
+                        content=content,
+                        author=self.request.user,
+                        post=post
+                    )
+                else:
+                    comment = Comment(
+                        content=content,
+                        name=name,
+                        email=email,
+                        website=website,
+                        post=post
+                    )
 
                 if parent_id:
                     parent_comment = Comment.objects.get(pk=parent_id)
@@ -182,3 +202,9 @@ def about(request):
 def contact(request):
     template_name = 'blog/contact.html'
     return render(request, template_name, {'title': 'Contact'})
+
+class UserView(DetailView):
+    slug_field = "username"
+    model = User
+    template_name = 'blog/user_profile.html'
+    context_object_name = 'obj'

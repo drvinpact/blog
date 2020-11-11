@@ -18,6 +18,9 @@
                 <li class="{% if request.path == '/profile/' %} colorlib-active {%endif%}">
                     <a href="{% url 'profile' %}">Me</a>
                 </li>
+                <li class="{% if request.path == '/messenger/' %} colorlib-active {%endif%}">
+                    <a href="{% url 'messenger:list' %}">Messenger</a>
+                </li>
                 {% endif %}
             </ul>
         </nav>
@@ -38,7 +41,11 @@
                 </form>
             </div>
             <p class="pfooter">
-                Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                Copyright &copy;
+                <script>document.write(new Date().getFullYear());</script> 
+                All rights reserved | This template is made with 
+                <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Tuto</a>
+            </p>
         </div>
     </aside>
 

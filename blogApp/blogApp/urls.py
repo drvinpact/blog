@@ -33,6 +33,7 @@ urlpatterns = [
         name='password_reset_complete'),
 
     path('', include(('blog.urls', 'blog'), namespace="blog")),
+    path('messenger/', include(('messenger.urls', 'messenger'), namespace="messenger")),
 
     path('summernote/', include('django_summernote.urls')),
 

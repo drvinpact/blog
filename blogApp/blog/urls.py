@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from .views import PostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView, \
-    UserPostListView, PostsByCategory, PostsByTag, PostsByDate, vote, ajax_form
+    UserView, UserPostListView, PostsByCategory, PostsByTag, PostsByDate, vote, ajax_form
 
 urlpatterns = [
     path('', PostListView.as_view(), name='home'),
@@ -17,6 +17,9 @@ urlpatterns = [
     path('tag=<slug:tag>', PostsByTag.as_view(), name='post_by_tag'),
     path('date/<int:year>/<int:month>', PostsByDate.as_view(), name='post_by_date'),
 
+    path('profile/<str:slug>/', UserView.as_view(), name='user_profile'),
+    path('message/', views.about, name='message'),
+    
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
 ]

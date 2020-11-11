@@ -1,11 +1,22 @@
 <ul class="children">
   <li class="comment">
     <div class="vcard bio">
-      <img src="{{ item.author.profile.image.url }}" alt="Image placeholder">
+      {% if item.author %}
+        <img src="{{ item.author.profile.image.url }}" alt="Profile">
+      {% else %}
+        <img src="{{MEDIA_URL}}/default.jpg" alt="Profile">
+      {% endif %}
     </div>
     <div class="comment-body">
-      <h3>{{ item.author }}</h3>
-      <div class="meta">October 03, 2018 at 2:21pm</div>
+      
+      {% if item.author %}
+        <p>{{ item.author }}</p>
+      {% else %}
+        <h3>{{ item.name }} <span class="website">{{ item.website }}</span></h3>
+      {% endif %}
+
+      <div class="meta">{{ item.created_at | date:'F d, Y' }}</div>
+
       <p>{{ item.content}}</p>
       
       <div class="votes">
