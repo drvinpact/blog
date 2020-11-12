@@ -1,0 +1,30 @@
+{% extends 'blog/base/base.html' %}
+{% load static %}
+
+{% block content %}
+
+  <section class="ftco-section contact-section px-md-4">
+    <div class="container">
+      <div class="row d-flex mb-5 contact-info">
+          <div class="col-md-12 mb-4">
+              <h2 class="h3">Notifications</h2>
+          </div>
+      </div>
+
+      <div class="row">
+
+        <table class="table table-hover">
+          <tbody>
+            {% for item in obj %}
+              <tr>
+                <td><span class="icon-chat"></span> {{ item.get_html_message | safe }} <small><i>About {{ item.created_at | timesince }}</i></small></td>
+              </tr>                
+            {% endfor %}            
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </section>
+
+{% endblock content %}

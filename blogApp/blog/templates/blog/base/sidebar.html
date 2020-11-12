@@ -12,7 +12,7 @@
             {% if user.is_authenticated %}
                 <p>
                     hellofriend, 
-                    <a href="{% url 'profile' %}">{{ user | title }}</a>
+                    <a href="{% url 'profile' %}">{{ user }}</a>
                     <span class="float-right">
                         <a href="{% url 'logout' %}"><span class="icon-exit_to_app"></span></a>
                     </span>

@@ -34,6 +34,7 @@ urlpatterns = [
 
     path('', include(('blog.urls', 'blog'), namespace="blog")),
     path('messenger/', include(('messenger.urls', 'messenger'), namespace="messenger")),
+    path('notifications/', include(('notifications.urls', 'notifications'), namespace="notifications")),
 
     path('summernote/', include('django_summernote.urls')),
 

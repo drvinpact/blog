@@ -65,7 +65,6 @@ class PostDetailView(DetailView):
         return render(self.request, "blog/post_detail.html", context)
     
     def post(self, *args, **kwargs):
-        print(CommentForm(self.request.POST))
         form = CommentForm(self.request.POST or None)
         if form.is_valid():
             pk = self.kwargs.get('pk')
@@ -75,7 +74,6 @@ class PostDetailView(DetailView):
             website = form.cleaned_data.get("website")
             content = form.cleaned_data.get("content")
             parent_id = form.cleaned_data.get("parent_id")
-            print(parent_id)
 
             if content:
                 if self.request.user.is_authenticated:                

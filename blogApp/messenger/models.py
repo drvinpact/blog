@@ -39,7 +39,6 @@ def messages_changed(sender, **kwargs):
     instance = kwargs.pop("instance", None)
     action = kwargs.pop("action", None)
     pk_set = kwargs.pop("pk_set", None)
-    print(instance, action, pk_set)
 
     false_pk_set = set()
     if action is "pre_add":

@@ -40,8 +40,9 @@ INSTALLED_APPS = [
     'crispy_forms',
 
     'blog.apps.BlogConfig',
-    'users.apps.UsersConfig',
     'messenger.apps.MessengerConfig',
+    'notifications.apps.NotificationsConfig',
+    'users.apps.UsersConfig',
 
     'storages',
 

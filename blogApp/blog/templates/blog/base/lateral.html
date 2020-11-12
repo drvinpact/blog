@@ -21,6 +21,9 @@
                 <li class="{% if request.path == '/messenger/' %} colorlib-active {%endif%}">
                     <a href="{% url 'messenger:list' %}">Messenger</a>
                 </li>
+                <li class="{% if request.path == '/notifications/' %} colorlib-active {%endif%}">
+                    <a href="{% url 'notifications:list' %}">Notifications</a>
+                </li>
                 {% endif %}
             </ul>
         </nav>
