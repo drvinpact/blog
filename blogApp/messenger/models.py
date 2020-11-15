@@ -41,7 +41,7 @@ def messages_changed(sender, **kwargs):
     pk_set = kwargs.pop("pk_set", None)
 
     false_pk_set = set()
-    if action is "pre_add":
+    if action=="pre_add":
         for msg_pk in pk_set:
             msg = Message.objects.get(pk=msg_pk)
             if msg.user not in instance.users.all():

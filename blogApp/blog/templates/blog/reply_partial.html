@@ -1,10 +1,12 @@
+{% load static %}
+
 <ul class="children">
   <li class="comment">
     <div class="vcard bio">
       {% if item.author %}
         <img src="{{ item.author.profile.image.url }}" alt="Profile">
       {% else %}
-        <img src="{{MEDIA_URL}}/default.jpg" alt="Profile">
+        <img src="{% static 'blog/img/default.jpg' %}" alt="Profile">
       {% endif %}
     </div>
     <div class="comment-body">
@@ -12,7 +14,8 @@
       {% if item.author %}
         <p>{{ item.author }}</p>
       {% else %}
-        <h3>{{ item.name }} <span class="website">{{ item.website }}</span></h3>
+        <h3>{{ item.name }} <span class="email">{{ item.email }}</span></h3>
+        <span class="website">{{ item.website }}</span>
       {% endif %}
 
       <div class="meta">{{ item.created_at | date:'F d, Y' }}</div>
@@ -20,8 +23,21 @@
       <p>{{ item.content}}</p>
       
       <div class="votes">
-        <a href="#" class="btn vote_btn like" data-like="1" data-url="{% url 'blog:vote' item.id 'comment' %}" role="button"><i class="icon-thumbs-o-up"></i> {{ item.get_likes }}</a>
-        <a href="#" class="btn vote_btn dislike" data-like="0" data-url="{% url 'blog:vote' item.id 'comment' %}" role="button"><i class="icon-thumbs-o-down"></i> {{ item.get_dislikes }}</a>
+        {% if user.is_authenticated %}
+          <a href="#" class="btn vote_btn like" data-like="1" data-url="{% url 'blog:vote' item.id 'comment' %}" role="button">
+            <i class="icon-thumbs-o-up"></i> 
+            <span class="like_count">{{ item.get_likes }}</span>
+          </a>
+          <a href="#" class="btn vote_btn dislike" data-like="0" data-url="{% url 'blog:vote' item.id 'comment' %}" role="button">
+            <i class="icon-thumbs-o-down"></i> 
+            <span class="dislike_count">{{ item.get_dislikes }}</span>
+          </a>
+        {% else %}
+          <i class="icon-thumbs-o-up"></i> 
+          <span class="like_count mr-3">{{ item.get_likes }}</span>
+          <i class="icon-thumbs-o-down"></i> 
+          <span class="dislike_count mr-2">{{ item.get_dislikes }}</span>
+        {% endif %}
         <a href="#" class="reply" data-id="{{ item.id }}" role="button">Reply</a>
       </div> 
       <div class="reply_div"></div>

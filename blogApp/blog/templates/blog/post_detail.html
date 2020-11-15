@@ -28,16 +28,22 @@
 
                     <div class="row pt-md-4">
                         <div class="votes">
-                            <a href="#" class="btn vote_btn like" data-like="1" data-url="{% url 'blog:vote' post.id 'post' %}" role="button">
+                            {% if user.is_authenticated %}
+                                <a href="#" class="btn vote_btn like" data-like="1" data-url="{% url 'blog:vote' post.id 'post' %}" role="button">
+                                    <i class="icon-thumbs-o-up"></i> 
+                                    <span class="like_count">{{ post.get_likes }}</span>
+                                </a>
+                                <a href="#" class="btn vote_btn dislike" data-like="0" data-url="{% url 'blog:vote' post.id 'post' %}" role="button">
+                                    <i class="icon-thumbs-o-down"></i> 
+                                    <span class="dislike_count">{{ post.get_dislikes }}</span>
+                                </a>
+                            {% else %}
                                 <i class="icon-thumbs-o-up"></i> 
-                                <span class="like_count">{{ post.get_likes }}</span>
-                            </a>
-                            <a href="#" class="btn vote_btn dislike" data-like="0" data-url="{% url 'blog:vote' post.id 'post' %}" role="button">
+                                <span class="like_count mr-3">{{ post.get_likes }}</span>
                                 <i class="icon-thumbs-o-down"></i> 
-                                <span class="dislike_count">{{ post.get_dislikes }}</span>
-                            </a>
-                            <!--<a href="#" class="reply" data-id="{{ item.id }}" role="button">Reply</a>-->
-                        </div> 
+                                <span class="dislike_count mr-2">{{ post.get_dislikes }}</span>
+                            {% endif %}
+                        </div>
 
                         <div class="tag-widget post-tag-container mb-5 mt-5">
                             <div class="tagcloud">
@@ -62,7 +68,7 @@
                         <div class="d-none" id="replyForm">
                             <article class="media comment content-section mt-3 active_reply">
                                 <img class="rounded-circle comment-img" src="{{ request.user.profile.image.url }}" />
-                                <div class="media-body">
+                                <div class="media-body col-lg-8">
                                     <form method="POST">
                                         {% csrf_token %}
                                         {{ form | crispy }}
@@ -134,9 +140,10 @@
                 .done(function (response) {
                     if(response.success){
                         var votes = $(element).closest('.votes')
+                        console.log($(votes).find('.like_count'))
+                        console.log($(votes).find('.dislike_count'))
                         $(votes).find('.like_count').text(response.likes)
-                        $(votes).find('.dislike_count').text(response.dislikes)
-                        
+                        $(votes).find('.dislike_count').text(response.dislikes)                        
                     }else{
                         message(response.msg, color)
                     }

@@ -17,7 +17,7 @@
           <!-- Con una búsqueda inversa user.threads también podemos conseguir los hilos de un usuario -->
           {% for thread in request.user.threads.all %}
             <!-- Sólo mostraremos un Thread si tiene como mínimo 1 mensaje -->
-            {% if thread.messages.all|length > 0 %}
+            {% if thread.messages.all.count > 0 %}
               <div class="mb-3">
                 <!-- Recorremos los miembros del hilo menos el propio request.user -->
                 {% for user in thread.users.all %}
@@ -48,7 +48,7 @@
             {% for message in object.messages.all %}
               <!-- Dependiendo del usuario asignamos una clase con un color de fondo u otro en el mensaje -->
               <div {% if request.user == message.user %}class="mine mb-3"{% else %}class="other mb-3"{% endif %}>
-                <img src="{{message.user.profile.image.url}}" class="avatar-message">
+                <img src="{{ message.user.profile.image.url }}" class="avatar-message">
                 <small><i>About {{ thread.messages.last.created_at | timesince }}</i></small><br>
                 {{ message.content }}
               </div>

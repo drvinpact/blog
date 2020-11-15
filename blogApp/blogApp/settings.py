@@ -76,7 +76,8 @@ TEMPLATES = [
             ],
             'builtins': [
                 'blog.templatetags.custom_tags',
-                'blog.templatetags.sidebar_template_tags',
+                'blog.templatetags.sidebar_tags',
+                'blog.templatetags.user_tags',
             ],
         },
     },

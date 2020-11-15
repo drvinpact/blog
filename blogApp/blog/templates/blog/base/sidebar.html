@@ -1,18 +1,29 @@
 {% load static %}
+
 {% get_popular_posts as popular_posts %}
 {% get_latest_posts as latest_posts %}
 {% get_categories_total as categories %}
 {% get_popular_tags as tags %}
 {% get_archives as archives %}
 
+{% if user.is_authenticated %}
+    {% get_notification_count user as notifications %}
+{% endif %}
+
 {% block content %}
 
     <div class="col-xl-4 sidebar ftco-animate bg-light pt-5">
         <div class="sidebar-box">
             {% if user.is_authenticated %}
-                <p>
-                    hellofriend, 
-                    <a href="{% url 'profile' %}">{{ user }}</a>
+                <p>                    
+                    <a href="{% url 'profile' %}">
+                        <img src="{{ user.profile.image.url }}" class="avatar-panel" alt="Profile">
+                    </a>
+                    {{ user }}                        
+                    <a href="{% url 'notifications:list' %}">
+                        <i class="icon {% if notifications %}icon-notifications_active{% else %}icon-notifications_none{% endif %} icon-notifications"></i>
+                        <span class="badge badge-danger user-notifications {% if not notifications %}d-none{% endif %}">{{ notifications }} </span>
+                    </a>
                     <span class="float-right">
                         <a href="{% url 'logout' %}"><span class="icon-exit_to_app"></span></a>
                     </span>
@@ -136,3 +147,5 @@
     </div>
 
 {% endblock content %}
+
+

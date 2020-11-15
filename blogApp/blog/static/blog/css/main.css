@@ -9066,9 +9066,12 @@ textarea.form-control {
       width: calc(100% - 80px); }
       .comment-list li .comment-body h3 {
         font-size: 20px; }
-      .comment-list li .comment-body .website {
+      .comment-list li .comment-body .email {
         font-size: 15px; 
         font-weight: 100; }
+      .comment-list li .comment-body .website {
+          font-size: 15px; 
+          font-weight: 100; }
       .comment-list li .comment-body .meta {
         text-transform: uppercase;
         font-size: 13px;
@@ -9218,18 +9221,31 @@ textarea.form-control {
       font-style: italic; }
 
 .avatar { 
-  width:50px; 
-  height:50px; 
-  float:left; 
-  margin-right:10px; 
+  width: 50px; 
+  height: 50px; 
+  float: left; 
+  margin-right: 10px; 
   border-radius: 50%;
 }
 
 .avatar-message { 
-  width:30px; 
-  height:30px; 
-  float:left; 
-  margin-right:5px;
+  width: 30px; 
+  height: 30px; 
+  float: left; 
+  margin-right: 5px;
+  border-radius: 50%;
+}
+
+.avatar-notification { 
+  width: 30px; 
+  height: 30px; 
+  margin-right: 5px;
+  border-radius: 50%;
+}
+
+.avatar-panel { 
+  width: 50px; 
+  height: 50px;     
   border-radius: 50%;
 }
 
