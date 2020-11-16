@@ -74,9 +74,20 @@ class VoteNotification(models.Manager):
 class MessageNotification(models.Manager):
     def createNotification(self, obj):
         category = 'message'
-        users = obj.thread
-        print(users)
-        
+        action = 'new message'
+        users = obj.thread.users.exclude(pk=obj.user.id)
+        html_message = "You have a {} from {}"
+
+        for user in users:
+            message = html_message.format(action, obj.user)
+            Notification.objects.create(
+                user=user,
+                author=obj.user,
+                category=category,
+                action=action,
+                message=message,
+                html_message=html_message
+            )        
     
 class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
@@ -101,15 +112,23 @@ class Notification(models.Model):
     class Meta:
         ordering = ['-created_at']
 
-    def get_html_message(self):        
-        if self.author:
+    def get_html_message(self):
+        if self.category=='comment' or self.category=='vote':   
+            if self.author:
+                author_url = reverse('blog:user_profile', kwargs={'slug': self.author})
+                img_url = "<img src='{}' class='avatar-notification'>".format(self.author.profile.image.url)
+                author = "<a href='{}'>{}{}</a>".format(author_url, img_url, self.author)
+            else:
+                author = self.author_name
+                
+            post_url = reverse('blog:post_detail', kwargs={'pk': self.post.id})
+            post = "<a href='{}'><i>{}</i></a>".format(post_url, self.post)
+
+            return self.html_message.format(author, self.action, post)
+            
+        elif self.category=='message':
             author_url = reverse('blog:user_profile', kwargs={'slug': self.author})
             img_url = "<img src='{}' class='avatar-notification'>".format(self.author.profile.image.url)
             author = "<a href='{}'>{}{}</a>".format(author_url, img_url, self.author)
-        else:
-            author = self.author_name
-            
-        post_url = reverse('blog:post_detail', kwargs={'pk': self.post.id})
-        post = "<a href='{}'><i>{}</i></a>".format(post_url, self.post)
 
-        return self.html_message.format(author, self.action, post)
+            return self.html_message.format(self.action, author)

@@ -38,8 +38,7 @@ def add_message(request, pk):
         content = request.GET.get('content', None)
         if content:
             thread = get_object_or_404(Thread, pk=pk)
-            message = Message.objects.create(user=request.user, content=content)
-            thread.messages.add(message)
+            Message.objects.create(thread=thread, user=request.user, content=content)
             json_response['created'] = True
             if len(thread.messages.all()) is 1:
                 json_response['first'] = True

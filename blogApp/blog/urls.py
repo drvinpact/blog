@@ -1,11 +1,14 @@
 from django.urls import path
 from . import views
-from .views import PostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView, \
-    UserView, UserPostListView, PostsByCategory, PostsByTag, PostsByDate, vote, ajax_form
+from .views import PostListView, BookmarkPostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeleteView, \
+    UserView, UserPostListView, PostsByCategory, PostsByTag, PostsByDate, vote, bookmark, ajax_form
 
 urlpatterns = [
     path('', PostListView.as_view(), name='home'),
+    path('bookmarks/', BookmarkPostListView.as_view(), name='bookmarks'),
+    
     path('vote/<int:pk>/<slug:slug>', vote, name="vote"),
+    path('bookmark/<int:pk>', bookmark, name="bookmark"),
     path('ajax_form/', ajax_form, name="ajax_form"),
     path('user/<str:username>/', UserPostListView.as_view(), name='user_posts'),
     path('posts/<int:pk>/', PostDetailView.as_view(), name='post_detail'),

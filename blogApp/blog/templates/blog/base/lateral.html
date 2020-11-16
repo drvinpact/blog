@@ -1,6 +1,5 @@
 {% load static %}
 
-
 {% if user.is_authenticated %}
     {% get_notification_count user as notifications %}
 {% endif %}
@@ -13,25 +12,28 @@
             <ul>
                 <li class="{% if request.path == '/' %} colorlib-active {%endif%}">
                     <a href="{% url 'blog:home' %}">Home</a>
-                </li>
+                </li>                
+                {% if user.is_authenticated %}
+                    <li class="{% if request.path == '/bookmarks/' %} colorlib-active {%endif%}">
+                        <a href="{% url 'blog:bookmarks' %}">Bookmarks</a>
+                    </li>  
+                    <!-- <li class="{% if request.path == '/profile/' %} colorlib-active {%endif%}">
+                        <a href="{% url 'profile' %}">Me</a>
+                    </li> -->
+                    <li class="{% if request.path == '/messenger/' %} colorlib-active {%endif%}">
+                        <a href="{% url 'messenger:list' %}">Messenger</a>
+                    </li>
+                    <!-- <li class="{% if request.path == '/notifications/' %} colorlib-active {%endif%}">
+                        <a href="{% url 'notifications:list' %}">Notifications</a> 
+                        <span class="badge badge-danger user-notifications {% if not notifications %}d-none{% endif %}">{{ notifications }} </span>
+                    </li> -->
+                {% endif %}
                 <li class="{% if request.path == '/about/' %} colorlib-active {%endif%}">
                     <a href="{% url 'blog:about' %}">About</a>
                 </li>
                 <li class="{% if request.path == '/contact/' %} colorlib-active {%endif%}">
                     <a href="{% url 'blog:contact' %}">Contact</a>
                 </li>
-                {% if user.is_authenticated %}
-                <li class="{% if request.path == '/profile/' %} colorlib-active {%endif%}">
-                    <a href="{% url 'profile' %}">Me</a>
-                </li>
-                <li class="{% if request.path == '/messenger/' %} colorlib-active {%endif%}">
-                    <a href="{% url 'messenger:list' %}">Messenger</a>
-                </li>
-                <li class="{% if request.path == '/notifications/' %} colorlib-active {%endif%}">
-                    <a href="{% url 'notifications:list' %}">Notifications</a> 
-                    <span class="badge badge-danger user-notifications {% if not notifications %}d-none{% endif %}">{{ notifications }} </span>
-                </li>
-                {% endif %}
             </ul>
         </nav>
 

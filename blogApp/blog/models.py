@@ -48,6 +48,9 @@ class Post(models.Model):
     def get_dislikes(self):
         return self.votes.filter(like=False).count()
 
+    def bookmark(self, user):
+        return self.bookmarks.filter(user=user).exists()
+
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     content = models.TextField()
@@ -86,3 +89,31 @@ class Vote(models.Model):
 
     def __str__(self):
         return 'Vote by {}'.format(self.author.username)
+
+class BookmakManager(models.Manager):
+    def find(self, user, post):
+        queryset = self.filter(user=user).filter(post=post)
+
+        if len(queryset) > 0:
+            return queryset[0]
+
+        return None
+
+    def create_or_delete(self, user, post):
+        bookmark = self.find(user=user, post=post)
+
+        if bookmark:
+            bookmark.delete()
+            return None
+        else:
+            bookmark = Bookmark.objects.create(user=user, post=post) 
+            return bookmark
+
+class Bookmark(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookmarks')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='bookmarks')
+    created_at = models.DateTimeField(auto_now_add=True)
+    objects = BookmakManager()
+
+    def __str__(self):
+        return '{}\'s bookmark on {}'.format(self.user.username, self.post.title)

@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Post, Comment, Vote
+from .models import Post, Comment, Vote, Bookmark
 from .forms import CommentForm, ReplyForm
 from django import forms
 from django.contrib import messages
@@ -29,9 +29,20 @@ class PostListView(ListView):
             return Post.objects.filter(
                 Q(title__contains=search.strip()) | 
                 Q(content__contains=search.strip())
-            ).distinct()
+            ).distinct().order_by('-created_at')
 
-        return Post.objects.all()
+        return Post.objects.all().order_by('-created_at')
+
+class BookmarkPostListView(ListView):
+    template_name = 'blog/home.html'
+    model = Post
+    context_object_name = 'obj'
+    ordering = ['-created_at']
+    paginate_by = 10
+
+    def get_queryset(self):        
+        bookmarks_ids = list(self.request.user.bookmarks.values_list('post_id', flat=True))
+        return Post.objects.filter(pk__in=bookmarks_ids).order_by('-created_at')
 
 class UserPostListView(ListView):
     template_name = 'blog/home.html'
@@ -109,23 +120,34 @@ def vote(request, pk, slug):
             if slug == 'post':
                 post = Post.objects.get(pk=pk)
                 vote = Vote.objects.update_or_create(post=post, author=request.user, defaults={
-                    'author':request.user,
-                    'post':post,
-                    'like':like
+                    'author': request.user,
+                    'post': post,
+                    'like': like
                 })
                 likes = post.get_likes()
                 dislikes = post.get_dislikes()
             elif slug == 'comment':
                 comment = Comment.objects.get(pk=pk)
                 vote = Vote.objects.update_or_create(comment=comment, author=request.user, defaults={
-                    'author':request.user,
-                    'comment':comment,
-                    'like':like
+                    'author': request.user,
+                    'comment': comment,
+                    'like': like
                 })
                 likes = comment.get_likes()
                 dislikes = comment.get_dislikes()
             
-            return JsonResponse({'success': True, 'likes': likes, 'dislikes': dislikes}, safe=False)
+            return JsonResponse({ 'success': True, 'likes': likes, 'dislikes': dislikes }, safe=False)
+        except ObjectDoesNotExist:
+            return JsonResponse({ 'msg': 'The object does not exist', 'success': False }, safe=False)
+        
+def bookmark(request, pk):
+    if request.method=='POST':
+        try:
+            post = Post.objects.get(pk=pk)
+            marker = Bookmark.objects.create_or_delete(user=request.user, post=post)
+            bookmark = True if marker else False
+            
+            return JsonResponse({ 'success': True, 'bookmark': bookmark }, safe=False)
         except ObjectDoesNotExist:
             return JsonResponse({'msg': 'The object does not exist', 'success': False}, safe=False)
 
