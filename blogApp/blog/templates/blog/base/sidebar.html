@@ -1,6 +1,7 @@
 {% load static %}
 
 {% get_popular_posts as popular_posts %}
+
 {% get_latest_posts as latest_posts %}
 {% get_categories_total as categories %}
 {% get_popular_tags as tags %}
@@ -45,7 +46,7 @@
                     <input type="text" id="search" name="search" class="form-control" placeholder="Type a keyword and hit enter" value="{{ request.GET.search }}">
                 </div>
             </form>
-        </div>
+        </div>        
 
         <div class="sidebar-box ftco-animate">
             <h3 class="sidebar-heading">Popular</h3>

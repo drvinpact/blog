@@ -2,8 +2,11 @@
 
 {% load crispy_forms_tags %}
 
+
 {% block content %}
 
+    {% get_related_posts post as related_posts %}
+    
     {% if user.is_authenticated %}
         {% get_post_bookmark post user as bookmark %}
     {% endif %}
@@ -14,9 +17,21 @@
 
             <div class="row d-flex">
                 <div class="col-lg-8 px-md-5 py-5">
-                    <div class="row pt-md-4">
-                        <h1 class="mb-3">{{ post.title }}</h1>                                            
-                    </div>
+                    <div class="row pt-md-4 mb-4">                         
+                        <h1 class="mb-3">{{ post.title }}</h1>   
+                        <p><em>{{ post.category }}</em></p>
+                        
+                        {% if post.author == user %}
+                            <div>
+                                <a class="btn btn-outline-info btn-sm mt-1 mb-1" href="{% url 'blog:post_update' post.id %}">Update</a>
+                                {% if post.active %}
+                                    <a class="btn btn-outline-danger btn-sm mt-1 mb-1" href="{% url 'blog:post_deactivate' post.id %}">Deactivate</a>
+                                {% else %}
+                                    <a class="btn btn-outline-success btn-sm mt-1 mb-1" href="{% url 'blog:post_deactivate' post.id %}">Activate</a>
+                                {% endif %}
+                            </div>
+                        {% endif %}                                         
+                    </div>                                        
 
                     {% if post.image %}
 
@@ -28,7 +43,7 @@
                     
                     <div class="row pt-md-4">
                         <p>{{ post.content | safe }}</p>
-                    </div>
+                    </div>                    
 
                     <div class="votes row pt-2 mt-2">
                         {% if user.is_authenticated %}                            
@@ -71,6 +86,33 @@
                                 <a href="{% url 'blog:user_profile' post.author %}"><h3>{{ post.author }}</h3></a>
                                 <p>{{ post.author.profile.bio}}</p>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="row pt-md-4">
+                        <div class="pt-5 mt-5">
+                            <h3 class="mb-5 font-weight-bold">Related Posts</h3>
+
+                            {% for related in related_posts %}
+                            <div class="block-21 mb-4 d-flex">
+                                <a class="blog-img mr-4" style="background-image: url('{{ related.image.url }}');"></a>
+                                <div class="text">
+                                    <h3 class="heading"><a href="{% url 'blog:post_detail' related.id %}">{{ related.title }}</a></h3>
+                                    <div class="meta">
+                                        <div><span class="icon-calendar"></span> {{ related.created_at | date:'F d, Y' }}</div>
+                                    </div>
+                                    <div class="meta">
+                                        <div>
+                                            <a href="{% url 'blog:user_posts' related.author %}">
+                                                <span class="icon-person"></span> {{ related.author }}
+                                            </a>
+                                        </div>
+                                        <div><span class="icon-chat"></span> {{ related.get_comments }}</div>
+                                        <div><span class="icon-thumbs-o-up"></span> {{ related.get_likes }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
                         </div>
                     </div>
 

@@ -27,14 +27,14 @@ def get_popular_posts():
 
 @register.simple_tag
 def get_categories_total():
-    qs = Category.objects.all().annotate(posts_count=Count('post')).order_by('name')
+    qs = Category.objects.all().annotate(posts_count=Count('posts')).order_by('name')
     if qs.exists():
         return qs
     return []
 
 @register.simple_tag
 def get_popular_tags():
-    qs = Tag.objects.all()[:6]
+    qs = Tag.objects.all().order_by('name')[:6]
     if qs.exists():
         return qs
     return []
@@ -48,4 +48,10 @@ def get_archives():
             .values('month', 'year', 'total'))[:6]
     if qs.exists():
         return qs
+    return []
+
+@register.simple_tag
+def get_related_posts(post):
+    if post:
+        return post.related_posts()
     return []

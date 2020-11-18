@@ -10,19 +10,17 @@ from django.http import JsonResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 
-def home(request):    
-    template_name = 'blog/home.html'
-    posts = Post.objects.all()
-    context = {'posts': posts}
-    return render(request, template_name, context)
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
-class PostListView(ListView):
+class BaseListView(ListView):
     template_name = 'blog/home.html'
     model = Post
     context_object_name = 'obj'
     ordering = ['-created_at']
     paginate_by = 10
 
+class PostListView(BaseListView):
     def get_queryset(self):
         search = self.request.GET.get('search')
         if search and search is not None:
@@ -33,32 +31,35 @@ class PostListView(ListView):
 
         return Post.objects.all().order_by('-created_at')
 
-class BookmarkPostListView(ListView):
-    template_name = 'blog/home.html'
-    model = Post
-    context_object_name = 'obj'
-    ordering = ['-created_at']
-    paginate_by = 10
+class PostsByCategory(BaseListView):
+    def get_queryset(self):
+        return Post.objects.filter(category__name=self.kwargs.get('category')).order_by('-created_at')
+ 
+class PostsByTag(BaseListView):
+    def get_queryset(self):
+        return Post.objects.filter(tags__name__in=[self.kwargs.get('tag')]).order_by('-created_at')
 
-    def get_queryset(self):        
-        bookmarks_ids = list(self.request.user.bookmarks.values_list('post_id', flat=True))
-        return Post.objects.filter(pk__in=bookmarks_ids).order_by('-created_at')
+class PostsByDate(BaseListView):
+    def get_queryset(self):
+        month = self.kwargs.get('month')
+        year = self.kwargs.get('year')            
+        return Post.objects.filter(created_at__year=year).filter(created_at__month=month).order_by('-created_at')
 
-class UserPostListView(ListView):
-    template_name = 'blog/home.html'
-    model = Post
-    context_object_name = 'obj'
-    ordering = ['-created_at']
-    paginate_by = 10
-
+class UserPostListView(BaseListView):
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         return Post.objects.filter(author=user).order_by('-created_at')
 
-def ajax_form(request):
-    if request.method == "GET":
-        form = CommentForm()
-        return HttpResponse(form.as_p())
+@method_decorator(login_required, name='dispatch')
+class BookmarkPostListView(BaseListView):
+    def get_queryset(self):        
+        bookmarks_ids = list(self.request.user.bookmarks.values_list('post_id', flat=True))
+        return Post.objects.filter(pk__in=bookmarks_ids).order_by('-created_at')
+
+@method_decorator(login_required, name='dispatch')
+class MyPostListView(BaseListView):
+    def get_queryset(self):        
+        return self.request.user.posts.all().order_by('-created_at')
 
 class PostDetailView(DetailView):
     def get(self, *args, **kwargs):
@@ -112,6 +113,70 @@ class PostDetailView(DetailView):
                 messages.info(self.request, "Please write some comment.")
                 return redirect('blog:post_detail', pk=pk)
 
+@method_decorator(login_required, name='dispatch')
+class UserView(DetailView):
+    slug_field = "username"
+    model = User
+    template_name = 'blog/user_profile.html'
+    context_object_name = 'obj'
+
+class PostCreateView(LoginRequiredMixin, CreateView):
+    model = Post
+    fields = ['title', 'content']
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Post
+    fields = ['title', 'content']
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def test_func(self):
+        post = self.get_object()
+        if self.request.user == post.author:
+            return True
+        return False
+            
+class PostDeactivateView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Post
+    template_name = 'blog/post_confirm_deactivate.html'
+    success_url = '/'
+
+    def test_func(self):
+        post = self.get_object()
+        if self.request.user == post.author:
+            return True
+        return False
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        if self.object.author == self.request.user:
+            self.object.active=(not self.object.active)
+            self.object.save()
+
+        return redirect(success_url)
+ 
+def about(request):
+    template_name = 'blog/about.html'
+    return render(request, template_name, {'title': 'About'})
+
+def contact(request):
+    template_name = 'blog/contact.html'
+    return render(request, template_name, {'title': 'Contact'})
+
+""" AJAX """
+
+def ajax_form(request):
+    if request.method == "GET":
+        form = CommentForm()
+        return HttpResponse(form.as_p())
+
 def vote(request, pk, slug):
     if request.method=='POST':
         try:            
@@ -150,81 +215,3 @@ def bookmark(request, pk):
             return JsonResponse({ 'success': True, 'bookmark': bookmark }, safe=False)
         except ObjectDoesNotExist:
             return JsonResponse({'msg': 'The object does not exist', 'success': False}, safe=False)
-
-class PostCreateView(LoginRequiredMixin, CreateView):
-    model = Post
-    fields = ['title', 'content']
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
-
-class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Post
-    fields = ['title', 'content']
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
-
-    def test_func(self):
-        post = self.get_object()
-        if self.request.user == post.author:
-            return True
-        return False
-            
-class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = Post
-    success_url = '/'
-
-    def test_func(self):
-        post = self.get_object()
-        if self.request.user == post.author:
-            return True
-        return False
-
-class PostsByCategory(ListView):
-    template_name = 'blog/home.html'
-    model = Post
-    context_object_name = 'obj'
-    ordering = ['-created_at']
-    paginate_by = 10
-
-    def get_queryset(self):
-        return Post.objects.filter(category__name=self.kwargs.get('category')).order_by('-created_at')
- 
-class PostsByTag(ListView):
-    template_name = 'blog/home.html'
-    model = Post
-    context_object_name = 'obj'
-    ordering = ['-created_at']
-    paginate_by = 10
-
-    def get_queryset(self):
-        return Post.objects.filter(tags__name__in=[self.kwargs.get('tag')]).order_by('-created_at')
-
-class PostsByDate(ListView):
-    template_name = 'blog/home.html'
-    model = Post
-    context_object_name = 'obj'
-    ordering = ['-created_at']
-    paginate_by = 10
-
-    def get_queryset(self):
-        month = self.kwargs.get('month')
-        year = self.kwargs.get('year')            
-        return Post.objects.filter(created_at__year=year).filter(created_at__month=month).order_by('-created_at')
- 
-def about(request):
-    template_name = 'blog/about.html'
-    return render(request, template_name, {'title': 'About'})
-
-def contact(request):
-    template_name = 'blog/contact.html'
-    return render(request, template_name, {'title': 'Contact'})
-
-class UserView(DetailView):
-    slug_field = "username"
-    model = User
-    template_name = 'blog/user_profile.html'
-    context_object_name = 'obj'

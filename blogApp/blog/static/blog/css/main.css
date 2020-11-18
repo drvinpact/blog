@@ -8729,7 +8729,7 @@ h1, h2, h3, h4, h5,
   -webkit-box-shadow: none !important;
   box-shadow: none !important; }
   .form-control:focus, .form-control:active {
-    border-color: #000000; }
+    border-color: #26bd12; }
 
 textarea.form-control {
   height: inherit !important; }

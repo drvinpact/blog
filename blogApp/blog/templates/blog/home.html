@@ -13,11 +13,24 @@
                         
                         {% for item in obj %}
 
-                            <div class="col-md-12">
+                            {% if user.is_authenticated %}
+                                {% get_post_bookmark item user as bookmark %}
+                            {% endif %}
+
+                            <div class="col-md-12 post">
                                 <div class="blog-entry ftco-animate d-md-flex">
                                     <a href="{% url 'blog:post_detail' item.id %}" class="img img-2" style="background-image: url('{{ item.image.url }}');"></a>
                                     <div class="text text-2 pl-md-4">
-                                        <h3 class="mb-2"><a href="{% url 'blog:post_detail' item.id %}">{{ item.title }}</a></h3>
+                                        <h3 class="mb-2">
+                                            <a href="{% url 'blog:post_detail' item.id %}">
+                                                {{ item.title }}
+                                            </a>
+                                            {% if user.is_authenticated %}
+                                                <a href="#" class="btn bookmark-btn" data-url="{% url 'blog:bookmark' item.id %}" role="button">                                
+                                                    <i class="icon {% if bookmark %}icon-heart{% else %}icon-heart-o{% endif %}"></i>
+                                                </a>
+                                            {% endif %}
+                                        </h3>                                        
                                         <div class="meta-wrap">
                                             <p class="meta">
                                                 <span>
@@ -50,34 +63,7 @@
          
                     </div>
 
-                    {% if is_paginated %}
-                    
-                        <div class="row">
-                            <div class="col">
-                                <div class="block-27">
-                                    <ul>
-                                        {% if page_obj.has_previous %}
-                                            <a class="btn btn-outline-info mb-4" href="?page=1">&lt;&lt;</a>
-                                            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">&lt;</a>
-                                        {% endif %}
-                                        {% for num in page_obj.paginator.page_range %}
-                                            {% if page_obj.number == num %}
-                                                <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
-                                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3'  %}
-                                                <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
-                                            {% endif %}
-                                        {% endfor %}
-                                        {% if page_obj.has_next %}
-                                            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">&gt;</a>
-                                            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">&gt;&gt;</a>
-                                        {% endif %}
-
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                    {% endif %}
+                    {% include "blog/partials/pagination.html" %}
 
                 </div>
 
@@ -90,3 +76,44 @@
     </section>
 
 {% endblock content %}
+
+{% block extra_scripts %}
+    <script>
+        $(document).ready(function(){                    
+            $(".bookmark-btn").click(function(e){
+                e.preventDefault();
+
+                var element =$(this);
+                var url = $(element).data("url");
+                var path = "{{ request.path }}"
+
+                $.ajax({
+                    type: "POST",
+                    url: url,            
+                    data: {csrfmiddlewaretoken: "{{ csrf_token }}"}
+                })
+                .done(function (response) {
+                    if(response.success){
+                        const icon = $(element).find("i")
+                        if(response.bookmark){
+                            $(icon).removeClass("icon-heart-o")
+                            $(icon).addClass("icon-heart")
+                        }else{
+                            $(icon).removeClass("icon-heart")
+                            $(icon).addClass("icon-heart-o")
+
+                            if(path=='/bookmarks/'){
+                                var post = $(element).parents('.post')
+                                $(post).fadeOut()
+                                console.log(post)
+                            }
+                        }
+                    }else{
+                        message(response.msg, color)
+                    }
+                })          
+            });
+
+        });
+    </script>
+{% endblock extra_scripts %}

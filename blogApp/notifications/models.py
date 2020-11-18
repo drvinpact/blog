@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from blog.models import Post, Comment, Vote
+from messenger.models import Thread
 from django.urls import reverse
 
 class CommentNotification(models.Manager):
@@ -75,7 +76,8 @@ class MessageNotification(models.Manager):
     def createNotification(self, obj):
         category = 'message'
         action = 'new message'
-        users = obj.thread.users.exclude(pk=obj.user.id)
+        thread = obj.thread
+        users = thread.users.exclude(pk=obj.user.id)
         html_message = "You have a {} from {}"
 
         for user in users:
@@ -83,6 +85,7 @@ class MessageNotification(models.Manager):
             Notification.objects.create(
                 user=user,
                 author=obj.user,
+                thread=thread,
                 category=category,
                 action=action,
                 message=message,
@@ -95,6 +98,7 @@ class Notification(models.Model):
     author_name = models.CharField(max_length=255, null=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True)
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True)
+    thread = models.ForeignKey(Thread, on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     message = models.TextField()
@@ -130,5 +134,7 @@ class Notification(models.Model):
             author_url = reverse('blog:user_profile', kwargs={'slug': self.author})
             img_url = "<img src='{}' class='avatar-notification'>".format(self.author.profile.image.url)
             author = "<a href='{}'>{}{}</a>".format(author_url, img_url, self.author)
+            thread_url = reverse('messenger:detail', kwargs={'pk': self.thread.id})
+            thread = "<a href='{}'>{}</a>".format(thread_url, self.action)
 
-            return self.html_message.format(self.action, author)
+            return self.html_message.format(thread, author)
