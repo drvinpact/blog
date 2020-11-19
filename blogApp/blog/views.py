@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views.defaults import page_not_found
 from .models import Post, Comment, Vote, Bookmark
 from .forms import CommentForm, ReplyForm
 from django import forms
@@ -12,6 +13,10 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+
+def error_404(request, exception):
+    template_name = 'blog/base/404.html'
+    return render(request, template_name)
 
 class BaseListView(ListView):
     template_name = 'blog/home.html'
