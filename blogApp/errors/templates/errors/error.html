@@ -11,13 +11,13 @@
         </div>
         <div class="notfound">
             <div class="notfound-404">
-                <h1>404</h1>
+                <h1>{{ error }}</h1>
             </div>
-            <h2>Page Not Found</h2>
-            <h4>UH OH! You're lost.</h4>
-            <p>The page you are looking for does not exist. How you got here is a mystery. </p>
-            <p>But you can click the button below to go back to the homepage.</p>
-            <a href="{% url 'blog:home' %}">Back Home</a>
+            <h2>{{ title }}</h2>
+            <h4>{{ subtitle }}</h4>
+            <p>{{ message }}</p>
+            <p>{{ submessage }}</p>
+            <a href="{{ url }}">{{ button }}</a>
             <!-- <div class="notfound-social">
                 <a href="#"><i class="fa fa-facebook"></i></a>
                 <a href="#"><i class="fa fa-twitter"></i></a>

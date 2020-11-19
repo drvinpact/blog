@@ -5,9 +5,12 @@ from django.conf.urls import handler404, handler500
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 from users import views as user_views
-from blog.views import error_404
+from errors.views import error_400, error_403, error_404, error_500
 
+handler400 = error_400
+handler403 = error_403
 handler404 = error_404
+handler500 = error_500
 
 urlpatterns = [
     path('admin/', admin.site.urls),    

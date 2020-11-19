@@ -9,14 +9,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View, TemplateView
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-def error_404(request, exception):
-    template_name = 'blog/base/404.html'
-    return render(request, template_name)
 
 class BaseListView(ListView):
     template_name = 'blog/home.html'
