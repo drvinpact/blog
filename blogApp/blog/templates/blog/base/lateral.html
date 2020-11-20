@@ -20,16 +20,6 @@
                     <li class="{% if request.path == '/bookmarks/' %} colorlib-active {%endif%}">
                         <a href="{% url 'blog:bookmarks' %}">Bookmarks</a>
                     </li>  
-                    <!-- <li class="{% if request.path == '/profile/' %} colorlib-active {%endif%}">
-                        <a href="{% url 'profile' %}">Me</a>
-                    </li> -->
-                    <li class="{% if request.path == '/messenger/' %} colorlib-active {%endif%}">
-                        <a href="{% url 'messenger:list' %}">Messenger</a>
-                    </li>
-                    <!-- <li class="{% if request.path == '/notifications/' %} colorlib-active {%endif%}">
-                        <a href="{% url 'notifications:list' %}">Notifications</a> 
-                        <span class="badge badge-danger user-notifications {% if not notifications %}d-none{% endif %}">{{ notifications }} </span>
-                    </li> -->
                 {% endif %}
                 <li class="{% if request.path == '/about/' %} colorlib-active {%endif%}">
                     <a href="{% url 'blog:about' %}">About</a>
@@ -72,7 +62,7 @@
     <script>
         $(document).ready(function(){
             
-            const is_authenticated = "{{ user.is_authenticated|yesno:'true,false' }}";
+            const is_authenticated = JSON.parse("{{ user.is_authenticated|yesno:'true,false' }}");
             const url = "{% url 'notifications:check' %}";
 
             if(is_authenticated){

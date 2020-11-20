@@ -1,7 +1,7 @@
 {% load static %}
 
 <ul class="children">
-  <li class="comment">
+  <li id="comment_{{ item.id }}" class="comment">
     <div class="vcard bio">
       {% if item.author %}
         <img src="{{ item.author.profile.image.url }}" alt="Profile">
@@ -45,7 +45,7 @@
 
     {%if item.replies.exists %}
       {%for reply in item.replies.all %}
-        {%with item=reply template_name="blog/reply_partial.html" %}
+        {%with item=reply template_name="blog/partials/reply.html" %}
           {%include template_name%}
         {%endwith%}
       {%endfor%}

@@ -124,8 +124,8 @@ class Notification(models.Model):
                 author = "<a href='{}'>{}{}</a>".format(author_url, img_url, self.author)
             else:
                 author = self.author_name
-                
-            post_url = reverse('blog:post_detail', kwargs={'pk': self.post.id})
+            comment = "?comment_id={}".format(self.comment.id) if self.comment.id else ""
+            post_url = reverse('blog:post_detail', kwargs={'pk': self.post.id}) + comment
             post = "<a href='{}'><i>{}</i></a>".format(post_url, self.post)
 
             return self.html_message.format(author, self.action, post)

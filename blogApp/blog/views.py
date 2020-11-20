@@ -65,6 +65,7 @@ class MyPostListView(BaseListView):
 
 class PostDetailView(DetailView):
     def get(self, *args, **kwargs):
+        comment_id = self.request.GET.get('comment_id')
         post = get_object_or_404(Post, pk=self.kwargs.get('pk'))
         comments = post.comments.filter(active=True, parent=None).order_by('-created_at')
         form = CommentForm()
@@ -75,7 +76,7 @@ class PostDetailView(DetailView):
             form.fields['website'].widget = forms.HiddenInput()
             form.fields['content'].label = ''
 
-        context = {'post': post, 'comments': comments, 'form': form}
+        context = {'post': post, 'comments': comments, 'form': form, 'comment_id': comment_id}
         return render(self.request, "blog/post_detail.html", context)
     
     def post(self, *args, **kwargs):

@@ -1,6 +1,6 @@
 {% load static %}
 
-<li class="comment">
+<li id="comment_{{ item.id }}" class="comment">
     <div class="vcard bio">
         {% if item.author %}
             <img src="{{ item.author.profile.image.url }}" alt="Profile">
@@ -19,7 +19,7 @@
 
         <div class="meta">{{ item.created_at | date:'F d, Y' }}</div>
         
-        <p>{{ item.content}}</p>
+        <p class="comment-content">{{ item.content}}</p>
 
         <div class="votes">
             {% if user.is_authenticated %}
@@ -42,12 +42,12 @@
         <div class="reply_div"></div>
     </div>
 
-    {%if item.replies.exists %}
-        {%for reply in item.replies.all %}
-            {%with item=reply template_name="blog/reply_partial.html" %}
-                {%include template_name%}
-            {%endwith%}
-        {%endfor%}
-    {%endif%}    
+    {% if item.replies.exists %}
+        {% for reply in item.replies.all %}
+            {% with item=reply template_name="blog/partials/reply.html" %}
+                {% include template_name %}
+            {% endwith %}
+        {% endfor %}
+    {% endif %}
     
 </li>

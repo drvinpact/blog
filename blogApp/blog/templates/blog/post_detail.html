@@ -13,32 +13,30 @@
 
     <section class="ftco-section ftco-no-pt ftco-no-pb">
 
-        <div class="container">
+        <div id="post-detail" class="container">
 
             <div class="row d-flex">
                 <div class="col-lg-8 px-md-5 py-5">
-                    <div class="row pt-md-4 mb-4">                         
-                        <h1 class="mb-3">{{ post.title }}</h1>   
+                    <div class="row pt-md-4">
+                        <h1>{{ post.title }}</h1>   
                         <p><em>{{ post.category }}</em></p>
-                        
-                        {% if post.author == user %}
-                            <div>
-                                <a class="btn btn-outline-info btn-sm mt-1 mb-1" href="{% url 'blog:post_update' post.id %}">Update</a>
-                                {% if post.active %}
-                                    <a class="btn btn-outline-danger btn-sm mt-1 mb-1" href="{% url 'blog:post_deactivate' post.id %}">Deactivate</a>
-                                {% else %}
-                                    <a class="btn btn-outline-success btn-sm mt-1 mb-1" href="{% url 'blog:post_deactivate' post.id %}">Activate</a>
-                                {% endif %}
-                            </div>
-                        {% endif %}                                         
                     </div>                                        
-
+                    {% if post.author == user %}
+                        <div class="float-right mb-4">
+                            <a class="btn btn-outline-info btn-sm mt-1 mb-1" href="{% url 'blog:post_update' post.id %}">Update</a>
+                            {% if post.active %}
+                                <a class="btn btn-outline-danger btn-sm mt-1 mb-1" href="{% url 'blog:post_deactivate' post.id %}">Deactivate</a>
+                            {% else %}
+                                <a class="btn btn-outline-success btn-sm mt-1 mb-1" href="{% url 'blog:post_deactivate' post.id %}">Activate</a>
+                            {% endif %}
+                        </div>
+                    {% endif %}    
                     {% if post.image %}
-
-                        <p>
-                            <img src="{{ post.image.url }}" alt="" class="img-fluid">
-                        </p>
-
+                        <div class="mt-4">
+                            <p>
+                                <img src="{{ post.image.url }}" alt="" class="img-fluid">
+                            </p>
+                        </div>
                     {% endif %}
                     
                     <div class="row pt-md-4">
@@ -134,7 +132,7 @@
                             <h3 class="mb-5 font-weight-bold">{{ post.get_comments }} comment{{ post.get_comments | pluralize }}</h3>
                             <ul class="comment-list">
                                 {% for item in comments.all %}
-                                    {%include "blog/comment_partial.html" %}
+                                    {% include "blog/partials/comment.html" %}
                                 {% endfor %}
                             </ul>
                         
@@ -177,6 +175,29 @@
 {% block extra_scripts %}
     <script>
         $(document).ready(function(){
+
+            const comment_id = "{{ comment_id }}";
+
+            function scrollToCenter(id) {
+                const scrollTo = $("#comment_" + id)
+                
+                $('html, body').animate({
+                    scrollTop: $(scrollTo).offset().top                    
+                }, 700);
+
+                const comment_content = $(scrollTo).find(".comment-content:first")
+                const comment_username = $(scrollTo).find("h3:first")
+                const comment_meta = $(scrollTo).find(".meta:first")
+                $(comment_content).css("color", "green")
+                $(comment_meta).css("color", "green")
+                $(comment_username).css("color", "green")
+            }
+            
+            if(comment_id){
+                id = JSON.parse(comment_id)
+                scrollToCenter(id)
+            }
+            
             $(".vote_btn").click(function(e){
                 e.preventDefault();
 
