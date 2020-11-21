@@ -42,8 +42,9 @@ def add_message(request, pk):
         content = request.GET.get('content', None)
         if content:
             thread = get_object_or_404(Thread, pk=pk)
-            Message.objects.create(thread=thread, user=request.user, content=content)
+            message = Message.objects.create(thread=thread, user=request.user, content=content)
             json_response['created'] = True
+            json_response['created_at'] = message.created_at.strftime("%b. %d, %Y, %I:%M %p")
             if len(thread.messages.all())==1:
                 json_response['first'] = True
     else:
@@ -57,3 +58,18 @@ def start_thread(request, username):
     thread = Thread.objects.find_or_create(user, request.user)
 
     return redirect(reverse_lazy('messenger:detail', args=[thread.pk])) 
+
+@method_decorator(login_required, name="dispatch")
+class ThreadListt(TemplateView):
+    template_name = "messenger/thread_listt.html"
+
+@method_decorator(login_required, name="dispatch")
+class ThreadDetaill(DetailView):
+    model = Thread
+    template_name = "messenger/thread_detaill.html"
+    def get_object(self):
+        obj = super(ThreadDetaill, self).get_object()
+        if self.request.user not in obj.users.all():
+            raise PermissionDenied()
+        
+        return obj

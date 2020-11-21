@@ -23,7 +23,11 @@
                 {% for user in thread.users.all %}
                   {% if user != request.user %}     
                     <!-- Mostramos el avatar del miembro -->                
-                    <img src="{{ user.profile.image.url }}" class="avatar" />
+                    {% if user.profile.image %}
+                      <img src="{{ user.profile.image.url }}" class="avatar">
+                    {% else %}
+                      <img src="{% static 'registration/img/no-avatar.jpg' %}" class="avatar">
+                    {% endif %}
                     <!-- Mostramos la información del miembro --> 
                     <div>
                       <a href="{% url 'messenger:detail' thread.pk %}">{{ user }}</a><br>

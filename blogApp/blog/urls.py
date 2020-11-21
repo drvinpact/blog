@@ -25,7 +25,6 @@ urlpatterns = [
     
 
     path('profile/<str:slug>/', UserView.as_view(), name='user_profile'),
-    path('message/', views.about, name='message'),
     
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),

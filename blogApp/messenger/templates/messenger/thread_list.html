@@ -16,7 +16,8 @@
         <div class="col-md-4">
           <!-- Recorremos los Threads y sólo mostramos los que tienen como mínimo 1 mensaje -->
           {% for thread in request.user.threads.all %}
-            {% if thread.messages.all|length > 0 %}
+
+            {% if thread.messages.all.count > 0 %}
               <div class="mb-3">
                 <!-- Recorremos los miembros del hilo menos el propio request.user -->
                 {% for user in thread.users.all %}
