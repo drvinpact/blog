@@ -69,23 +69,6 @@
                 check()
             }
 
-
-            function getCookie(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        // Does this cookie string begin with the name we want?
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
-
             function check(){
                 setTimeout(function () {
                     const span = $(".user-notifications")
@@ -100,7 +83,9 @@
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({'notifications': notifications})      
-                    }).then(response => response.json()).then(function(data){
+                    }).then(
+                        response => response.json()
+                    ).then(function(data){
                         if(data.success){
                             if(data.update){
                                 $(span).text(data.notifications)

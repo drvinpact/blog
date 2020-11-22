@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ThreadList, ThreadDetail, add_message, start_thread, ThreadListt, ThreadDetaill
+from .views import ThreadList, ThreadDetail, add_message, start_thread, check_updates, ThreadListt, ThreadDetaill
 
 urlpatterns = [
     path('', ThreadList.as_view(), name='list'),
@@ -9,4 +9,6 @@ urlpatterns = [
     
     path('threadd/', ThreadListt.as_view(), name='listt'),
     path('threadd/<int:pk>/', ThreadDetaill.as_view(), name='detaill'),
+
+    path('thread/check-updates', check_updates, name='check-updates'),
 ]

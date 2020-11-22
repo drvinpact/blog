@@ -14,25 +14,26 @@
                     </div>
 
                     <ul class="list">
-                        {% for thread in request.user.threads.all %}
+                        {% for thread in user.threads.all %}
                             {% if thread.messages.count > 0 %}
                             <li class="clearfix">
-                                {% for user in thread.users.all %}
-                                    {% if user != request.user %} 
-                                        {% if user.profile.image %}
-                                            <img src="{{ user.profile.image.url }}" alt="avatar" class="avatar"/>
+                                {% for thread_user in thread.users.all %}
+                                    {% if thread_user != user %} 
+                                        {% if thread_user.profile.image %}
+                                            <img src="{{ thread_user.profile.image.url }}" alt="avatar" class="avatar"/>
                                         {% else %}
                                             <img src="{% static 'registration/img/no-avatar.jpg' %}" class="avatar">
                                         {% endif %}
                                         <div class="about">
                                             <div class="name">
                                                 <a href="{% url 'messenger:detaill' thread.pk %}">
-                                                    {{ user }}
+                                                    {{ thread_user }}
                                                 </a>
                                             </div>
                                             <div class="status">
                                                 <!-- <i class="fa fa-circle online"></i> online -->
-                                                <p>{{ thread.messages.last.created_at|date:'d-m-Y' }}</p>
+                                                <p><i>{{ thread.messages.last.content | string_trunc:25 }}</i></p>
+                                                <p><small>{{ thread.messages.last.created_at|date:'d-m-Y' }}</small></p>
                                             </div>
                                         </div>
                                     {% endif %}
@@ -47,30 +48,32 @@
             <div class="col-md-8">
                 <div class="chat">
                     <div class="chat-header clearfix">
-                        {% for user in thread.users.all %}
-                            {% if user.pk != request.user.pk %}       
-                                <img src="{{ user.profile.image.url }}" class="avatar" alt="avatar" />
+                        {% for thread_user in thread.users.all %}
+                            {% if thread_user.pk != user.pk %}       
+                                <img src="{{ thread_user.profile.image.url }}" class="avatar" alt="avatar" />
                                 <div class="chat-about">
                                     <div class="chat-with">
-                                        Conversation with <a href="{% url 'blog:user_profile' user %} ">{{ user }}</a>
+                                        Conversation with <a href="{% url 'blog:user_profile' thread_user %} ">{{ thread_user }}</a>
                                     </div>
                                     <div class="chat-num-messages">
-                                        already <span class="messages-count">{{ thread.messages.count }}</span> messages</div>
+                                        Already <span id="messages-count" class="messages-count">{{ thread.messages.count }}</span> messages
+                                    </div>
                                 </div>
                                 <!-- <i class="fa fa-star"></i> -->
                             {% endif %}
-                        {% endfor %}
-                                                                                    
+                        {% endfor %}                                           
                     </div>
+
+                    <input id="last-update" type="hidden" value="{{ thread.updated_at | date:'U' }}" />
                     
                     <div id="thread" class="chat-history">
                         <ul id="thread-list">
                             {% for message in thread.messages.all %}
-                                {% if request.user.pk == message.user.pk %}
+                                {% if user.pk == message.user.pk %}
                                 <li>
                                     <div class="message-data">
-                                        <span class="message-data-name"><i class="fa fa-circle online"></i> {{ message.user }}</span>
-                                        <span class="message-data-time">{{ message.created_at | date:'M. d, Y, h:i A' }}</span>
+                                        <span class="message-data-name"><i class="fa fa-circle online"></i> Me</span>
+                                        <span class="message-data-time">{{ message.created_at | date:'M. d, Y, H:i' }}</span>
                                     </div>
                                     <div class="message my-message">
                                         {{ message.content }}
@@ -79,7 +82,7 @@
                                 {% else %}
                                 <li class="clearfix">
                                     <div class="message-data align-right">
-                                        <span class="message-data-time" >{{ message.created_at | date:'M. d, Y, h:i A' }}</span> &nbsp; &nbsp;
+                                        <span class="message-data-time" >{{ message.created_at | date:'M. d, Y, H:i' }}</span> &nbsp; &nbsp;
                                         <span class="message-data-name" >{{ message.user }}</span> <i class="fa fa-circle me"></i>                        
                                     </div>
                                     <div class="message other-message float-right">
@@ -134,11 +137,12 @@
 						if (data.first){
 							window.location.href = "{% url 'messenger:detaill' thread.pk %}"
 						}
-
                         var message = document.createElement("li")
-						message.innerHTML = '<img src="{{ user.profile.image.url }}" class="avatar-message"><small><i>About a few seconds</i></small><br />' + decodeURIComponent(content)
-						message.innerHTML = '<div class="message-data"><span class="message-data-name"><i class="fa fa-circle online"></i> {{ user }}</span><span class="message-data-time">' + data.created_at + '</span></div><div class="message my-message">' + decodeURIComponent(content) + '</div>'
+						message.innerHTML = '<div class="message-data"><span class="message-data-name"><i class="fa fa-circle online"></i> Me</span><span class="message-data-time">' + formateDatetime(data.created_at) + '</span></div><div class="message my-message">' + decodeURIComponent(content) + '</div>'
 						document.getElementById("thread-list").appendChild(message)
+                        document.getElementById("messages-count").innerHTML = data.total
+                        document.getElementById("last-update").setAttribute('value', data.last_update)
+                        
 						ScrollBottomInThread()
 					}else{
 						alert("Something weng wrong...")
@@ -155,6 +159,48 @@
 			}
 		});
 
+        const url = "{% url 'messenger:check-updates' %}"            
+        const user_id = "{{ user.pk }}"        
+
+        function checkUpdates() {
+            setTimeout(function() {
+                var last_update = document.getElementById("last-update").value
+                fetch(url, {
+                    credentials: 'include',
+                    method: 'POST',
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken"),
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({"thread_id": "{{ thread.pk }}", "updated_at": last_update})
+                }).then(
+                    response => response.json()
+                ).then(function(data) {
+                    if(data.update){         
+                        var html = data.thread_list.map(function(message) {
+                            if (message.user_id==user_id){                            
+                                return '<li><div class="message-data"><span class="message-data-name"><i class="fa fa-circle online"></i> Me </span><span class="message-data-time">' + formateDatetime(message.created_at) + '</span></div><div class="message my-message">' + message.content + '</div></li>'
+                            } else {
+                                return '<li class="clearfix"><div class="message-data align-right"><span class="message-data-time">' + formateDatetime(message.created_at) + '</span> \&nbsp; \&nbsp;<span class="message-data-name" > ' + message.author + '</span> <i class="fa fa-circle me"></i></div><div class="message other-message float-right">' + message.content + '</div></li>'
+                            }
+                        }).join('')
+						const thread_list = document.getElementById("thread-list")
+
+                        while(thread_list.firstChild) {
+                            thread_list.firstChild.remove()
+                        }
+
+                        thread_list.innerHTML = html            
+                        document.getElementById("messages-count").innerHTML = data.thread_list.length
+                        document.getElementById("last-update").setAttribute('value', data.last_update)
+                        ScrollBottomInThread()
+                    }
+                    checkUpdates()
+                })
+            }, 5000)
+        }
+
 		// Forzar el Scroll
 		function ScrollBottomInThread(){
 			var thread = document.getElementById("thread")
@@ -162,6 +208,7 @@
 		}
 
         ScrollBottomInThread()
+        checkUpdates()
         
     </script>
     

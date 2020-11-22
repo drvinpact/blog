@@ -12,7 +12,10 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from users.mixins import AuthorCheckMixin
+from django.utils.dateformat import format
+from django.db.models import F
 
+import json
 
 @method_decorator(login_required, name="dispatch")
 class ThreadList(TemplateView):
@@ -43,10 +46,32 @@ def add_message(request, pk):
         if content:
             thread = get_object_or_404(Thread, pk=pk)
             message = Message.objects.create(thread=thread, user=request.user, content=content)
+            thread.save()
             json_response['created'] = True
             json_response['created_at'] = message.created_at.strftime("%b. %d, %Y, %I:%M %p")
-            if len(thread.messages.all())==1:
+            total = thread.messages.all().count()
+            if total==1:
                 json_response['first'] = True
+            json_response['total'] = total
+            json_response['last_update'] = format(thread.updated_at, 'U')
+    else:
+        raise "User is not authenticated"
+
+    return JsonResponse(json_response)
+
+def check_updates(request):
+    json_response = {'update': False}
+    if request.user.is_authenticated:
+        data = json.loads(request.body.decode("utf-8"))
+        thread_id = data['thread_id']
+        updated_at = data['updated_at']
+        thread = get_object_or_404(Thread, pk=thread_id)
+        last_update = format(thread.updated_at, 'U')
+        if last_update!=updated_at:
+            json_response['update'] = True
+            thread_list = list(thread.messages.annotate(author=F("user__username")).values())
+            json_response['thread_list'] = thread_list        
+            json_response['last_update'] = last_update
     else:
         raise "User is not authenticated"
 

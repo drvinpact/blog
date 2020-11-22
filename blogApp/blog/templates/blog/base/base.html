@@ -79,6 +79,36 @@
 
     {% block control_modal %}
     <script>
+
+      Date.shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      
+      function formateDatetime(date) {
+        var m = new Date(Date.parse(date))
+        var formated = (Date.shortMonths[m.getMonth()]) + ". " +
+          ("0" + m.getUTCDate()).slice(-2) + ", " +                
+          (m.getUTCFullYear()) + ", " +
+          ("0" + m.getUTCHours()).slice(-2) + ":" +
+          ("0" + m.getUTCMinutes()).slice(-2)
+        
+        return formated
+      }
+
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+      }
+
       function message(msg, type='green'){
         $.alert({
           title: '',
@@ -87,6 +117,7 @@
           content: msg
         });
       }
+      
     </script>
     {% endblock control_modal %}
 

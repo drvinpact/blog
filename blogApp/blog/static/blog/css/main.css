@@ -9349,6 +9349,10 @@ textarea.form-control {
   color: #92959E;
 }
 
+.people-list .status p {
+  margin-bottom: 0;
+}
+
 .chat {
   width: 100%;
   float: left;
