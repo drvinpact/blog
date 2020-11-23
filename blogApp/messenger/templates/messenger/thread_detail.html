@@ -33,7 +33,7 @@
                                             <div class="status">
                                                 <!-- <i class="fa fa-circle online"></i> online -->
                                                 <p><i>{{ thread.messages.last.content | string_trunc:25 }}</i></p>
-                                                <p><small>{{ thread.messages.last.created_at|date:'d-m-Y' }}</small></p>
+                                                <p><small>{{ thread.messages.last.created_at|date:'d/m/Y' }}</small></p>
                                             </div>
                                         </div>
                                     {% endif %}
@@ -53,7 +53,7 @@
                                 <img src="{{ thread_user.profile.image.url }}" class="avatar" alt="avatar" />
                                 <div class="chat-about">
                                     <div class="chat-with">
-                                        Conversation with <a href="{% url 'blog:user_profile' thread_user %} ">{{ thread_user }}</a>
+                                        Conversation with <a href="{% url 'blog:user_profile' thread_user %}">{{ thread_user }}</a>
                                     </div>
                                     <div class="chat-num-messages">
                                         Already <span id="messages-count" class="messages-count">{{ thread.messages.count }}</span> messages
@@ -82,8 +82,8 @@
                                 {% else %}
                                 <li class="clearfix">
                                     <div class="message-data align-right">
-                                        <span class="message-data-time" >{{ message.created_at | date:'M. d, Y, H:i' }}</span> &nbsp; &nbsp;
-                                        <span class="message-data-name" >{{ message.user }}</span> <i class="fa fa-circle me"></i>                        
+                                        <span class="message-data-time">{{ message.created_at | date:'M. d, Y, H:i' }}</span> &nbsp; &nbsp;
+                                        <span class="message-data-name">{{ message.user }}</span> <i class="fa fa-circle me"></i>                        
                                     </div>
                                     <div class="message other-message float-right">
                                         {{ message.content }}
@@ -129,7 +129,7 @@
 				content_input.value = ''
 				send_btn.disabled = true
 				
-				const url = "{% url 'messenger:add' thread.pk %}" + "?content=" + content
+				const url = "{% url 'messenger:add' %}" + "?content=" + content
 				
 				fetch(url, {'credentials': 'include'}).then(response => response.json()).then(function(data){
 					if(data.created){
@@ -138,7 +138,7 @@
 							window.location.href = "{% url 'messenger:detail' thread.pk %}"
 						}
                         var message = document.createElement("li")
-						message.innerHTML = '<div class="message-data"><span class="message-data-name"><i class="fa fa-circle online"></i> Me</span><span class="message-data-time">' + formateDatetime(data.created_at) + '</span></div><div class="message my-message">' + decodeURIComponent(content) + '</div>'
+						message.innerHTML = '<div class="message-data"><span class="message-data-name"><i class="fa fa-circle online"></i> Me</span><span class="message-data-time">' + formatDatetime(data.created_at) + '</span></div><div class="message my-message">' + decodeURIComponent(content) + '</div>'
 						document.getElementById("thread-list").appendChild(message)
                         document.getElementById("messages-count").innerHTML = data.total
                         document.getElementById("last-update").setAttribute('value', data.last_update)
@@ -163,7 +163,7 @@
 		});
 
         const url = "{% url 'messenger:check-updates' %}"            
-        const user_id = "{{ user.pk }}"        
+        const user_id = "{{ user.pk }}"     
 
         function checkUpdates() {
             setTimeout(function() {
@@ -183,9 +183,9 @@
                     if(data.update){         
                         var html = data.thread_list.map(function(message) {
                             if (message.user_id==user_id){                            
-                                return '<li><div class="message-data"><span class="message-data-name"><i class="fa fa-circle online"></i> Me </span><span class="message-data-time">' + formateDatetime(message.created_at) + '</span></div><div class="message my-message">' + message.content + '</div></li>'
+                                return '<li><div class="message-data"><span class="message-data-name"><i class="fa fa-circle online"></i> Me </span><span class="message-data-time">' + formatDatetime(message.created_at) + '</span></div><div class="message my-message">' + message.content + '</div></li>'
                             } else {
-                                return '<li class="clearfix"><div class="message-data align-right"><span class="message-data-time">' + formateDatetime(message.created_at) + '</span> \&nbsp; \&nbsp;<span class="message-data-name" > ' + message.author + '</span> <i class="fa fa-circle me"></i></div><div class="message other-message float-right">' + message.content + '</div></li>'
+                                return '<li class="clearfix"><div class="message-data align-right"><span class="message-data-time">' + formatDatetime(message.created_at) + '</span> \&nbsp; \&nbsp;<span class="message-data-name" > ' + message.author + '</span> <i class="fa fa-circle me"></i></div><div class="message other-message float-right">' + message.content + '</div></li>'
                             }
                         }).join('')
 						const thread_list = document.getElementById("thread-list")

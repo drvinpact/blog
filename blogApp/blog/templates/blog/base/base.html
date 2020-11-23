@@ -82,7 +82,7 @@
 
       Date.shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       
-      function formateDatetime(date) {
+      function formatDatetime(date) {
         var m = new Date(Date.parse(date))
         var formated = (Date.shortMonths[m.getMonth()]) + ". " +
           ("0" + m.getUTCDate()).slice(-2) + ", " +                
@@ -91,6 +91,22 @@
           ("0" + m.getUTCMinutes()).slice(-2)
         
         return formated
+      }
+
+      function formatDate(date) {
+        var m = new Date(Date.parse(date))
+        var formated = ("0" + m.getUTCDate()).slice(-2) + "/" +   
+          ("0" + m.getMonth()).slice(-2) + "/" +             
+          (m.getUTCFullYear())        
+        return formated
+      }
+
+      function string_trunc(content, length=100, suffix="...") {    
+        if(content.length > length){
+          var trimmedString = content.substr(0, length)
+          content = trimmedString.substr(0, Math.min(trimmedString.length, trimmedString.lastIndexOf(" "))) + "..."
+        }
+        return content
       }
 
       function getCookie(name) {

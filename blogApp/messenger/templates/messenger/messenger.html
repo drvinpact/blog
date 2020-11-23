@@ -14,25 +14,25 @@
                     </div>
 
                     <ul class="list">
-                        {% for thread in request.user.threads.all %}
+                        {% for thread in user.threads.all %}
                             {% if thread.messages.count > 0 %}
-                            <li class="clearfix">
-                                {% for user in thread.users.all %}
-                                    {% if user != request.user %} 
-                                        {% if user.profile.image %}
-                                            <img src="{{ user.profile.image.url }}" alt="avatar" class="avatar"/>
+                            <li id="thread_{{ thread.pk }}" class="clearfix">
+                                {% for thread_user in thread.users.all %}
+                                    {% if thread_user != user %} 
+                                        {% if thread_user.profile.image %}
+											<img src="{{ thread_user.profile.image.url }}" alt="avatar" class="avatar"/>
                                         {% else %}
                                             <img src="{% static 'registration/img/no-avatar.jpg' %}" class="avatar">
                                         {% endif %}
                                         <div class="about">
                                             <div class="name">
-                                                <a href="{% url 'messenger:detail' thread.pk %}">
-                                                    {{ user }}
-                                                </a>
+                                                <a href="#" class="thread-btn" data-thread-id="{{ thread.pk }}">
+													{{ thread_user }}
+												</a>												
                                             </div>
                                             <div class="status">
-                                                <!-- <i class="fa fa-circle online"></i> online -->
-                                                <p>{{ thread.messages.last.created_at|date:'d-m-Y' }}</p>
+                                                <p><i><span class="last-message">{{ thread.messages.last.content | string_trunc:25 }}</span></i></p>
+                                                <p><small><span class="last-time-message">{{ thread.messages.last.created_at|date:'d/m/Y' }}</span></small></p>
                                             </div>
                                         </div>
                                     {% endif %}
@@ -42,9 +42,181 @@
                         {% endfor %}
                     </ul>
                 </div>        
+			</div>
+			
+			<div class="col-md-8">
+                <div id="chat" class="chat">
+					<div id="chat-detail"></div>                    
+                    
+                    <div class="chat-message clearfix">
+                        <textarea name="message-to-send" class="form-control mb-2" id="message-to-send" placeholder="Type your message" rows="3"></textarea>                        
+                        <button id="send" class="btn btn-primary btn-sm" data-thread-id="" disabled>Send</button>
+                    </div>
+                
+				</div>
+				
+				<div id="background">
+					<div class="img d-flex align-self-stretch align-items-center js-fullheight" style="background-image:url(/static/blog/img/bg_1.jpg);">
+                    </div>
+				</div>
+            
             </div>
 
         </div>
     </div> 
 
 {% endblock content %}
+
+
+{% block extra_scripts %}
+
+<script>
+	
+	(function() {
+
+		var thread_btn = document.querySelectorAll(".thread-btn")
+		const url = "{% url 'messenger:thread' %}" 		
+
+		function ScrollBottomInThread(){
+			var thread = document.getElementById("thread")
+			thread.scrollTop = thread.scrollHeight
+		}
+
+		thread_btn.forEach(element => element.addEventListener('click', event => {
+			event.preventDefault()
+			var element = event.target
+			var thread_id = element.getAttribute('data-thread-id')
+			document.getElementById('send').setAttribute('data-thread-id', thread_id)
+			console.log(thread_id)
+			console.log(document.getElementById('send').getAttribute('data-thread-id'))
+			threadDetail(thread_id)
+		}))		
+
+		function threadDetail(thread_id) {
+			fetch(url, {
+				credentials: 'include',
+				method: 'POST',
+				headers: {
+					"X-CSRFToken": getCookie("csrftoken"),
+					"Accept": "application/json",
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({"thread_id": thread_id})
+			}).then(
+				response => response.json()
+			).then(function(data) {
+				const chat_detail = document.getElementById("chat-detail")
+
+				while(chat_detail.firstChild) {
+					chat_detail.firstChild.remove()
+				}
+
+				chat_detail.innerHTML = data.html
+				document.getElementById("chat").style.display = "block"
+				document.getElementById("background").style.display = "none"				
+				ScrollBottomInThread()
+			})
+		}
+
+		function addMessage() {
+			const url = "{% url 'messenger:add' %}"
+			var thread_id = document.getElementById('send').getAttribute('data-thread-id')
+			var content = content_input.value
+
+			content_input.value = ''
+			send_btn.disabled = true
+
+			fetch(url, {
+				credentials: 'include',
+				method: 'POST',
+				headers: {
+					"X-CSRFToken": getCookie("csrftoken"),
+					"Accept": "application/json",
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({"thread_id": thread_id, "content": content})
+			}).then(response => response.json()).then(function(data){
+				if(data.created){
+					// Si el mensaje es el primero
+					// if (data.first){
+					// }
+					var message = document.createElement("li")					
+					message.innerHTML = '<div class="message-data"><span class="message-data-name"><i class="fa fa-circle online"></i> Me</span><span class="message-data-time">' + formatDatetime(data.created_at) + '</span></div><div class="message my-message">' + decodeURIComponent(content) + '</div>'
+					document.getElementById("thread-list").appendChild(message)
+					document.getElementById("messages-count").innerHTML = data.total
+					document.getElementById("last-update").setAttribute('value', data.last_update)
+					var thread_list = document.querySelector("#thread_" + thread_id)
+					var last_message = thread_list.querySelector(".last-message")
+					var last_time_message = thread_list.querySelector(".last-time-message")
+					last_message.innerHTML = string_trunc(content)
+					last_time_message.innerHTML = formatDate(data.created_at)
+
+					ScrollBottomInThread()
+				}else{
+					alert("Something weng wrong...")
+				}
+			})
+		}
+
+		var send_btn = document.getElementById("send");
+		var content_input = document.getElementById("message-to-send");
+
+		send_btn.addEventListener("click", function(){
+			var content = content_input.value
+			if(content.length > 0){				
+				addMessage()				
+			}
+		})
+
+		content_input.addEventListener("keyup", function(e){            
+			if(!this.checkValidity() || !this.value){
+			    send_btn.disabled = true
+			}else{
+                send_btn.disabled = false
+                if(e.keyCode==13){
+                    send_btn.click()
+                }
+			}
+		});		
+		
+		function checkUpdates() {
+
+			const url = "{% url 'messenger:check-updates' %}"            
+			const user_id = "{{ user.pk }}"
+			var thread_id = document.getElementById('send').getAttribute('data-thread-id')
+			console.log(thread_id)
+            
+			var last_update = document.getElementById("last-update") ? document.getElementById("last-update").value : null
+			fetch(url, {
+				credentials: 'include',
+				method: 'POST',
+				headers: {
+					"X-CSRFToken": getCookie("csrftoken"),
+					"Accept": "application/json",
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({"thread_id": thread_id, "updated_at": last_update})
+			}).then(
+				response => response.json()
+			).then(function(data) {
+				if(data.update){         
+					const chat_detail = document.getElementById("chat-detail")
+
+					while(chat_detail.firstChild) {
+						chat_detail.firstChild.remove()
+					}
+
+					chat_detail.innerHTML = data.html
+					document.getElementById("last-update").setAttribute('value', data.last_update)
+					ScrollBottomInThread()
+				}
+			})            
+		}
+		
+		setInterval(checkUpdates,5000)
+
+	})()	
+	
+</script>
+
+{% endblock extra_scripts %}

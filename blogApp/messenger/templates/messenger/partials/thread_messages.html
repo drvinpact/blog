@@ -1,0 +1,45 @@
+<div class="chat-header clearfix">
+    {% for thread_user in thread.users.all %}
+        {% if thread_user.pk != user.pk %}       
+            <img src="{{ thread_user.profile.image.url }}" class="avatar" alt="avatar" />
+            <div class="chat-about">
+                <div class="chat-with">
+                    Conversation with <a href="{% url 'blog:user_profile' thread_user %}">{{ thread_user }}</a>
+                </div>
+                <div class="chat-num-messages">
+                    Already <span id="messages-count" class="messages-count">{{ thread.messages.count }}</span> messages
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}                                           
+</div>
+
+<input id="last-update" type="hidden" value="{{ thread.updated_at | date:'U' }}" />
+
+<div id="thread" class="chat-history">
+    <ul id="thread-list">
+        {% for message in thread.messages.all %}
+            {% if user.pk == message.user.pk %}
+            <li>
+                <div class="message-data">
+                    <span class="message-data-name"><i class="fa fa-circle online"></i> Me</span>
+                    <span class="message-data-time">{{ message.created_at | date:'M. d, Y, H:i' }}</span>
+                </div>
+                <div class="message my-message">
+                    {{ message.content }}
+                </div>
+            </li>
+            {% else %}
+            <li class="clearfix">
+                <div class="message-data align-right">
+                    <span class="message-data-time">{{ message.created_at | date:'M. d, Y, H:i' }}</span> &nbsp; &nbsp;
+                    <span class="message-data-name">{{ message.user }}</span> <i class="fa fa-circle me"></i>                        
+                </div>
+                <div class="message other-message float-right">
+                    {{ message.content }}
+                </div>
+            </li>
+            {% endif %}							
+        {% endfor %}				
+    </ul>
+</div>

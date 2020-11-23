@@ -9462,11 +9462,11 @@ textarea.form-control {
   font-size: 16px;
   color: gray;
   cursor: pointer;
-  }
+}
   
 .chat .chat-message button {
   float: right;
-  color: #94edb6;
+  color: #94edb691;
   font-size: 16px;
   text-transform: uppercase;
   border: none;
@@ -9515,6 +9515,14 @@ textarea.form-control {
   content: " ";
   clear: both;
   height: 0;
+}
+
+#background div {
+  opacity: 0.1;
+}
+
+#chat {
+  display: none;
 }
 
 /* ERRORS */

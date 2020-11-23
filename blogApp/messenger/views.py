@@ -15,6 +15,7 @@ from users.mixins import AuthorCheckMixin
 from django.utils.dateformat import format
 from django.db.models import F
 
+from django.template.loader import render_to_string
 import json
 
 @method_decorator(login_required, name="dispatch")
@@ -43,12 +44,14 @@ class ThreadDetail(DetailView):
         
         return obj
 
-def add_message(request, pk):
+def add_message(request):
     json_response = {'created':False}
     if request.user.is_authenticated:
-        content = request.GET.get('content', None)
+        data = json.loads(request.body.decode("utf-8"))    
+        thread_id = data['thread_id']
+        content = data['content']
         if content:
-            thread = get_object_or_404(Thread, pk=pk)
+            thread = get_object_or_404(Thread, pk=thread_id)
             message = Message.objects.create(thread=thread, user=request.user, content=content)
             thread.save()
             json_response['created'] = True
@@ -68,14 +71,28 @@ def check_updates(request):
     if request.user.is_authenticated:
         data = json.loads(request.body.decode("utf-8"))
         thread_id = data['thread_id']
-        updated_at = data['updated_at']
+        if thread_id:
+            updated_at = data['updated_at']
+            thread = get_object_or_404(Thread, pk=thread_id)
+            last_update = format(thread.updated_at, 'U')
+            if last_update!=updated_at:
+                json_response['update'] = True
+                html = render_to_string('messenger/partials/thread_messages.html', {'thread': thread, 'user': request.user})
+                json_response['html'] = html
+    else:
+        raise "User is not authenticated"
+
+    return JsonResponse(json_response)
+
+def thread(request):
+    json_response = {'update': False}
+    if request.user.is_authenticated:
+        data = json.loads(request.body.decode("utf-8"))
+        thread_id = data['thread_id']
         thread = get_object_or_404(Thread, pk=thread_id)
-        last_update = format(thread.updated_at, 'U')
-        if last_update!=updated_at:
-            json_response['update'] = True
-            thread_list = list(thread.messages.annotate(author=F("user__username")).values())
-            json_response['thread_list'] = thread_list        
-            json_response['last_update'] = last_update
+        json_response['update'] = True
+        html = render_to_string('messenger/partials/thread_messages.html', {'thread': thread, 'user': request.user})
+        json_response['html'] = html
     else:
         raise "User is not authenticated"
 
