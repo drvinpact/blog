@@ -21,9 +21,6 @@ urlpatterns = [
     path('vote/<int:pk>/<slug:slug>', vote, name="vote"),
     path('bookmark/<int:pk>', bookmark, name="bookmark"),
 
-
-    
-
     path('profile/<str:slug>/', UserView.as_view(), name='user_profile'),
     
     path('about/', views.about, name='about'),

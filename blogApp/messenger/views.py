@@ -27,6 +27,10 @@ class ThreadList(TemplateView):
         queryset = super(ThreadList, self).get_queryset()
         return queryset.filter(users=self.request.user)
         """
+
+@method_decorator(login_required, name="dispatch")
+class Messenger(TemplateView):
+    template_name = "messenger/messenger.html"
         
 @method_decorator(login_required, name="dispatch")
 class ThreadDetail(DetailView):
@@ -83,18 +87,3 @@ def start_thread(request, username):
     thread = Thread.objects.find_or_create(user, request.user)
 
     return redirect(reverse_lazy('messenger:detail', args=[thread.pk])) 
-
-@method_decorator(login_required, name="dispatch")
-class ThreadListt(TemplateView):
-    template_name = "messenger/thread_listt.html"
-
-@method_decorator(login_required, name="dispatch")
-class ThreadDetaill(DetailView):
-    model = Thread
-    template_name = "messenger/thread_detaill.html"
-    def get_object(self):
-        obj = super(ThreadDetaill, self).get_object()
-        if self.request.user not in obj.users.all():
-            raise PermissionDenied()
-        
-        return obj

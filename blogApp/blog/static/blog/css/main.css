@@ -9292,11 +9292,10 @@ textarea.form-control {
 /* MESSENGER */
 
 .messenger {
-  background: #C5DDEB;
+  background: #F2F5F8;
   font: 14px/20px "Lato", Arial, sans-serif;
   color: white;
   margin: 0;  
-  background: #444753;
   border-radius: 5px;
 }
 
@@ -9314,7 +9313,7 @@ textarea.form-control {
   border: none;
   padding: 14px;
   color: white;
-  background: #6A6C75;
+  background: #fff;
   width: 90%;
   font-size: 14px;
 }
@@ -9356,7 +9355,7 @@ textarea.form-control {
 .chat {
   width: 100%;
   float: left;
-  background: #F2F5F8;
+  background: #f2f8f371;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   color: #434651;
@@ -9467,13 +9466,13 @@ textarea.form-control {
   
 .chat .chat-message button {
   float: right;
-  color: #94C2ED;
+  color: #94edb6;
   font-size: 16px;
   text-transform: uppercase;
   border: none;
   cursor: pointer;
   font-weight: bold;
-  background: #F2F5F8;
+  background: #f2f8f5;
 }
 
 .chat .chat-message button:hover {

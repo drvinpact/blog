@@ -1,51 +1,50 @@
 {% extends 'blog/base/base.html' %}
+
 {% load static %}
 
 {% block content %}
-
-  <section class="ftco-section contact-section px-md-4">
-    <div class="container">
-      <div class="row d-flex mb-5 contact-info">
-          <div class="col-md-12 mb-4">
-              <h2 class="h3">Messenger</h2>
-          </div>
-      </div>
-
-      <div class="row">
-        <!-- Hilos de conversación -->
-        <div class="col-md-4">
-          <!-- Recorremos los Threads y sólo mostramos los que tienen como mínimo 1 mensaje -->
-          {% for thread in request.user.threads.all %}
-
-            {% if thread.messages.all.count > 0 %}
-              <div class="mb-3">
-                <!-- Recorremos los miembros del hilo menos el propio request.user -->
-                {% for user in thread.users.all %}
-                  {% if user != request.user %}   
-                    <!-- Mostramos el avatar del miembro -->  
-                    {% if user.profile.image %}
-                      <img src="{{ user.profile.image.url }}" class="avatar">
-                    {% else %}
-                      <img src="{% static 'registration/img/no-avatar.jpg' %}" class="avatar">
-                    {% endif %}
-                    <!-- Mostramos la información del miembro -->
-                    <div>
-                      <a href="{% url 'messenger:detail' thread.pk %}">{{ user }}</a><br>
-                      <small><i>About {{ thread.messages.last.created_at | timesince }}</i></small>
+    <div class="messenger clearfix">
+        <div class="row">
+            
+            <div class="col-md-4">
+                <div class="people-list js-fullheight" id="people-list">
+                    <div class="search">
+                        <input type="text" placeholder="search" />
+                        <i class="fa fa-search"></i>
                     </div>
-                  {% endif %}
-                {% endfor %}
-              </div>
-            {% endif %}
-          {% endfor %}
-        </div>
-        <!-- Hilos de conversación -->
-        <div class="col-md-8">
-          <p><i>Select a conversation</i></p>
-        </div>
 
-      </div>
-    </div>
-  </section>
+                    <ul class="list">
+                        {% for thread in request.user.threads.all %}
+                            {% if thread.messages.count > 0 %}
+                            <li class="clearfix">
+                                {% for user in thread.users.all %}
+                                    {% if user != request.user %} 
+                                        {% if user.profile.image %}
+                                            <img src="{{ user.profile.image.url }}" alt="avatar" class="avatar"/>
+                                        {% else %}
+                                            <img src="{% static 'registration/img/no-avatar.jpg' %}" class="avatar">
+                                        {% endif %}
+                                        <div class="about">
+                                            <div class="name">
+                                                <a href="{% url 'messenger:detail' thread.pk %}">
+                                                    {{ user }}
+                                                </a>
+                                            </div>
+                                            <div class="status">
+                                                <!-- <i class="fa fa-circle online"></i> online -->
+                                                <p>{{ thread.messages.last.created_at|date:'d-m-Y' }}</p>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </li> 
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>        
+            </div>
+
+        </div>
+    </div> 
 
 {% endblock content %}

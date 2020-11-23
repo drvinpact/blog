@@ -29,7 +29,7 @@
                         <div class="dropdown-menu account-menu" aria-labelledby="navbarDropdown"><!-- ADDED CLASS -->
                             <a href="{% url 'profile' %}" class="dropdown-item">Profile</a>
                             <a href="{% url 'notifications:list' %}" class="dropdown-item">Notifications</a>
-                            <a href="{% url 'messenger:listt' %}" class="dropdown-item">Messages</a>
+                            <a href="{% url 'messenger:list' %}" class="dropdown-item">Messages</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{% url 'logout' %}">
                                 Logout <span class="icon-exit_to_app"></span>
@@ -157,3 +157,58 @@
 {% endblock content %}
 
 
+{% block extra_scripts %}
+
+    <script src="{% static 'blog/js/jquery-3.4.1.min.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+            
+            const is_authenticated = JSON.parse("{{ user.is_authenticated|yesno:'true,false' }}");
+            const url = "{% url 'notifications:check' %}";
+
+            if(is_authenticated){
+                check()
+            }
+
+            function check(){
+                setTimeout(function () {
+                    const span = $(".user-notifications")
+                    const notifications = Number($(span).text())
+
+                    fetch(url, {
+                        credentials: 'include', 
+                        method: 'POST', 
+                        headers: {
+                            "X-CSRFToken": getCookie("csrftoken"),
+                            "Accept": "application/json",
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({'notifications': notifications})      
+                    }).then(
+                        response => response.json()
+                    ).then(function(data){
+                        if(data.success){
+                            if(data.update){
+                                $(span).text(data.notifications)
+                                const icon = $(".icon-notifications")
+                                if(data.notifications){
+                                    $(span).removeClass('d-none')
+                                    $(icon).removeClass('icon-notifications_none')
+                                    $(icon).addClass('icon-notifications_active')
+                                }else{
+                                    $(span).addClass('d-none')
+                                    $(icon).removeClass('icon-notifications_active')
+                                    $(icon).addClass('icon-notifications_none')
+                                }
+                            }
+                            check()
+                        }else{
+                            console.log("NOTOK")
+                        }
+                    })
+                }, 15000)
+            }
+        });
+    </script>
+
+{% endblock extra_scripts %}
