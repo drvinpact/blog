@@ -14,8 +14,6 @@
     {% endfor %}                                           
 </div>
 
-<input id="last-update" type="hidden" value="{{ thread.updated_at | date:'U' }}" />
-
 <div id="thread" class="chat-history">
     <ul id="thread-list">
         {% for message in thread.messages.all %}

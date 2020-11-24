@@ -1,0 +1,33 @@
+{% load static %}
+
+<ul class="list">
+							
+    <input id="last-update" type="hidden" value="{{ last_update }}" />
+
+    {% for thread in user.threads.all %}
+        {% if thread.messages.count > 0 %}
+        <li id="thread_{{ thread.pk }}" class="clearfix">
+            {% for thread_user in thread.users.all %}
+                {% if thread_user != user %} 
+                    {% if thread_user.profile.image %}
+                        <img src="{{ thread_user.profile.image.url }}" alt="avatar" class="avatar"/>
+                    {% else %}
+                        <img src="{% static 'registration/img/no-avatar.jpg' %}" class="avatar">
+                    {% endif %}
+                    <div class="about">
+                        <div class="name">
+                            <a href="#" class="thread-btn" data-thread-id="{{ thread.pk }}">
+                                {{ thread_user }}
+                            </a>												
+                        </div>
+                        <div class="status">
+                            <p><i><span class="last-message">{{ thread.messages.last.content | string_trunc:25 }}</span></i></p>
+                            <p><small><span class="last-time-message">{{ thread.messages.last.created_at|date:'d/m/Y' }}</span></small></p>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </li> 
+        {% endif %}
+    {% endfor %}
+</ul>

@@ -11,36 +11,45 @@
                     <div class="search">
                         <input type="text" placeholder="search" />
                         <i class="fa fa-search"></i>
-                    </div>
+					</div>
+					
+					
+                    <div id="chat-list">						
+						
+						<ul class="list">
+							
+							<input id="last-update" type="hidden" value="{{ last_update }}" />
 
-                    <ul class="list">
-                        {% for thread in user.threads.all %}
-                            {% if thread.messages.count > 0 %}
-                            <li id="thread_{{ thread.pk }}" class="clearfix">
-                                {% for thread_user in thread.users.all %}
-                                    {% if thread_user != user %} 
-                                        {% if thread_user.profile.image %}
-											<img src="{{ thread_user.profile.image.url }}" alt="avatar" class="avatar"/>
-                                        {% else %}
-                                            <img src="{% static 'registration/img/no-avatar.jpg' %}" class="avatar">
-                                        {% endif %}
-                                        <div class="about">
-                                            <div class="name">
-                                                <a href="#" class="thread-btn" data-thread-id="{{ thread.pk }}">
-													{{ thread_user }}
-												</a>												
-                                            </div>
-                                            <div class="status">
-                                                <p><i><span class="last-message">{{ thread.messages.last.content | string_trunc:25 }}</span></i></p>
-                                                <p><small><span class="last-time-message">{{ thread.messages.last.created_at|date:'d/m/Y' }}</span></small></p>
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
-                            </li> 
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
+							{% for thread in user.threads.all %}
+								{% if thread.messages.count > 0 %}
+								<li id="thread_{{ thread.pk }}" class="clearfix">
+									{% for thread_user in thread.users.all %}
+										{% if thread_user != user %} 
+											{% if thread_user.profile.image %}
+												<img src="{{ thread_user.profile.image.url }}" alt="avatar" class="avatar"/>
+											{% else %}
+												<img src="{% static 'registration/img/no-avatar.jpg' %}" class="avatar">
+											{% endif %}
+											<div class="about">
+												<div class="name">
+													<a href="#" class="thread-btn" data-thread-id="{{ thread.pk }}">
+														{{ thread_user }}
+													</a>												
+												</div>
+												<div class="status">
+													<p><i><span class="last-message">{{ thread.messages.last.content | string_trunc:25 }}</span></i></p>
+													<p><small><span class="last-time-message">{{ thread.messages.last.created_at|date:'d/m/Y' }}</span></small></p>
+												</div>
+											</div>
+										{% endif %}
+									{% endfor %}
+								</li> 
+								{% endif %}
+							{% endfor %}
+						</ul>
+
+					</div>
+
                 </div>        
 			</div>
 			
@@ -74,26 +83,29 @@
 	
 	(function() {
 
-		var thread_btn = document.querySelectorAll(".thread-btn")
-		const url = "{% url 'messenger:thread' %}" 		
+		const thread_detail_url = "{% url 'messenger:thread' %}"
+		const add_message_url = "{% url 'messenger:add' %}"
+		const check_updates_url = "{% url 'messenger:check-updates' %}"
 
 		function ScrollBottomInThread(){
 			var thread = document.getElementById("thread")
 			thread.scrollTop = thread.scrollHeight
 		}
 
-		thread_btn.forEach(element => element.addEventListener('click', event => {
-			event.preventDefault()
-			var element = event.target
-			var thread_id = element.getAttribute('data-thread-id')
-			document.getElementById('send').setAttribute('data-thread-id', thread_id)
-			console.log(thread_id)
-			console.log(document.getElementById('send').getAttribute('data-thread-id'))
-			threadDetail(thread_id)
-		}))		
+		function addEvents() {
+			var thread_btn = document.querySelectorAll(".thread-btn")
+
+			thread_btn.forEach(element => element.addEventListener('click', event => {
+				event.preventDefault()
+				var element = event.target
+				var thread_id = element.getAttribute('data-thread-id')
+				document.getElementById('send').setAttribute('data-thread-id', thread_id)
+				threadDetail(Number(thread_id))
+			}))		
+		}
 
 		function threadDetail(thread_id) {
-			fetch(url, {
+			fetch(thread_detail_url, {
 				credentials: 'include',
 				method: 'POST',
 				headers: {
@@ -118,15 +130,14 @@
 			})
 		}
 
-		function addMessage() {
-			const url = "{% url 'messenger:add' %}"
+		function addMessage() {			
 			var thread_id = document.getElementById('send').getAttribute('data-thread-id')
 			var content = content_input.value
 
 			content_input.value = ''
 			send_btn.disabled = true
 
-			fetch(url, {
+			fetch(add_message_url, {
 				credentials: 'include',
 				method: 'POST',
 				headers: {
@@ -144,12 +155,12 @@
 					message.innerHTML = '<div class="message-data"><span class="message-data-name"><i class="fa fa-circle online"></i> Me</span><span class="message-data-time">' + formatDatetime(data.created_at) + '</span></div><div class="message my-message">' + decodeURIComponent(content) + '</div>'
 					document.getElementById("thread-list").appendChild(message)
 					document.getElementById("messages-count").innerHTML = data.total
-					document.getElementById("last-update").setAttribute('value', data.last_update)
 					var thread_list = document.querySelector("#thread_" + thread_id)
 					var last_message = thread_list.querySelector(".last-message")
 					var last_time_message = thread_list.querySelector(".last-time-message")
 					last_message.innerHTML = string_trunc(content)
 					last_time_message.innerHTML = formatDate(data.created_at)
+					document.getElementById("last-update").setAttribute('value', data.last_update)
 
 					ScrollBottomInThread()
 				}else{
@@ -178,16 +189,31 @@
                 }
 			}
 		});		
-		
-		function checkUpdates() {
 
-			const url = "{% url 'messenger:check-updates' %}"            
-			const user_id = "{{ user.pk }}"
+		function updateList(html) {
+			const chat_list = document.getElementById("chat-list")
+			while(chat_list.firstChild) {
+				chat_list.firstChild.remove()
+			}
+			console.log(html)
+			chat_list.innerHTML = html
+			addEvents()
+		}
+
+		function updateThread(html) {
+			const chat_detail = document.getElementById("chat-detail")
+			while(chat_detail.firstChild) {
+				chat_detail.firstChild.remove()
+			}
+			chat_detail.innerHTML = html
+			ScrollBottomInThread()
+		}
+		
+		function checkUpdates() {		
 			var thread_id = document.getElementById('send').getAttribute('data-thread-id')
-			console.log(thread_id)
-            
-			var last_update = document.getElementById("last-update") ? document.getElementById("last-update").value : null
-			fetch(url, {
+			var last_update = document.getElementById("last-update").value
+
+			fetch(check_updates_url, {
 				credentials: 'include',
 				method: 'POST',
 				headers: {
@@ -195,27 +221,23 @@
 					"Accept": "application/json",
 					"Content-Type": "application/json"
 				},
-				body: JSON.stringify({"thread_id": thread_id, "updated_at": last_update})
+				body: JSON.stringify({"thread_id": Number(thread_id), "last_update": last_update})
 			}).then(
 				response => response.json()
 			).then(function(data) {
+				if(data.update_list){
+					updateList(data.html_list)
+				}
 				if(data.update){         
-					const chat_detail = document.getElementById("chat-detail")
-
-					while(chat_detail.firstChild) {
-						chat_detail.firstChild.remove()
-					}
-
-					chat_detail.innerHTML = data.html
-					document.getElementById("last-update").setAttribute('value', data.last_update)
-					ScrollBottomInThread()
+					updateThread(data.html)
 				}
 			})            
 		}
 		
-		setInterval(checkUpdates,5000)
+		addEvents()
+		setInterval(checkUpdates, 4000)
 
-	})()	
+	})()
 	
 </script>
 

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import m2m_changed
+from django.utils.dateformat import format
 
 class ThreadManager(models.Manager):
     def find(self, user1, user2):
@@ -20,6 +21,20 @@ class ThreadManager(models.Manager):
             thread.users.add(user1, user2)
             
         return thread
+
+    def last_thread(self, user):
+        try:
+            return user.threads.latest('updated_at')           
+        except Thread.DoesNotExist:
+            return None
+
+    def thread_last_update(self, user):
+        last_thread = self.last_thread(user)
+        if last_thread:
+            return format(last_thread.updated_at, 'U')
+        else:
+            return 0
+
 
 class Thread(models.Model):
     users = models.ManyToManyField(User, related_name='threads')    
