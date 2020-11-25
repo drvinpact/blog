@@ -9292,27 +9292,32 @@ textarea.form-control {
 /* MESSENGER */
 
 .messenger {
-  background: #F2F5F8;
+  background: #f2f8f371;
   font: 14px/20px "Lato", Arial, sans-serif;
   color: white;
   margin: 0;  
   border-radius: 5px;
 }
 
+.chat-container {
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+
 .people-list {
-  width: 260px;
+  width: 100%;
   float: left;
 }
 
 .people-list .search {
-  padding: 20px;
+  padding: 20px;  
 }
 
 .people-list input {
   border-radius: 3px;
   border: none;
   padding: 14px;
-  color: white;
+  color: #434651;
   background: #fff;
   width: 90%;
   font-size: 14px;
@@ -9324,11 +9329,17 @@ textarea.form-control {
 }
 
 .people-list ul {
-  padding: 20px;  
+  margin-top: 20px;
+  padding: 0px;  
 }
   
 .people-list ul li {
-  padding-bottom: 20px;        
+  padding: 10px 20px 10px 30px;
+}
+
+.active-chat {  
+  font-style: italic;
+  background: #e7e7e7;
 }
 
 .people-list img {
@@ -9355,7 +9366,7 @@ textarea.form-control {
 .chat {
   width: 100%;
   float: left;
-  background: #f2f8f371;
+  background: #fff;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   color: #434651;
@@ -9395,7 +9406,7 @@ textarea.form-control {
   padding: 30px 30px 20px;
   border-bottom: 2px solid white;
   overflow-y: scroll;
-  height: 575px;
+  height: 520px;
 }
 .chat .chat-history .message-data {
   margin-bottom: 15px;

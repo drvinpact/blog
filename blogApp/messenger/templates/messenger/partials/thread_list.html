@@ -6,9 +6,9 @@
 
     {% for thread in user.threads.all %}
         {% if thread.messages.count > 0 %}
-        <li id="thread_{{ thread.pk }}" class="clearfix">
+        <li id="thread_{{ thread.pk }}" class="clearfix {% if thread_id == thread.pk %}active-chat{% endif %}">
             {% for thread_user in thread.users.all %}
-                {% if thread_user != user %} 
+                {% if thread_user != user %}
                     {% if thread_user.profile.image %}
                         <img src="{{ thread_user.profile.image.url }}" alt="avatar" class="avatar"/>
                     {% else %}
@@ -21,7 +21,7 @@
                             </a>												
                         </div>
                         <div class="status">
-                            <p><i><span class="last-message">{{ thread.messages.last.content | string_trunc:25 }}</span></i></p>
+                            <p><span class="last-message">{{ thread.messages.last.content | string_trunc:25 }}</span></p>
                             <p><small><span class="last-time-message">{{ thread.messages.last.created_at|date:'d/m/Y' }}</span></small></p>
                         </div>
                     </div>

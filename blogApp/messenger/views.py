@@ -17,21 +17,31 @@ from django.db.models import F, Max, Count, Sum
 from django.db.models.functions import Concat
 from django.db.models import CharField, Value, Subquery, OuterRef
 
+from django.http import HttpResponseRedirect
+
 from django.template.loader import render_to_string
 import json
-
 
 @method_decorator(login_required, name="dispatch")
 class Messenger(TemplateView):
     template_name = "messenger/messenger.html"
-
+    
     def get_context_data(self, **kwargs):
+        new_thread = self.request.session.get('new_thread', None)
+        self.request.session['new_thread'] = None
         context = super(Messenger, self).get_context_data(**kwargs)        
         context['last_update'] = Thread.objects.thread_last_update(self.request.user)
+        context['new_thread'] = new_thread
+        context['thread_id'] = ''
 
         return context
 
-        
+    def post(self, *args, **kwargs):        
+        user_id = self.request.POST.get('user_id')
+        self.request.session['new_thread'] = user_id
+        return redirect(reverse_lazy('messenger:messenger'))
+
+
 @method_decorator(login_required, name="dispatch")
 class ThreadDetail(DetailView):
     model = Thread
@@ -44,7 +54,10 @@ class ThreadDetail(DetailView):
         return obj
 
 def add_message(request):
-    json_response = {'created':False}
+    json_response = {
+        'success': False,
+        'first': False
+    }
     if request.user.is_authenticated:
         data = json.loads(request.body.decode("utf-8"))    
         thread_id = data['thread_id']
@@ -53,13 +66,17 @@ def add_message(request):
             thread = get_object_or_404(Thread, pk=thread_id)
             message = Message.objects.create(thread=thread, user=request.user, content=content)
             thread.save()
-            json_response['created'] = True
+            last_update = format(thread.updated_at, 'U')
+            json_response['success'] = True
             json_response['created_at'] = message.created_at.strftime("%b. %d, %Y, %I:%M %p")
-            total = thread.messages.all().count()
-            if total==1:
+            total = thread.messages.count()
+            if thread.messages.count()==1:
                 json_response['first'] = True
+                html_list = render_to_string('messenger/partials/thread_list.html', {'user': request.user, 'last_update': last_update})
+                json_response['html_list'] = html_list
+
             json_response['total'] = total
-            json_response['last_update'] = format(thread.updated_at, 'U')
+            json_response['last_update'] = last_update
     else:
         raise "User is not authenticated"
 
@@ -81,27 +98,15 @@ def check_updates(request):
 
             if last_update!=current_last_update:
                 json_response['update_list'] = True
-                html_list = render_to_string('messenger/partials/thread_list.html', {'user': request.user, 'last_update': current_last_update})
+                html_list = render_to_string('messenger/partials/thread_list.html', {'user': request.user, 'last_update': current_last_update, 'thread_id': thread_id})
                 json_response['html_list'] = html_list
                 json_response['thread_id'] = thread_id
                 json_response['last_thread_id'] = last_thread.id
 
-                if thread_id and thread_id==last_thread.id:
-                    # thread = get_object_or_404(Thread, pk=thread_id)
-                    # last_update = format(thread.updated_at, 'U')                    
+                if thread_id and thread_id==last_thread.id:                
                     json_response['update'] = True
                     html = render_to_string('messenger/partials/thread_messages.html', {'thread': last_thread, 'user': request.user})
-                    json_response['html'] = html
-            # subquery = Message.objects.filter(thread=OuterRef('pk')).order_by('-pk')[:1]
-            # threads = Thread.objects.filter(
-            #                             messages__id=Subquery(subquery.values('pk'))
-            #                         ).annotate(
-            #                             content=F('messages__content'),
-            #                             created_at=F('messages__created_at')
-            #                         ).values('id', 'created_at', 'content')
-
-            # json_response['threads'] = list(threads)
-                        
+                    json_response['html'] = html                                
     else:
         raise "User is not authenticated"
 
@@ -109,6 +114,7 @@ def check_updates(request):
 
 def thread(request):
     json_response = {'update': False}
+
     if request.user.is_authenticated:
         data = json.loads(request.body.decode("utf-8"))
         thread_id = data['thread_id']
@@ -122,8 +128,25 @@ def thread(request):
     return JsonResponse(json_response)
 
 @login_required
-def start_thread(request, username):
-    user = get_object_or_404(User, username=username)
-    thread = Thread.objects.find_or_create(user, request.user)
+def start_thread(request):    
+    json_response = {
+        'success': False, 
+        'new': False
+    }
+    if request.user.is_authenticated:
+        data = json.loads(request.body.decode("utf-8"))
+        user_id = data['user_id']
+        user = get_object_or_404(User, pk=user_id)
+        thread = Thread.objects.find_or_create(user, request.user)
+        json_response['success'] = True                
+        json_response['thread_id'] = thread.pk
 
-    return redirect(reverse_lazy('messenger:detail', args=[thread.pk])) 
+        if thread.messages.count()==0:
+            json_response['new'] = True
+            json_response['last_update'] = format(thread.updated_at, 'U')
+
+    else:
+        raise "User is not authenticated"
+
+    return JsonResponse(json_response)
+

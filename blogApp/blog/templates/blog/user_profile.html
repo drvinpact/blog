@@ -25,9 +25,13 @@
                                 <p class="text-secondary">{{ obj.email }}</p>
                                 <p class="text-secondary">{{ obj.profile.bio }}</p>
                                 {% if request.user != profile.user %}
-                                    <a href="{% url 'messenger:start' obj %}" class="btn btn-primary btn-sm">
-                                        <span class="icon-message"></span>
-                                    </a>
+                                    <form method="POST" action="{% url 'messenger:messenger' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="user_id" value="{{ obj.id }}" />
+                                        <button class="btn btn-primary btn-sm" type="submit">
+                                            <span class="icon-message"></span>
+                                        </button>
+                                    </form>
                                 {% endif %}
                             </div>
                         </div>
@@ -39,3 +43,16 @@
     </section>
 
 {% endblock content %}
+
+
+{% block extra_scripts %}
+    <script>
+
+        (function() {
+
+  
+
+        }())
+
+    </script>
+{% endblock extra_scripts %}

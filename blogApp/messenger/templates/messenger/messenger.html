@@ -6,23 +6,26 @@
     <div class="messenger clearfix">
         <div class="row">
             
-            <div class="col-md-4">
+            <div class="col-md-4 chat-container">
                 <div class="people-list js-fullheight" id="people-list">
-                    <div class="search">
+                    <!-- <div class="search d-none">
                         <input type="text" placeholder="search" />
                         <i class="fa fa-search"></i>
-					</div>
+					</div> -->
 					
 					
                     <div id="chat-list">						
 						
-						<ul class="list">
-							
+						<div class="float-right mt-2">
+							<a href="{% url 'messenger:messenger' %}">
+								NEW
+							</a>
+						</div>
+						<ul class="list">							
 							<input id="last-update" type="hidden" value="{{ last_update }}" />
-
 							{% for thread in user.threads.all %}
 								{% if thread.messages.count > 0 %}
-								<li id="thread_{{ thread.pk }}" class="clearfix">
+								<li id="thread_{{ thread.pk }}" class="clearfix user-thread">
 									{% for thread_user in thread.users.all %}
 										{% if thread_user != user %} 
 											{% if thread_user.profile.image %}
@@ -37,7 +40,7 @@
 													</a>												
 												</div>
 												<div class="status">
-													<p><i><span class="last-message">{{ thread.messages.last.content | string_trunc:25 }}</span></i></p>
+													<p><span class="last-message">{{ thread.messages.last.content | string_trunc:25 }}</span></p>
 													<p><small><span class="last-time-message">{{ thread.messages.last.created_at|date:'d/m/Y' }}</span></small></p>
 												</div>
 											</div>
@@ -45,7 +48,7 @@
 									{% endfor %}
 								</li> 
 								{% endif %}
-							{% endfor %}
+							{% endfor %}							
 						</ul>
 
 					</div>
@@ -53,13 +56,12 @@
                 </div>        
 			</div>
 			
-			<div class="col-md-8">
+			<div class="col-md-8 chat-container">
                 <div id="chat" class="chat">
-					<div id="chat-detail"></div>                    
-                    
+					<div id="chat-detail"></div>                                        
                     <div class="chat-message clearfix">
                         <textarea name="message-to-send" class="form-control mb-2" id="message-to-send" placeholder="Type your message" rows="3"></textarea>                        
-                        <button id="send" class="btn btn-primary btn-sm" data-thread-id="" disabled>Send</button>
+                        <button id="send" class="btn btn-primary btn-sm" data-thread-id="{{ thread_id }}" disabled>Send</button>
                     </div>
                 
 				</div>
@@ -86,9 +88,17 @@
 		const thread_detail_url = "{% url 'messenger:thread' %}"
 		const add_message_url = "{% url 'messenger:add' %}"
 		const check_updates_url = "{% url 'messenger:check-updates' %}"
+		const start_thread_url = "{% url 'messenger:start_thread' %}"
+		const send_btn = document.getElementById("send");
+		const content_input = document.getElementById("message-to-send");
+		const new_thread = Number("{{ new_thread }}")
+
+		if(new_thread) {
+			startThread(new_thread)
+		}
 
 		function ScrollBottomInThread(){
-			var thread = document.getElementById("thread")
+			const thread = document.getElementById("thread")
 			thread.scrollTop = thread.scrollHeight
 		}
 
@@ -113,19 +123,17 @@
 					"Accept": "application/json",
 					"Content-Type": "application/json"
 				},
-				body: JSON.stringify({"thread_id": thread_id})
+				body: JSON.stringify({
+					"thread_id": thread_id
+				})
 			}).then(
 				response => response.json()
 			).then(function(data) {
-				const chat_detail = document.getElementById("chat-detail")
-
-				while(chat_detail.firstChild) {
-					chat_detail.firstChild.remove()
-				}
-
-				chat_detail.innerHTML = data.html
+				updateThread(data.html)
 				document.getElementById("chat").style.display = "block"
-				document.getElementById("background").style.display = "none"				
+				document.getElementById("background").style.display = "none"	
+				document.querySelectorAll(".active-chat").forEach(el=>el.classList.remove("active-chat"))
+				document.querySelector("#thread_" + thread_id).classList.add("active-chat")
 				ScrollBottomInThread()
 			})
 		}
@@ -145,12 +153,15 @@
 					"Accept": "application/json",
 					"Content-Type": "application/json"
 				},
-				body: JSON.stringify({"thread_id": thread_id, "content": content})
+				body: JSON.stringify({
+					"thread_id": thread_id, 
+					"content": content
+				})
 			}).then(response => response.json()).then(function(data){
-				if(data.created){
-					// Si el mensaje es el primero
-					// if (data.first){
-					// }
+				if(data.success){
+					if (data.first){
+						updateList(data.html_list)
+					}
 					var message = document.createElement("li")					
 					message.innerHTML = '<div class="message-data"><span class="message-data-name"><i class="fa fa-circle online"></i> Me</span><span class="message-data-time">' + formatDatetime(data.created_at) + '</span></div><div class="message my-message">' + decodeURIComponent(content) + '</div>'
 					document.getElementById("thread-list").appendChild(message)
@@ -167,10 +178,7 @@
 					alert("Something weng wrong...")
 				}
 			})
-		}
-
-		var send_btn = document.getElementById("send");
-		var content_input = document.getElementById("message-to-send");
+		}		
 
 		send_btn.addEventListener("click", function(){
 			var content = content_input.value
@@ -195,7 +203,6 @@
 			while(chat_list.firstChild) {
 				chat_list.firstChild.remove()
 			}
-			console.log(html)
 			chat_list.innerHTML = html
 			addEvents()
 		}
@@ -210,8 +217,8 @@
 		}
 		
 		function checkUpdates() {		
-			var thread_id = document.getElementById('send').getAttribute('data-thread-id')
-			var last_update = document.getElementById("last-update").value
+			const thread_id = document.getElementById('send').getAttribute('data-thread-id')
+			const last_update = document.getElementById("last-update").value
 
 			fetch(check_updates_url, {
 				credentials: 'include',
@@ -221,7 +228,10 @@
 					"Accept": "application/json",
 					"Content-Type": "application/json"
 				},
-				body: JSON.stringify({"thread_id": Number(thread_id), "last_update": last_update})
+				body: JSON.stringify({
+					"thread_id": Number(thread_id), 
+					"last_update": last_update
+				})
 			}).then(
 				response => response.json()
 			).then(function(data) {
@@ -232,6 +242,31 @@
 					updateThread(data.html)
 				}
 			})            
+		}
+
+		function startThread(user_id) {			
+			fetch(start_thread_url, {
+				credentials: 'include',
+				method: 'POST',
+				headers: {
+					"X-CSRFToken": getCookie("csrftoken"),
+					"Accept": "application/json",
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					"user_id": user_id
+				})
+			}).then(response => response.json()).then(function(data){
+				if(data.success) {
+					if(data.new) {
+						document.getElementById("last-update").setAttribute('value', data.last_update)
+					}
+					threadDetail(data.thread_id)
+					document.getElementById('send').setAttribute('data-thread-id', data.thread_id)
+				}else{
+					alert("Something weng wrong...")
+				}
+			})
 		}
 		
 		addEvents()
