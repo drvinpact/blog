@@ -113,15 +113,18 @@ def check_updates(request):
     return JsonResponse(json_response)
 
 def thread(request):
-    json_response = {'update': False}
+    json_response = {'success': False}
 
     if request.user.is_authenticated:
         data = json.loads(request.body.decode("utf-8"))
         thread_id = data['thread_id']
         thread = get_object_or_404(Thread, pk=thread_id)
-        json_response['update'] = True
+        json_response['success'] = True
         html = render_to_string('messenger/partials/thread_messages.html', {'thread': thread, 'user': request.user})
+        updated = thread.messages.filter(read=False).exclude(user=request.user).update(read=True)
+        json_response['read'] = (updated > 0)
         json_response['html'] = html
+        json_response['new'] = (thread.messages.count()==0)
     else:
         raise "User is not authenticated"
 
@@ -143,8 +146,23 @@ def start_thread(request):
 
         if thread.messages.count()==0:
             json_response['new'] = True
-            json_response['last_update'] = format(thread.updated_at, 'U')
+            json_response['last_update'] = Thread.objects.thread_last_update(request.user)
 
+    else:
+        raise "User is not authenticated"
+
+    return JsonResponse(json_response)
+
+@login_required
+def new_thread(request):    
+    json_response = {'success': False}
+    if request.user.is_authenticated:
+        users = User.objects.exclude(pk=request.user.pk)
+        
+        html = render_to_string('messenger/partials/new_thread_list.html', {'users': users})
+
+        json_response['success'] = True                        
+        json_response['html'] = html
     else:
         raise "User is not authenticated"
 

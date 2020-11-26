@@ -6,9 +6,13 @@
 
     {% for thread in user.threads.all %}
         {% if thread.messages.count > 0 %}
-        <li id="thread_{{ thread.pk }}" class="clearfix {% if thread_id == thread.pk %}active-chat{% endif %}">
+
+        {% get_unread_count thread user as unread %}
+
+        <li id="thread_{{ thread.pk }}" class="clearfix {% if thread_id == thread.pk %}active-chat{% endif %} {% if unread %}has-notifications{% endif %}">
             {% for thread_user in thread.users.all %}
-                {% if thread_user != user %}
+                {% if thread_user != user %}                    
+
                     {% if thread_user.profile.image %}
                         <img src="{{ thread_user.profile.image.url }}" alt="avatar" class="avatar"/>
                     {% else %}
@@ -17,7 +21,7 @@
                     <div class="about">
                         <div class="name">
                             <a href="#" class="thread-btn" data-thread-id="{{ thread.pk }}">
-                                {{ thread_user }}
+                                {{ thread_user }} <span class="badge badge-danger float-right messenger-notifications {% if not unread %}d-none{% endif %}">{{ unread }} </span>
                             </a>												
                         </div>
                         <div class="status">

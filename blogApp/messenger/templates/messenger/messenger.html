@@ -14,42 +14,15 @@
 					</div> -->
 					
 					
-                    <div id="chat-list">						
+					<div class="new-thread-container">
+						<a href="#" id="new-thread">
+							<span class="icon-message"></span>
+						</a>
+					</div>
+
+					<div id="chat-list" class="chat-list">					
 						
-						<div class="float-right mt-2">
-							<a href="{% url 'messenger:messenger' %}">
-								NEW
-							</a>
-						</div>
-						<ul class="list">							
-							<input id="last-update" type="hidden" value="{{ last_update }}" />
-							{% for thread in user.threads.all %}
-								{% if thread.messages.count > 0 %}
-								<li id="thread_{{ thread.pk }}" class="clearfix user-thread">
-									{% for thread_user in thread.users.all %}
-										{% if thread_user != user %} 
-											{% if thread_user.profile.image %}
-												<img src="{{ thread_user.profile.image.url }}" alt="avatar" class="avatar"/>
-											{% else %}
-												<img src="{% static 'registration/img/no-avatar.jpg' %}" class="avatar">
-											{% endif %}
-											<div class="about">
-												<div class="name">
-													<a href="#" class="thread-btn" data-thread-id="{{ thread.pk }}">
-														{{ thread_user }}
-													</a>												
-												</div>
-												<div class="status">
-													<p><span class="last-message">{{ thread.messages.last.content | string_trunc:25 }}</span></p>
-													<p><small><span class="last-time-message">{{ thread.messages.last.created_at|date:'d/m/Y' }}</span></small></p>
-												</div>
-											</div>
-										{% endif %}
-									{% endfor %}
-								</li> 
-								{% endif %}
-							{% endfor %}							
-						</ul>
+						{% include 'messenger/partials/thread_list.html' %}
 
 					</div>
 
@@ -57,6 +30,12 @@
 			</div>
 			
 			<div class="col-md-8 chat-container">
+				
+				<div id="background">
+					<div class="img d-flex align-self-stretch align-items-center js-fullheight" style="background-image:url(/static/blog/img/bg_1.jpg);">
+					</div>
+				</div>
+
                 <div id="chat" class="chat">
 					<div id="chat-detail"></div>                                        
                     <div class="chat-message clearfix">
@@ -65,11 +44,8 @@
                     </div>
                 
 				</div>
-				
-				<div id="background">
-					<div class="img d-flex align-self-stretch align-items-center js-fullheight" style="background-image:url(/static/blog/img/bg_1.jpg);">
-                    </div>
-				</div>
+
+				<div id="new-thread-list">NEW</div>
             
             </div>
 
@@ -89,12 +65,14 @@
 		const add_message_url = "{% url 'messenger:add' %}"
 		const check_updates_url = "{% url 'messenger:check-updates' %}"
 		const start_thread_url = "{% url 'messenger:start_thread' %}"
+		const new_thread_url = "{% url 'messenger:new_thread' %}"
 		const send_btn = document.getElementById("send");
+		const new_thread = document.getElementById("new-thread");
 		const content_input = document.getElementById("message-to-send");
-		const new_thread = Number("{{ new_thread }}")
+		const start_new_thread = Number("{{ new_thread }}")
 
-		if(new_thread) {
-			startThread(new_thread)
+		if(start_new_thread) {
+			startThread(start_new_thread)
 		}
 
 		function ScrollBottomInThread(){
@@ -113,6 +91,17 @@
 				threadDetail(Number(thread_id))
 			}))		
 		}
+		
+		function addStartThreadEvents() {
+			var start_thread_btn = document.querySelectorAll(".start-thread-btn")
+
+			start_thread_btn.forEach(element => element.addEventListener('click', event => {
+				event.preventDefault()
+				var element = event.target
+				var user_id = element.getAttribute('data-user-id')				
+				startThread(Number(user_id))
+			}))		
+		}
 
 		function threadDetail(thread_id) {
 			fetch(thread_detail_url, {
@@ -129,12 +118,24 @@
 			}).then(
 				response => response.json()
 			).then(function(data) {
-				updateThread(data.html)
-				document.getElementById("chat").style.display = "block"
-				document.getElementById("background").style.display = "none"	
-				document.querySelectorAll(".active-chat").forEach(el=>el.classList.remove("active-chat"))
-				document.querySelector("#thread_" + thread_id).classList.add("active-chat")
-				ScrollBottomInThread()
+				if(data.success) {
+					updateHtml("chat-detail", data.html)
+					document.getElementById("chat").style.display = "block"
+					document.getElementById("background").style.display = "none"
+					document.getElementById("new-thread-list").style.display = "none"
+					document.querySelectorAll(".active-chat").forEach(el=>el.classList.remove("active-chat"))
+					if(!data.new) {
+						const thread_list = document.querySelector("#thread_" + thread_id)
+						thread_list.classList.add("active-chat")
+					}else{
+						if(data.read) {
+							thread_list.classList.remove("has-notifications")
+							const badges = thread_list.getElementsByClassName("messenger-notifications")
+							badges[0].classList.add("d-none")
+						}
+						ScrollBottomInThread()
+					}									
+				}				
 			})
 		}
 
@@ -157,7 +158,9 @@
 					"thread_id": thread_id, 
 					"content": content
 				})
-			}).then(response => response.json()).then(function(data){
+			}).then(
+				response => response.json()
+			).then(function(data) {
 				if(data.success){
 					if (data.first){
 						updateList(data.html_list)
@@ -178,9 +181,33 @@
 					alert("Something weng wrong...")
 				}
 			})
-		}		
+		}
 
-		send_btn.addEventListener("click", function(){
+		new_thread.addEventListener("click", function() {
+			fetch(new_thread_url, {
+				credentials: 'include',
+				method: 'POST',
+				headers: {
+					"X-CSRFToken": getCookie("csrftoken"),
+					"Accept": "application/json",
+					"Content-Type": "application/json"
+				}
+			}).then(
+				response => response.json()
+			).then(function(data) {
+				if(data.success) {
+					document.getElementById("chat").style.display = "none"
+					document.getElementById("background").style.display = "none"
+					updateHtml("new-thread-list", data.html)
+					document.getElementById("new-thread-list").style.display = "block"
+					addStartThreadEvents()
+				} else {
+					alert("Something weng wrong...")
+				}
+			})
+		})
+
+		send_btn.addEventListener("click", function() {
 			var content = content_input.value
 			if(content.length > 0){				
 				addMessage()				
@@ -198,22 +225,12 @@
 			}
 		});		
 
-		function updateList(html) {
-			const chat_list = document.getElementById("chat-list")
-			while(chat_list.firstChild) {
-				chat_list.firstChild.remove()
+		function updateHtml(selector, html) {
+			const element = document.getElementById(selector)
+			while(element.firstChild) {
+				element.firstChild.remove()
 			}
-			chat_list.innerHTML = html
-			addEvents()
-		}
-
-		function updateThread(html) {
-			const chat_detail = document.getElementById("chat-detail")
-			while(chat_detail.firstChild) {
-				chat_detail.firstChild.remove()
-			}
-			chat_detail.innerHTML = html
-			ScrollBottomInThread()
+			element.innerHTML = html
 		}
 		
 		function checkUpdates() {		
@@ -236,10 +253,12 @@
 				response => response.json()
 			).then(function(data) {
 				if(data.update_list){
-					updateList(data.html_list)
+					updateHtml("chat-list", data.html_list)
+					addEvents()
 				}
 				if(data.update){         
-					updateThread(data.html)
+					updateHtml("chat-detail", data.html)
+					ScrollBottomInThread()
 				}
 			})            
 		}

@@ -1,0 +1,24 @@
+{% load static %}
+
+<ul class="list">
+							
+    {% for user in users %}
+
+        <li class="clearfix contact-list">
+            {% if user.profile.image %}
+                <img src="{{ user.profile.image.url }}" alt="avatar" class="avatar"/>
+            {% else %}
+                <img src="{% static 'registration/img/no-avatar.jpg' %}" class="avatar">
+            {% endif %}
+            <div class="about">
+                <div class="name">
+                    <a href="#" class="start-thread-btn" data-user-id="{{ user.pk }}">{{ user }}</a>												
+                </div>
+                <div class="bio">
+                    <p><span>{{ user.profile.bio | string_trunc:25 }}</span></p>
+                </div>
+            </div>            
+        </li> 
+    {% endfor %}
+
+</ul>

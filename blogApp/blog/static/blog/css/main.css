@@ -9304,6 +9304,10 @@ textarea.form-control {
   padding-left: 0 !important;
 }
 
+.chat-list {
+  margin-top: 40px;
+}
+
 .people-list {
   width: 100%;
   float: left;
@@ -9337,9 +9341,12 @@ textarea.form-control {
   padding: 10px 20px 10px 30px;
 }
 
-.active-chat {  
-  font-style: italic;
-  background: #e7e7e7;
+.messenger-notifications {
+  height: 15px;
+  width: 15px;
+  background-color: red;
+  border-radius: 50%;
+  font-size: 65%;
 }
 
 .people-list img {
@@ -9361,6 +9368,28 @@ textarea.form-control {
 
 .people-list .status p {
   margin-bottom: 0;
+}
+
+.active-chat {  
+  background: #e7e7e7;
+}
+
+.active-chat .status {  
+  color: #56585c;
+}
+
+.active-chat .name {  
+  color: #007912;
+}
+
+.has-notifications .status{
+  color: #4b4d52;
+  font-weight: 700;
+}
+
+.has-notifications .name{
+  color: #007912;
+  font-weight: 700;
 }
 
 .chat {
@@ -9532,8 +9561,23 @@ textarea.form-control {
   opacity: 0.1;
 }
 
-#chat {
+#chat, #new-thread-list {
   display: none;
+}
+
+.contact-list {
+  margin-top: 20px;
+}
+
+.contact-list .bio {
+  color: #4b4d52;
+}
+
+.new-thread-container {
+  position: absolute;
+  right: 0px;
+  margin-bottom: 20px;
+  padding: 20px;
 }
 
 /* ERRORS */

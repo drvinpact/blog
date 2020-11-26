@@ -6,7 +6,6 @@ from django.utils.dateformat import format
 from taggit.models import Tag
 
 
-
 register = template.Library()
 
 @register.simple_tag

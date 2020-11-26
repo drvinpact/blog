@@ -81,6 +81,7 @@ TEMPLATES = [
                 'blog.templatetags.post_tags',
                 'blog.templatetags.sidebar_tags',
                 'blog.templatetags.user_tags',
+                'messenger.templatetags.messenger_tags',
             ],
         },
     },
