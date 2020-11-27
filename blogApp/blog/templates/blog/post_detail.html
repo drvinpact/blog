@@ -11,6 +11,8 @@
         {% get_post_bookmark post user as bookmark %}
     {% endif %}
 
+    {% include 'blog/base/modals/confirmation-modal.html' %}
+
     <section class="ftco-section ftco-no-pt ftco-no-pb">
 
         <div id="post-detail" class="container">
@@ -24,10 +26,10 @@
                     {% if post.author == user %}
                         <div class="float-right mb-4">
                             <a class="btn btn-outline-info btn-sm mt-1 mb-1" href="{% url 'blog:post_update' post.id %}">Update</a>
-                            {% if post.active %}
-                                <a class="btn btn-outline-danger btn-sm mt-1 mb-1" href="{% url 'blog:post_deactivate' post.id %}">Deactivate</a>
-                            {% else %}
-                                <a class="btn btn-outline-success btn-sm mt-1 mb-1" href="{% url 'blog:post_deactivate' post.id %}">Activate</a>
+                            {% if post.is_active %}                            
+                                <a href="#" url="{% url 'blog:post_deactivate' post.id %}" class="btn btn-outline-danger btn-sm mt-1 mb-1 confirm-delete" title="Delete" data-toggle="modal" data-target="#confirmDeleteModal">Deactivate</a>                            
+                                {% else %}
+                                <a href="#" url="{% url 'blog:post_deactivate' post.id %}" class="btn btn-outline-success btn-sm mt-1 mb-1 confirm-delete" title="Delete" data-toggle="modal" data-target="#confirmDeleteModal">Activate</a>                            
                             {% endif %}
                         </div>
                     {% endif %}    
@@ -175,6 +177,15 @@
 {% block extra_scripts %}
     <script>
         $(document).ready(function(){
+
+            const deactivate_btn = document.querySelectorAll('.confirm-delete')
+            
+            deactivate_btn.forEach(element => element.addEventListener('click', event => {
+                event.preventDefault()
+                const element = event.target
+                const url = element.getAttribute('url')
+                document.getElementById('confirmDeleteModalForm').setAttribute('action', url)
+            }))
 
             const comment_id = "{{ comment_id }}";
 

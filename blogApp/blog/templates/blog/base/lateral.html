@@ -10,21 +10,33 @@
     <aside id="colorlib-aside" role="complementary" class="js-fullheight">        
         <nav id="colorlib-main-menu" role="navigation">
             <ul>
-                <li class="{% if request.path == '/' %} colorlib-active {%endif%}">
+                <li class="{% if request.path == '/' %}colorlib-active{%endif%}">
                     <a href="{% url 'blog:home' %}">Home</a>
-                </li>                
-                {% if user.is_authenticated %}
-                    <li class="{% if request.path == '/posts/' %} colorlib-active {%endif%}">
-                        <a href="{% url 'blog:posts' %}">My Posts</a>
-                    </li>  
-                    <li class="{% if request.path == '/bookmarks/' %} colorlib-active {%endif%}">
+                </li>        
+                {% if user.is_authenticated %}                    
+                    <li class="nav-dropdown {% if request.path == '/posts/' %}colorlib-active{%endif%}">
+                        <div class="nav-link-dropdown collapsed text-truncate" href="#submenu1" data-toggle="collapse" data-target="#submenu1">
+                            <a href="{% url 'blog:posts' %}">My Posts</a></span>
+                        </div>
+                        <div class="collapse {% if request.path == '/posts/' or request.path == '/deleted-posts/' or request.path == '/posts/new/'%}show{%endif%}" id="submenu1" aria-expanded="false">
+                            <ul class="flex-column pl-4 pt-2 nav">
+                                <li class="{% if request.path == '/posts/new/' %}colorlib-active{%endif%}">
+                                    <a class="pt-0" href="{% url 'blog:post_new' %}">New Post</a>
+                                </li>                            
+                                <li class="{% if request.path == '/deleted-posts/' %}colorlib-active{%endif%}">
+                                    <a class="pt-0" href="{% url 'blog:posts_deleted' %}">Deleted Posts</a>
+                                </li>                            
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="{% if request.path == '/bookmarks/' %}colorlib-active{%endif%}">
                         <a href="{% url 'blog:bookmarks' %}">Bookmarks</a>
                     </li>  
                 {% endif %}
-                <li class="{% if request.path == '/about/' %} colorlib-active {%endif%}">
+                <li class="{% if request.path == '/about/' %}colorlib-active{%endif%}">
                     <a href="{% url 'blog:about' %}">About</a>
                 </li>
-                <li class="{% if request.path == '/contact/' %} colorlib-active {%endif%}">
+                <li class="{% if request.path == '/contact/' %}colorlib-active{%endif%}">
                     <a href="{% url 'blog:contact' %}">Contact</a>
                 </li>
             </ul>
@@ -55,3 +67,29 @@
     </aside>
 
 {% endblock %}
+
+{% block extra_scripts %}
+
+<script>
+    (function() {
+
+        const nav_dropdown = document.querySelectorAll('.nav-dropdown')
+
+        nav_dropdown.forEach(element => element.addEventListener('mouseenter', event => {
+            const element = event.target            
+            const id = element.getElementsByClassName('nav-link-dropdown')[0].getAttribute('data-target')
+            console.log(id)
+            document.querySelector(id).classList.add('show')
+        }))
+        
+        nav_dropdown.forEach(element => element.addEventListener('mouseleave', event => {
+            const element = event.target
+            const id = element.getElementsByClassName('nav-link-dropdown')[0].getAttribute('data-target')
+            console.log(id)
+            document.querySelector(id).classList.remove('show')
+        }))
+
+    })()
+</script>
+
+{% endblock extra_scripts %}

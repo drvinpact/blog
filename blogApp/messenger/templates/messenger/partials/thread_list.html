@@ -21,8 +21,9 @@
                     <div class="about">
                         <div class="name">
                             <a href="#" class="thread-btn" data-thread-id="{{ thread.pk }}">
-                                {{ thread_user }} <span class="badge badge-danger float-right messenger-notifications {% if not unread %}d-none{% endif %}">{{ unread }} </span>
-                            </a>												
+                                {{ thread_user }}
+                            </a>				
+                            <span class="badge badge-danger float-right messenger-notifications {% if not unread %}d-none{% endif %}">{{ unread }} </span>								
                         </div>
                         <div class="status">
                             <p><span class="last-message">{{ thread.messages.last.content | string_trunc:25 }}</span></p>

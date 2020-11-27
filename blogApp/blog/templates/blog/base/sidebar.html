@@ -20,13 +20,13 @@
                 <ul class="nav navbar-nav ml-md--auto">
                     <li class="dropdown"> 
                         
-                        <a href="#" class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a href="#" class="nav-link dropdown-toggle" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img src="{{ user.profile.image.url }}" class="avatar-panel" alt="Profile" />
                             {{ user }}
                             <b class="caret"></b>    
                         </a>
                         
-                        <div class="dropdown-menu account-menu" aria-labelledby="navbarDropdown"><!-- ADDED CLASS -->
+                        <div class="dropdown-menu account-menu" aria-labelledby="profileDropdown">
                             <a href="{% url 'profile' %}" class="dropdown-item">Profile</a>
                             <a href="{% url 'notifications:list' %}" class="dropdown-item">Notifications</a>
                             <a href="{% url 'messenger:messenger' %}" class="dropdown-item">Messages</a>

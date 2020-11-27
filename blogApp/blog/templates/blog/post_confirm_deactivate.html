@@ -6,7 +6,7 @@
         <div class="container">
             <div class="row d-flex contact-info">
                 <div class="col-md-12 mb-4">
-                    <h2 class="h3">{{ object.active | yesno:'Deactive,Active' }} Post</h2>
+                    <h2 class="h3">{{ object.is_active | yesno:'Deactive,Active' }} Post</h2>
                 </div>
             </div>
 
@@ -18,11 +18,11 @@
                         {% csrf_token %}
 
                         <fieldset class="form-group">
-                            <h2>Are you sure you want to {{ object.active | yesno:'deactive,active' }} the post "{{ object.title }}"?</h2>
+                            <h2>Are you sure you want to {{ object.is_active | yesno:'deactive,active' }} the post "{{ object.title }}"?</h2>
                         </fieldset>
 
                         <div class="form-group">
-                            <button class="btn btn-outline-danger" type="submit">Yes, {{ object.active | yesno:'deactivate,activate' }}</button>
+                            <button class="btn btn-outline-danger" type="submit">Yes, {{ object.is_active | yesno:'deactivate,activate' }}</button>
                             <a class="btn btn-outline-success" href="{% url 'blog:post_detail' object.id %}">Cancel</a>
                         </div>
                     </form>

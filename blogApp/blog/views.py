@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.defaults import page_not_found
+from django.http import Http404
 from .models import Post, Comment, Vote, Bookmark
 from .forms import CommentForm, ReplyForm
 from django import forms
@@ -26,42 +26,50 @@ class PostListView(BaseListView):
     def get_queryset(self):
         search = self.request.GET.get('search')
         if search and search is not None:
-            return Post.objects.filter(
+            return Post.active.filter(
                 Q(title__contains=search.strip()) | 
                 Q(content__contains=search.strip())
             ).distinct().order_by('-created_at')
 
-        return Post.objects.all().order_by('-created_at')
+        return Post.active.all().order_by('-created_at')
 
 class PostsByCategory(BaseListView):
     def get_queryset(self):
-        return Post.objects.filter(category__name=self.kwargs.get('category')).order_by('-created_at')
+        return Post.active.filter(category__name=self.kwargs.get('category')).order_by('-created_at')
  
 class PostsByTag(BaseListView):
     def get_queryset(self):
-        return Post.objects.filter(tags__name__in=[self.kwargs.get('tag')]).order_by('-created_at')
+        return Post.active.filter(tags__name__in=[self.kwargs.get('tag')]).order_by('-created_at')
 
 class PostsByDate(BaseListView):
     def get_queryset(self):
         month = self.kwargs.get('month')
         year = self.kwargs.get('year')            
-        return Post.objects.filter(created_at__year=year).filter(created_at__month=month).order_by('-created_at')
+        return Post.active.filter(created_at__year=year).filter(created_at__month=month).order_by('-created_at')
 
 class UserPostListView(BaseListView):
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        return Post.objects.filter(author=user).order_by('-created_at')
+        return Post.active.filter(author=user).order_by('-created_at')
 
 @method_decorator(login_required, name='dispatch')
 class BookmarkPostListView(BaseListView):
     def get_queryset(self):        
         bookmarks_ids = list(self.request.user.bookmarks.values_list('post_id', flat=True))
-        return Post.objects.filter(pk__in=bookmarks_ids).order_by('-created_at')
+        return Post.active.filter(pk__in=bookmarks_ids).order_by('-created_at')
 
 @method_decorator(login_required, name='dispatch')
 class MyPostListView(BaseListView):
     def get_queryset(self):        
-        return self.request.user.posts.all().order_by('-created_at')
+        return self.request.user.posts.filter(is_active=True).order_by('-created_at')
+
+@method_decorator(login_required, name='dispatch')
+class MyDeletedPostListView(BaseListView):
+    def get_queryset(self):        
+        return self.request.user.posts.filter(is_active=False).order_by('-created_at')
+
+class DeletedPostDetailView(DetailView):
+    model = Post
 
 class PostDetailView(DetailView):
     def get(self, *args, **kwargs):
@@ -147,9 +155,9 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             
 class PostDeactivateView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
-    template_name = 'blog/post_confirm_deactivate.html'
-    success_url = '/'
 
+    def get(self, *args, **kwargs):
+        raise Http404
     def test_func(self):
         post = self.get_object()
         if self.request.user == post.author:
@@ -158,10 +166,11 @@ class PostDeactivateView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
-        success_url = self.get_success_url()
+        success_url = '/'
         if self.object.author == self.request.user:
-            self.object.active=(not self.object.active)
+            self.object.is_active=(not self.object.is_active)
             self.object.save()
+            success_url = '/posts' if self.object.is_active else '/deleted-posts'
 
         return redirect(success_url)
  
@@ -186,7 +195,7 @@ def vote(request, pk, slug):
             like = True if request.POST.get("like") == "1" else False
             votes = 0
             if slug == 'post':
-                post = Post.objects.get(pk=pk)
+                post = Post.active.get(pk=pk)
                 vote = Vote.objects.update_or_create(post=post, author=request.user, defaults={
                     'author': request.user,
                     'post': post,
@@ -211,7 +220,7 @@ def vote(request, pk, slug):
 def bookmark(request, pk):
     if request.method=='POST':
         try:
-            post = Post.objects.get(pk=pk)
+            post = Post.active.get(pk=pk)
             marker = Bookmark.objects.create_or_delete(user=request.user, post=post)
             bookmark = True if marker else False
             

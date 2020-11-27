@@ -8360,7 +8360,7 @@ h1, h2, h3, h4, h5,
             /* Firefox 18- */
             color: rgba(0, 0, 0, 0.4) !important; }
         #colorlib-aside .colorlib-footer .colorlib-subscribe-form .form-group .form-control {
-          bordeR: 1px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.2);
           font-weight: 400; }
       #colorlib-aside .colorlib-footer .colorlib-subscribe-form .icon {
         position: absolute;
@@ -8370,6 +8370,13 @@ h1, h2, h3, h4, h5,
         -ms-transform: translateY(-50%);
         transform: translateY(-50%);
         color: rgba(0, 0, 0, 0.5); }
+
+.nav-link-dropdown[data-toggle].collapsed:before {
+  content: " ▾";
+}
+.nav-link-dropdown[data-toggle]:not(.collapsed):before {
+  content: " ▴";
+}
 
 #colorlib-main {
   width: 100%;

@@ -1,0 +1,46 @@
+{% load static %}
+
+<table class="table table-hover">
+	<tbody>
+		{% for notification in notifications %}
+			<tr>
+				<td>
+					{% if notification.category == 'comment' or notification.category == 'vote' %}
+						{% if notification.author %}
+							<a href="{% url 'blog:user_profile' notification.author %}">
+								<img src='{{ notification.author.profile.image.url }}' class='avatar-notification' /> {{ notification.author }}
+							</a>
+						{% else %}
+							{{ notification.author_name }}
+						{% endif %}
+
+						{{ notification.action }} 
+
+						{% if notification.comment %}
+							{% if notification.category == 'comment' %} to{% endif %} your comment on 
+							<a href="{% url 'blog:post_detail' notification.post.id %}">
+								<i>{{ notification.post }}</i>
+							</a>
+						{% else %}
+							{% if notification.category == 'comment' %} on{% endif %}your post 
+							<a href="{% url 'blog:post_detail' notification.post.id %}">
+								<i>{{ notification.post }}</i>
+							</a>
+						{% endif %}						
+					{% elif notification.category == 'message' %}
+						You have a 
+						<a href="#">
+							{{ notification.action }}
+						</a>
+						from 
+						<a href="{% url 'blog:user_profile' notification.author %}">
+							<img src='{{ notification.author.profile.image.url }}' class='avatar-notification' />{{ notification.author }}
+						</a>
+					{% endif %}
+					
+					<small><i>About {{ notification.created_at | timesince }}</i></small>
+				</td>
+			</tr>                
+		{% endfor %}            
+	</tbody>
+</table>
