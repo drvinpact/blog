@@ -9243,6 +9243,14 @@ textarea.form-control {
       color: #000000;
       font-style: italic; }
 
+.post-category {
+  margin-bottom: 0;  
+}
+
+.post-title {
+  margin-top: 0;
+}
+
 .avatar { 
   width: 50px; 
   height: 50px; 
@@ -9301,7 +9309,6 @@ textarea.form-control {
 .users-container {
   font-family: "Poppins", Arial, sans-serif;
   height: 100vh;
-  background-image: url(https://picsum.photos/g/3000/2000);
   background-size: cover;
   background-position: center;
 }
@@ -9330,7 +9337,7 @@ textarea.form-control {
   width: 100%;
   height: 0;
   border-radius: 50%;
-  background-color: #32e24d;
+  background-color: #4d9958;
   position: absolute;
   bottom: 135%;
   right: 0;
@@ -9349,7 +9356,7 @@ textarea.form-control {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background-color: #32e24d;
+  background-color: #4d9958;
   position: absolute;
   top: 0;
   left: 0;
@@ -9385,7 +9392,7 @@ textarea.form-control {
   width: 100%;
   padding: 0;
   margin: 0;
-  background-color: #32e24d;
+  background-color: #4d9958;
   position: absolute;
   bottom: -100px;
   left: 0;
@@ -9419,16 +9426,35 @@ textarea.form-control {
 }
 
 .our-team .social li a:hover {
-  color: #32e24d;
+  color: #4d9958;
   background-color: #f7f5ec;
 }
 
 .our-team .social li button:hover {
-  color: #32e24d;
+  color: #4d9958;
   background-color: #f7f5ec;
 }
 
 
+/* USER PROFILE */
+
+.profile-head {
+  transform: translateY(5rem)
+}
+
+.cover {
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.profile-info h3, .profile-info p {    
+  font-family: "Poppins", Arial, sans-serif;
+  color: #f8f9fa;
+}
+
+.profile-info h3 {
+  text-transform: uppercase;  
+}
 
 /* MESSENGER */
 

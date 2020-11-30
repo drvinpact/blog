@@ -6,14 +6,87 @@
     
     <section class="ftco-section ftco-no-pt ftco-no-pb">
         <div class="container">
-            <div class="row d-flex contact-info">
-                <div class="col-md-12 mb-4">
-                    <h2 class="h3">Profile</h2>
-                </div>
-            </div>
 
             <div class="row d-flex">
-                <div class="col-lg-8 px-md-5 py-5">
+
+                <div class="bg-white shadow rounded overflow-hidden">
+                    <div class="px-4 pt-0 pb-4 cover" style="background-image: linear-gradient(rgba(255,255,255,0.2), rgba(255,255,255,0.2)),url(/static/blog/img/bg_1.jpg);">
+                        <div class="media align-items-end profile-head">
+                            <div class="profile mr-3">
+                                <img src="{{ obj.profile.image.url }}" alt="..."  class="rounded mb-2 img-thumbnail" />
+                                <form method="POST" action="{% url 'messenger:messenger' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="user_id" value="{{ item.id }}" />
+                                    <button class="btn btn-outline-success btn-sm btn-block" type="submit">
+                                        Message
+                                    </button>
+                                </form>                                
+                            </div>
+                            <div class="media-body mb-5 profile-info">
+                                <h3 class="mt-0 mb-0 ">{{ obj.username }}</h3>
+                                <p class="mb-4"> 
+                                    <i class="fas fa-map-marker-alt mr-2"></i>{{ obj.email }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-light p-4 d-flex justify-content-end text-center">
+                        <ul class="list-inline mb-0">
+                            <li class="list-inline-item">
+                                <h5 class="font-weight-bold mb-0 d-block">{{ obj.profile.get_posts }}</h5>
+                                <small class="text-muted"> <i class="fa fa-book mr-1"></i>Posts</small>
+                            </li>
+                            <li class="list-inline-item">
+                                <h5 class="font-weight-bold mb-0 d-block">{{ obj.profile.get_likes }}</h5>
+                                <small class="text-muted"> <i class="icon-thumbs-o-up mr-1"></i>Likes</small>
+                            </li>
+                            <li class="list-inline-item">
+                                <h5 class="font-weight-bold mb-0 d-block">{{ obj.profile.get_comments }}</h5>
+                                <small class="text-muted"> <i class="icon-chat mr-1"></i>Comments</small>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="px-4 py-3">
+                        <h5 class="mb-0">Bio</h5>
+                        <div class="p-4 rounded shadow-sm bg-light">
+                            <p class="font-italic mb-0">{{ obj.profile.bio }}</p>                            
+                        </div>
+                    </div>
+                    <div class="py-4 px-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="mb-0">Recent posts</h5>
+                            <a href="{% url 'blog:user_posts' obj %}" class="btn text-muted">
+                                Go to posts
+                            </a>
+                        </div>
+                        <div class="row">
+                            {% for post in posts %}
+                            <div class="sidebar-box ftco-animate col-lg-6 mt-4">
+                                <div class="block-21 mb-4 d-flex">
+                                    <a class="blog-img mr-4" style="background-image: url('{{ post.image.url }}');"></a>
+                                    <div class="text">
+                                        <h3 class="heading"><a href="{% url 'blog:post_detail' post.id %}">{{ post.title }}</a></h3>
+                                        <div class="meta">
+                                            <div><span class="icon-calendar"></span> {{ post.created_at | date:'F d, Y' }}</div>
+                                        </div>
+                                        <div class="meta">
+                                            <div>
+                                                <a href="{% url 'blog:user_posts' post.author %}">
+                                                    <span class="icon-person"></span> {{ post.author }}
+                                                </a>
+                                            </div>
+                                            <div><span class="icon-chat"></span> {{ post.get_comments }}</div>
+                                            <div><span class="icon-thumbs-o-up"></span> {{ post.get_likes }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}                                                        
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <div class="col-lg-8 px-md-5 py-5">
 
                     <div class="row">
                         <div class="about-author d-flex p-4 bg-light">
@@ -36,7 +109,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
 
         </div>

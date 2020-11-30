@@ -55,10 +55,7 @@ class Post(models.Model):
         return self.votes.filter(like=True).count()
 
     def get_dislikes(self):
-        return self.votes.filter(like=False).count()
-
-    def bookmark(self, user):
-        return self.bookmarks.filter(user=user).exists()
+        return self.votes.filter(like=False).count()    
 
     def related_posts(self):
         tags_ids = list(self.tags.values_list('pk', flat=True))

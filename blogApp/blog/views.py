@@ -16,7 +16,7 @@ from django.utils.decorators import method_decorator
 
 
 class BaseListView(ListView):
-    template_name = 'blog/home.html'
+    template_name = 'blog/home2.html'
     model = Post
     context_object_name = 'obj'
     ordering = ['-created_at']
@@ -132,12 +132,20 @@ class UsersListView(ListView):
     ordering = ['username']
     paginate_by = 12
 
+    def get_queryset(self):
+        return User.objects.exclude(pk=self.request.user.pk).order_by('username')
+
 @method_decorator(login_required, name='dispatch')
 class UserView(DetailView):
     slug_field = "username"
     model = User
     template_name = 'blog/user_profile.html'
     context_object_name = 'obj'
+    
+    def get_context_data(self, **kwargs):
+        context = super(UserView, self).get_context_data(**kwargs)
+        context['posts'] = self.object.posts.filter(is_active=True).order_by('-created_at')[:4]
+        return context
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post

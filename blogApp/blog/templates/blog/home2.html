@@ -1,0 +1,123 @@
+{% extends "blog/base/base.html" %}
+
+{% block content %}
+    
+    <section class="ftco-section ftco-no-pt ftco-no-pb">
+
+        <div class="container">
+
+            <div class="row d-flex">
+
+                <div class="col-xl-8 py-5 px-md-5">
+                    <div class="row pt-md-4">
+                        
+                        {% for item in obj %}
+
+                            {% if user.is_authenticated %}
+                                {% get_post_bookmark item user as bookmark %}
+                            {% endif %}
+
+                            <div class="col-md-12 post">
+                                <div class="blog-entry-2 ftco-animate">
+                                    <a href="{% url 'blog:post_detail' item.id %}" class="img" style="background-image: url('{{ item.image.url }}');"></a>
+                                    <div class="text pt-4">
+                                        <h3 class="mb-4">
+                                            <a href="{% url 'blog:post_detail' item.id %}">
+                                                {{ item.title }}
+                                            </a>
+                                            {% if user.is_authenticated %}
+                                                <a href="#" class="btn bookmark-btn" data-url="{% url 'blog:bookmark' item.id %}" role="button">                                
+                                                    <i class="icon {% if bookmark %}icon-heart{% else %}icon-heart-o{% endif %}"></i>
+                                                </a>
+                                            {% endif %}
+                                        </h3>         
+                                        
+                                        <p class="mb-4">{{ item.content | string_trunc | safe }}</p>                               
+
+                                        <div class="author mb-4 d-flex align-items-center">
+                                            <a href="{% url 'blog:user_posts' item.author %}" class="img" style="background-image: url('{{ item.author.profile.image.url }}');"></a>
+                                            <div class="ml-3 info">
+												<span>Written by</span>
+												<h3><a href="{% url 'blog:user_posts' item.author %}">{{ item.author }}</a>, <span>{{ item.created_at }}</span></h3>
+											</div>
+                                        </div>
+                                        <div class="meta-wrap d-md-flex align-items-center">
+                                            <div class="half order-md-last text-md-right">
+												<p class="meta">
+													<span><i class="icon-heart"></i>{{ item.get_likes }}</span>
+													<span><i class="icon-eye"></i>{{ item.get_likes }}</span>
+													<span><i class="icon-comment"></i>{{ item.get_comments }}</span>
+												</p>
+                                            </div>
+                                            <div class="half">
+												<p>
+                                                    <a href="{% url 'blog:post_detail' item.id %}" class="btn btn-outline-success p-3 px-xl-4 py-xl-3">
+                                                        Read
+                                                    </a>
+                                                </p>
+                                            </div>
+                                            
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% endfor %}
+         
+                    </div>
+
+                    {% include "blog/partials/pagination.html" %}
+
+                </div>
+
+                {% include "blog/base/sidebar.html" %}
+
+            </div>
+
+        </div>
+
+    </section>
+
+{% endblock content %}
+
+{% block extra_scripts %}
+    <script>
+        $(document).ready(function(){                    
+            $(".bookmark-btn").click(function(e){
+                e.preventDefault();
+
+                var element =$(this);
+                var url = $(element).data("url");
+                var path = "{{ request.path }}"
+
+                $.ajax({
+                    type: "POST",
+                    url: url,            
+                    data: {csrfmiddlewaretoken: "{{ csrf_token }}"}
+                })
+                .done(function (response) {
+                    if(response.success){
+                        const icon = $(element).find("i")
+                        if(response.bookmark){
+                            $(icon).removeClass("icon-heart-o")
+                            $(icon).addClass("icon-heart")
+                        }else{
+                            $(icon).removeClass("icon-heart")
+                            $(icon).addClass("icon-heart-o")
+
+                            if(path=='/bookmarks/'){
+                                var post = $(element).parents('.post')
+                                $(post).fadeOut()
+                                console.log(post)
+                            }
+                        }
+                    }else{
+                        message(response.msg, color)
+                    }
+                })          
+            });
+
+        });
+    </script>
+{% endblock extra_scripts %}

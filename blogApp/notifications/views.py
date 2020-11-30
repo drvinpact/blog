@@ -15,7 +15,7 @@ class NotificationList(TemplateView):
     template_name = "notifications/notification_list.html"
 
     def get_context_data(self, **kwargs):
-        context = super(NotificationList,self).get_context_data(**kwargs)
+        context = super(NotificationList, self).get_context_data(**kwargs)
         notifications = self.request.user.notifications.filter(read=False)
         html = render_to_string('notifications/partials/notification_list.html', {'notifications': notifications[:15]}, request=self.request)
         context['notifications'] = html
