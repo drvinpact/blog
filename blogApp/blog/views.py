@@ -125,6 +125,14 @@ class PostDetailView(DetailView):
                 return redirect('blog:post_detail', pk=pk)
 
 @method_decorator(login_required, name='dispatch')
+class UsersListView(ListView):
+    template_name = 'blog/users.html'
+    model = User
+    context_object_name = 'obj'
+    ordering = ['username']
+    paginate_by = 12
+
+@method_decorator(login_required, name='dispatch')
 class UserView(DetailView):
     slug_field = "username"
     model = User

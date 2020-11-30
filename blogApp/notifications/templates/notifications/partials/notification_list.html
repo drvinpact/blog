@@ -18,7 +18,7 @@
 
 						{% if notification.comment %}
 							{% if notification.category == 'comment' %} to{% endif %} your comment on 
-							<a href="{% url 'blog:post_detail' notification.post.id %}">
+							<a href="{% url 'blog:post_detail' notification.post.id %}?comment_id={{ notification.comment.id }}">
 								<i>{{ notification.post }}</i>
 							</a>
 						{% else %}
@@ -29,9 +29,11 @@
 						{% endif %}						
 					{% elif notification.category == 'message' %}
 						You have a 
-						<a href="#">
-							{{ notification.action }}
-						</a>
+						<form class="messenger-notification-form" method="POST" action="{% url 'messenger:messenger' %}">
+							{% csrf_token %}
+							<input type="hidden" name="redirect_thread" value="{{ notification.thread.id }}" />
+							<input class="messenger-link" type="submit" value="{{ notification.action }}" />
+						</form>
 						from 
 						<a href="{% url 'blog:user_profile' notification.author %}">
 							<img src='{{ notification.author.profile.image.url }}' class='avatar-notification' />{{ notification.author }}

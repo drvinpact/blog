@@ -32,6 +32,9 @@
                     <li class="{% if request.path == '/bookmarks/' %}colorlib-active{%endif%}">
                         <a href="{% url 'blog:bookmarks' %}">Bookmarks</a>
                     </li>  
+                    <li class="{% if request.path == '/users/' %}colorlib-active{%endif%}">
+                        <a href="{% url 'blog:users' %}">Users</a>
+                    </li>  
                 {% endif %}
                 <li class="{% if request.path == '/about/' %}colorlib-active{%endif%}">
                     <a href="{% url 'blog:about' %}">About</a>

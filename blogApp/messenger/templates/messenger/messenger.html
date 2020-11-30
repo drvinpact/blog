@@ -70,9 +70,14 @@
 		const new_thread = document.getElementById("new-thread");
 		const content_input = document.getElementById("message-to-send");
 		const start_new_thread = Number("{{ new_thread }}")
+		const redirect_thread = Number("{{ redirect_thread }}")
 
 		if(start_new_thread) {
 			startThread(start_new_thread)
+		}
+		
+		if(redirect_thread) {
+			threadDetail(redirect_thread)
 		}
 
 		function ScrollBottomInThread(){

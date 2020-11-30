@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from .views import PostListView, MyPostListView, MyDeletedPostListView, BookmarkPostListView, PostDetailView, PostCreateView, PostUpdateView, PostDeactivateView, \
-    UserView, UserPostListView, PostsByCategory, PostsByTag, PostsByDate, vote, bookmark, ajax_form
+    UsersListView, UserView, UserPostListView, PostsByCategory, PostsByTag, PostsByDate, vote, bookmark, ajax_form
 
 urlpatterns = [
     path('', PostListView.as_view(), name='home'),
@@ -22,6 +22,7 @@ urlpatterns = [
     path('vote/<int:pk>/<slug:slug>', vote, name="vote"),
     path('bookmark/<int:pk>', bookmark, name="bookmark"),
 
+    path('profile/users/', UsersListView.as_view(), name='users'),
     path('profile/<str:slug>/', UserView.as_view(), name='user_profile'),
     
     path('about/', views.about, name='about'),

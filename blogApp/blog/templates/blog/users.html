@@ -1,0 +1,49 @@
+{% extends "blog/base/base.html" %}
+
+{% block content %}
+    
+    <section class="ftco-section ftco-no-pt ftco-no-pb">
+
+        <div class="container users-container">
+            <div class="row">
+
+                {% for item in obj %}
+
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">                        
+                        <div class="our-team">
+                            <a href="{% url 'blog:user_profile' item %}">
+                                <div class="picture">
+                                    <img class="img-fluid" src="{{ item.profile.image.url }}">
+                                </div>
+                                <div class="team-content">
+                                    <h3 class="name">{{ item.username }}</h3>
+                                    <h4 class="title">{{ item.email }}</h4>
+                                </div>
+                            </a>
+                            <ul class="social">
+                                <li><a href="{% url 'blog:user_profile' item %}" class="fa fa-user-circle" aria-hidden="true"></a></li>
+                                <li><a href="{% url 'blog:user_posts' item %}" class="fa fa-book" aria-hidden="true"></a></li>
+                                <li>
+                                    <form method="POST" action="{% url 'messenger:messenger' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="user_id" value="{{ item.id }}" />
+                                        <button class="btn btn-sm" type="submit">
+                                            <span class="fa fa-commenting"></span>
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>                        
+                    </div>
+
+                {% endfor %}                
+
+            </div>
+
+            {% include "blog/partials/pagination.html" %}
+
+        </div>
+
+    </section>
+
+{% endblock content %}

@@ -28,17 +28,25 @@ class Messenger(TemplateView):
     
     def get_context_data(self, **kwargs):
         new_thread = self.request.session.get('new_thread', None)
+        redirect_thread = self.request.session.get('redirect_thread', None)
         self.request.session['new_thread'] = None
+        self.request.session['redirect_thread'] = None
         context = super(Messenger, self).get_context_data(**kwargs)        
         context['last_update'] = Thread.objects.thread_last_update(self.request.user)
         context['new_thread'] = new_thread
+        context['redirect_thread'] = redirect_thread
         context['thread_id'] = ''
 
         return context
 
     def post(self, *args, **kwargs):        
         user_id = self.request.POST.get('user_id')
-        self.request.session['new_thread'] = user_id
+        redirect_thread = self.request.POST.get('redirect_thread')
+        if user_id:
+            self.request.session['new_thread'] = user_id
+        elif redirect_thread:
+            self.request.session['redirect_thread'] = redirect_thread
+
         return redirect(reverse_lazy('messenger:messenger'))
 
 
