@@ -1,4 +1,19 @@
 from django import forms
+from django.forms import ModelForm
+from .models import Post
+from django_summernote.widgets import SummernoteWidget, SummernoteInplaceWidget
+
+
+class PostForm(ModelForm):
+    class Meta:
+        model = Post
+        fields = ['title', 'image', 'category', 'content', 'tags', 'is_active']
+        labels = {
+            'is_active': 'Active'
+        }
+        widgets = {
+            'content': SummernoteWidget(),
+        }
 
 class CommentForm(forms.Form):
     parent_id = forms.CharField(widget=forms.HiddenInput(), required=False)

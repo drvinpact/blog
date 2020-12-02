@@ -81,14 +81,12 @@
         nav_dropdown.forEach(element => element.addEventListener('mouseenter', event => {
             const element = event.target            
             const id = element.getElementsByClassName('nav-link-dropdown')[0].getAttribute('data-target')
-            console.log(id)
             document.querySelector(id).classList.add('show')
         }))
         
         nav_dropdown.forEach(element => element.addEventListener('mouseleave', event => {
             const element = event.target
             const id = element.getElementsByClassName('nav-link-dropdown')[0].getAttribute('data-target')
-            console.log(id)
             document.querySelector(id).classList.remove('show')
         }))
 

@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import Http404
 from .models import Post, Comment, Vote, Bookmark
-from .forms import CommentForm, ReplyForm
+from .forms import PostForm, CommentForm, ReplyForm
 from django import forms
 from django.contrib import messages
 from django.db.models import Q
@@ -10,17 +10,30 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View, TemplateView
-
+from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 
 class BaseListView(ListView):
-    template_name = 'blog/home2.html'
+    template_name = 'blog/home.html'
     model = Post
     context_object_name = 'obj'
     ordering = ['-created_at']
     paginate_by = 10
+
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+        list_type = request.session.get('list_type', 0)
+        context['list_type'] = list_type
+        return render(self.request, 'blog/home.html', context)
+
+    def post(self, *args, **kwargs):
+        list_type = self.request.POST.get('list')
+        self.request.session['list_type'] = list_type
+        return redirect(reverse_lazy('blog:home'))
+
 
 class PostListView(BaseListView):
     def get_queryset(self):
@@ -67,9 +80,6 @@ class MyPostListView(BaseListView):
 class MyDeletedPostListView(BaseListView):
     def get_queryset(self):        
         return self.request.user.posts.filter(is_active=False).order_by('-created_at')
-
-class DeletedPostDetailView(DetailView):
-    model = Post
 
 class PostDetailView(DetailView):
     def get(self, *args, **kwargs):
@@ -133,15 +143,26 @@ class UsersListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        return User.objects.exclude(pk=self.request.user.pk).order_by('username')
+        return User.objects.filter(profile__is_public=True).exclude(pk=self.request.user.pk).order_by('username')
 
 @method_decorator(login_required, name='dispatch')
-class UserView(DetailView):
+class UserView(UserPassesTestMixin, DetailView):
     slug_field = "username"
     model = User
     template_name = 'blog/user_profile.html'
     context_object_name = 'obj'
     
+    def handle_no_permission(self):
+        return redirect('profile')
+
+    def test_func(self):
+        user = self.get_object()        
+        if self.request.user==self.get_object():            
+            return False
+        if user.profile.is_public is False:
+            raise Http404
+        return True
+
     def get_context_data(self, **kwargs):
         context = super(UserView, self).get_context_data(**kwargs)
         context['posts'] = self.object.posts.filter(is_active=True).order_by('-created_at')[:4]
@@ -149,7 +170,8 @@ class UserView(DetailView):
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'content']
+    # fields = ['image', 'category', 'title', 'content', 'is_active']    
+    form_class = PostForm
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -157,7 +179,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content']
+    form_class = PostForm
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -174,6 +196,7 @@ class PostDeactivateView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get(self, *args, **kwargs):
         raise Http404
+    
     def test_func(self):
         post = self.get_object()
         if self.request.user == post.author:

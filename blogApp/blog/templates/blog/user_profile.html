@@ -5,18 +5,18 @@
 {% block content %}
     
     <section class="ftco-section ftco-no-pt ftco-no-pb">
-        <div class="container">
+        <div class="clearfix">
 
-            <div class="row d-flex">
+            <div class="row">
 
-                <div class="bg-white shadow rounded overflow-hidden">
+                <div class="bg-white shadow rounded overflow-hidden profile-container">
                     <div class="px-4 pt-0 pb-4 cover" style="background-image: linear-gradient(rgba(255,255,255,0.2), rgba(255,255,255,0.2)),url(/static/blog/img/bg_1.jpg);">
-                        <div class="media align-items-end profile-head">
+                        <div class="row media align-items-end profile-head">
                             <div class="profile mr-3">
                                 <img src="{{ obj.profile.image.url }}" alt="..."  class="rounded mb-2 img-thumbnail" />
                                 <form method="POST" action="{% url 'messenger:messenger' %}">
                                     {% csrf_token %}
-                                    <input type="hidden" name="user_id" value="{{ item.id }}" />
+                                    <input type="hidden" name="user_id" value="{{ obj.id }}" />
                                     <button class="btn btn-outline-success btn-sm btn-block" type="submit">
                                         Message
                                     </button>

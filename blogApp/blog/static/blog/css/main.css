@@ -9309,6 +9309,7 @@ textarea.form-control {
 .users-container {
   font-family: "Poppins", Arial, sans-serif;
   height: 100vh;
+  padding: 40px;
   background-size: cover;
   background-position: center;
 }
@@ -9321,6 +9322,7 @@ textarea.form-control {
   overflow: hidden;
   position: relative;
   border-radius: 5%;
+  min-width: 200px;
 }
 
 .our-team .picture {
@@ -9437,6 +9439,11 @@ textarea.form-control {
 
 
 /* USER PROFILE */
+
+.profile-container {
+  padding: 40px;
+  width: 100%;
+}
 
 .profile-head {
   transform: translateY(5rem)

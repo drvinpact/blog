@@ -20,6 +20,8 @@ class UserUpdateForm(ModelForm):
         fields = ['username', 'email']    
 
 class ProfileUpdateForm(ModelForm):
+    is_public = forms.BooleanField(label='Public', required=False)
+    
     class Meta:
         model = Profile
-        fields = ['bio', 'image']
+        fields = ['bio', 'image', 'is_public']
