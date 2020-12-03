@@ -35,6 +35,7 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     tags = TaggableManager(blank=True)
+    views = models.IntegerField(default=0)
 
     objects = models.Manager()
     active = ActivePostManager()

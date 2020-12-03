@@ -14,6 +14,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
+from .signals import add_view
 
 class BaseListView(ListView):
     template_name = 'blog/home.html'
@@ -84,7 +85,7 @@ class MyDeletedPostListView(BaseListView):
 class PostDetailView(DetailView):
     def get(self, *args, **kwargs):
         comment_id = self.request.GET.get('comment_id')
-        post = get_object_or_404(Post, pk=self.kwargs.get('pk'))
+        post = get_object_or_404(Post, pk=self.kwargs.get('pk'))        
         comments = post.comments.filter(active=True, parent=None).order_by('-created_at')
         form = CommentForm()
 
@@ -95,6 +96,9 @@ class PostDetailView(DetailView):
             form.fields['content'].label = ''
 
         context = {'post': post, 'comments': comments, 'form': form, 'comment_id': comment_id}
+
+        add_view.send(sender=Post, user=self.request.user, post=post)
+
         return render(self.request, "blog/post_detail.html", context)
     
     def post(self, *args, **kwargs):
