@@ -88,6 +88,7 @@ venv/
 ENV/
 Lib/
 Scripts/
+pyvenv.cfg
 
 .vscode
 # Spyder project settings
