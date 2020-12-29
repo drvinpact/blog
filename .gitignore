@@ -86,8 +86,8 @@ celerybeat-schedule
 .venv
 venv/
 ENV/
-blogApp/Lib/
-blogApp/Scripts/
+Lib/
+Scripts/
 
 .vscode
 # Spyder project settings
