@@ -83,7 +83,11 @@ class Comment(models.Model):
         ordering = ('-created_at',)
 
     def __str__(self):
-        return 'Comment by {}'.format(self.author.username)
+        if self.author:
+            username = self.author.username
+        else:
+            username = self.name
+        return 'Comment by {}'.format(username)
 
     def get_votes(self):
         return self.votes.count()
