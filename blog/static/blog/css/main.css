@@ -456,10 +456,10 @@ pre {
 
 .container {
   width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
-  margin-right: auto;
-  margin-left: auto; }
+  padding-right: 0;
+  padding-left: 0;
+  margin-right: 0;
+  margin-left: 0; }
   @media (min-width: 576px) {
     .container {
       max-width: 540px; } }
@@ -471,7 +471,7 @@ pre {
       max-width: 960px; } }
   @media (min-width: 1200px) {
     .container {
-      max-width: 1140px; } }
+      max-width: 100%; } }
 
 .container-fluid {
   width: 100%;
@@ -8232,7 +8232,7 @@ body {
   font-size: 15px;
   line-height: 1.8;
   font-weight: 400;
-  margin: 0 15px;
+  margin: 0;
   color: #666666; }
   body.offcanvas {
     overflow-x: hidden; }
@@ -9329,7 +9329,7 @@ textarea.form-control {
     margin-bottom: 30px; }
   @media (max-width: 767.98px) {
     .sidebar-box {
-      padding: 0; } }
+      padding: 0 20px; } }
 
 .categories, .sidelink {
   padding: 0; }  
@@ -9428,7 +9428,7 @@ textarea.form-control {
 
 .users-container {
   font-family: "Poppins", Arial, sans-serif;
-  height: 100vh;
+  height: 100%;
   padding: 40px;
   background-size: cover;
   background-position: center;
