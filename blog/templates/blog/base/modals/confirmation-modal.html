@@ -3,7 +3,7 @@
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-body confirm-delete">
-				This action is permanent!
+				¿Está seguro que desea continuar?
 			</div>
 			<div class="modal-footer">
 				<form id="confirmDeleteModalForm" method="POST" action="" novalidate>
@@ -11,8 +11,8 @@
 					{% csrf_token %}
 					
 					<div class="form-group">
-						<button class="btn btn-outline-danger" type="submit">Yes</button>
-						<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
+						<button class="btn btn-outline-danger" type="submit">Sí</button>
+						<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancelar</button>
 					</div>
 				</form>        
 			</div>

@@ -95,11 +95,14 @@ WSGI_APPLICATION = 'blogApp.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'blog_nono',
+        'USER': 'postgres',
+        'PASSWORD': 'daPV96G7N3b$',
+        'HOST': '107.6.142.229',
+        'PORT': '5432',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -123,9 +126,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en'
+LANGUAGE_CODE = 'es'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Madrid'
 
 USE_I18N = True
 
@@ -136,6 +139,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
+
+SESSION_COOKIE_AGE = 36000
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'blog/static')
@@ -155,11 +160,11 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'reciclatusanimales@gmail.com'
 EMAIL_HOST_PASSWORD = 'cyhnbolcznswholo'
 
-AWS_ACCESS_KEY_ID = 'AKIAZLDXZTNTCHELILSA'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'reciclatusanimales'
+# AWS_ACCESS_KEY_ID = 'AKIAZLDXZTNTCHELILSA'
+# AWS_SECRET_ACCESS_KEY = '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'
+# AWS_STORAGE_BUCKET_NAME = 'reciclatusanimales'
 
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
+# AWS_S3_FILE_OVERWRITE = False
+# AWS_DEFAULT_ACL = None
 
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'

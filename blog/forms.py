@@ -9,7 +9,12 @@ class PostForm(ModelForm):
         model = Post
         fields = ['title', 'image', 'category', 'content', 'tags', 'is_active']
         labels = {
-            'is_active': 'Active'
+            'title': 'Título',
+            'image': 'Imagen',
+            'category': 'Categoría',
+            'content': 'Contenido',
+            'tags': 'Etiquetas',
+            'is_active': 'Activo'
         }
         widgets = {
             'content': SummernoteWidget(),

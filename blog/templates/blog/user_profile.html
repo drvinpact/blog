@@ -17,8 +17,8 @@
                                 <form method="POST" action="{% url 'messenger:messenger' %}">
                                     {% csrf_token %}
                                     <input type="hidden" name="user_id" value="{{ obj.id }}" />
-                                    <button class="btn btn-outline-success btn-sm btn-block" type="submit">
-                                        Message
+                                    <button class="btn btn-outline-yellow btn-sm btn-block" type="submit">
+                                        Mensajes
                                     </button>
                                 </form>                                
                             </div>
@@ -34,7 +34,7 @@
                         <ul class="list-inline mb-0">
                             <li class="list-inline-item">
                                 <h5 class="font-weight-bold mb-0 d-block">{{ obj.profile.get_posts }}</h5>
-                                <small class="text-muted"> <i class="fa fa-book mr-1"></i>Posts</small>
+                                <small class="text-muted"> <i class="fa fa-book mr-1"></i>Cuentos</small>
                             </li>
                             <li class="list-inline-item">
                                 <h5 class="font-weight-bold mb-0 d-block">{{ obj.profile.get_likes }}</h5>
@@ -42,21 +42,21 @@
                             </li>
                             <li class="list-inline-item">
                                 <h5 class="font-weight-bold mb-0 d-block">{{ obj.profile.get_comments }}</h5>
-                                <small class="text-muted"> <i class="icon-chat mr-1"></i>Comments</small>
+                                <small class="text-muted"> <i class="icon-chat mr-1"></i>Comentarios</small>
                             </li>
                         </ul>
                     </div>
                     <div class="px-4 py-3">
-                        <h5 class="mb-0">Bio</h5>
+                        <h5 class="mb-0">Biografía</h5>
                         <div class="p-4 rounded shadow-sm bg-light">
                             <p class="font-italic mb-0">{{ obj.profile.bio }}</p>                            
                         </div>
                     </div>
                     <div class="py-4 px-4">
                         <div class="d-flex align-items-center justify-content-between mb-3">
-                            <h5 class="mb-0">Recent posts</h5>
+                            <h5 class="mb-0">Recientes</h5>
                             <a href="{% url 'blog:user_posts' obj %}" class="btn text-muted">
-                                Go to posts
+                                Leer
                             </a>
                         </div>
                         <div class="row">
@@ -67,7 +67,7 @@
                                     <div class="text">
                                         <h3 class="heading"><a href="{% url 'blog:post_detail' post.id %}">{{ post.title }}</a></h3>
                                         <div class="meta">
-                                            <div><span class="icon-calendar"></span> {{ post.created_at | date:'F d, Y' }}</div>
+                                            <div><span class="icon-calendar"></span> {{ post.created_at | date:'d F Y' }}</div>
                                         </div>
                                         <div class="meta">
                                             <div>

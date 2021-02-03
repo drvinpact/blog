@@ -4,10 +4,10 @@
             <img src="{{ thread_user.profile.image.url }}" class="avatar" alt="avatar" />
             <div class="chat-about">
                 <div class="chat-with">
-                    Conversation with <a href="{% url 'blog:user_profile' thread_user %}">{{ thread_user }}</a>
+                    Conversación con <a href="{% url 'blog:user_profile' thread_user %}">{{ thread_user }}</a>
                 </div>
                 <div class="chat-num-messages">
-                    Already <span id="messages-count" class="messages-count">{{ thread.messages.count }}</span> messages
+                    <span id="messages-count" class="messages-count">{{ thread.messages.count }}</span> mensajes
                 </div>
             </div>
         {% endif %}
@@ -20,7 +20,7 @@
             {% if user.pk == message.user.pk %}
             <li>
                 <div class="message-data">
-                    <span class="message-data-name"><i class="fa fa-circle online"></i> Me</span>
+                    <span class="message-data-name"><i class="fa fa-circle online"></i> Yo</span>
                     <span class="message-data-time">{{ message.created_at | date:'M. d, Y, H:i' }}</span>
                 </div>
                 <div class="message my-message">

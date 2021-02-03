@@ -17,30 +17,30 @@
 						{{ notification.action }} 
 
 						{% if notification.comment %}
-							{% if notification.category == 'comment' %} to{% endif %} your comment on 
+							{% if notification.category == 'comment' %} to{% endif %} tu comentario en  
 							<a href="{% url 'blog:post_detail' notification.post.id %}?comment_id={{ notification.comment.id }}">
 								<i>{{ notification.post }}</i>
 							</a>
 						{% else %}
-							{% if notification.category == 'comment' %} on{% endif %}your post 
+							{% if notification.category == 'comment' %} on{% endif %}tu cuento 
 							<a href="{% url 'blog:post_detail' notification.post.id %}">
 								<i>{{ notification.post }}</i>
 							</a>
 						{% endif %}						
 					{% elif notification.category == 'message' %}
-						You have a 
+						Tienes 
 						<form class="messenger-notification-form" method="POST" action="{% url 'messenger:messenger' %}">
 							{% csrf_token %}
 							<input type="hidden" name="redirect_thread" value="{{ notification.thread.id }}" />
 							<input class="messenger-link" type="submit" value="{{ notification.action }}" />
 						</form>
-						from 
+						de 
 						<a href="{% url 'blog:user_profile' notification.author %}">
 							<img src='{{ notification.author.profile.image.url }}' class='avatar-notification' />{{ notification.author }}
 						</a>
 					{% endif %}
 					
-					<small><i>About {{ notification.created_at | timesince }}</i></small>
+					<small><i>Hace {{ notification.created_at | timesince }}</i></small>
 				</td>
 			</tr>                
 		{% endfor %}            

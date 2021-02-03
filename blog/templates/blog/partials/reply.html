@@ -18,7 +18,7 @@
         <span class="website">{{ item.website }}</span>
       {% endif %}
 
-      <div class="meta">{{ item.created_at | date:'F d, Y' }}</div>
+      <div class="meta">{{ item.created_at | date:'d F Y' }}</div>
 
       <p>{{ item.content}}</p>
       
@@ -38,7 +38,7 @@
           <i class="icon-thumbs-o-down"></i> 
           <span class="dislike_count mr-2">{{ item.get_dislikes }}</span>
         {% endif %}
-        <a href="#" class="reply" data-id="{{ item.id }}" role="button">Reply</a>
+        <a href="#" class="reply" data-id="{{ item.id }}" role="button">Responder</a>
       </div> 
       <div class="reply_div"></div>
     </div>

@@ -11,60 +11,59 @@
         <nav id="colorlib-main-menu" role="navigation">
             <ul>
                 <li class="{% if request.path == '/' %}colorlib-active{%endif%}">
-                    <a href="{% url 'blog:home' %}">Home</a>
+                    <a href="{% url 'blog:home' %}">Cuentos</a>
                 </li>        
                 {% if user.is_authenticated %}                    
                     <li class="nav-dropdown {% if request.path == '/posts/' %}colorlib-active{%endif%}">
                         <div class="nav-link-dropdown collapsed text-truncate" href="#submenu1" data-toggle="collapse" data-target="#submenu1">
-                            <a href="{% url 'blog:posts' %}">My Posts</a></span>
+                            <a href="{% url 'blog:posts' %}">Mis Cuentos</a></span>
                         </div>
                         <div class="collapse {% if request.path == '/posts/' or request.path == '/deleted-posts/' or request.path == '/posts/new/'%}show{%endif%}" id="submenu1" aria-expanded="false">
                             <ul class="flex-column pl-4 pt-2 nav">
                                 <li class="{% if request.path == '/posts/new/' %}colorlib-active{%endif%}">
-                                    <a class="pt-0" href="{% url 'blog:post_new' %}">New Post</a>
+                                    <a class="pt-0" href="{% url 'blog:post_new' %}">Publicar</a>
                                 </li>                            
                                 <li class="{% if request.path == '/deleted-posts/' %}colorlib-active{%endif%}">
-                                    <a class="pt-0" href="{% url 'blog:posts_deleted' %}">Deleted Posts</a>
+                                    <a class="pt-0" href="{% url 'blog:posts_deleted' %}">Desechados</a>
                                 </li>                            
                             </ul>
                         </div>
                     </li>
                     <li class="{% if request.path == '/bookmarks/' %}colorlib-active{%endif%}">
-                        <a href="{% url 'blog:bookmarks' %}">Bookmarks</a>
+                        <a href="{% url 'blog:bookmarks' %}">Marca Páginas</a>
                     </li>  
                     <li class="{% if request.path == '/users/' %}colorlib-active{%endif%}">
-                        <a href="{% url 'blog:users' %}">Users</a>
+                        <a href="{% url 'blog:users' %}">Usuarios</a>
                     </li>  
                 {% endif %}
                 <li class="{% if request.path == '/about/' %}colorlib-active{%endif%}">
-                    <a href="{% url 'blog:about' %}">About</a>
+                    <a href="{% url 'blog:about' %}">Nosotros</a>
                 </li>
                 <li class="{% if request.path == '/contact/' %}colorlib-active{%endif%}">
-                    <a href="{% url 'blog:contact' %}">Contact</a>
+                    <a href="{% url 'blog:contact' %}">Contacto</a>
                 </li>
             </ul>
         </nav>
 
         <div class="colorlib-footer">
             <h1 id="colorlib-logo" class="mb-5">
-                <a href="{% url 'blog:home' %}" style="background-image: url(/static/blog/img/bg_1.jpg);">
-                    Blog <span>Fome</span>
+                <a href="{% url 'blog:home' %}" style="background-image: url(/static/blog/img/back.jpg);">
+                    Blog <span>Cuentos</span>
                 </a>
             </h1>
             <div class="mb-4">
-                <h3>Subscribe for newsletter</h3>
+                <h3>Suscríbete a nuestro blog</h3>
                 <form action="#" class="colorlib-subscribe-form">
                     <div class="form-group d-flex">
                         <div class="icon"><span class="icon-paper-plane"></span></div>
-                        <input type="text" class="form-control" placeholder="Enter Email Address">
+                        <input type="text" class="form-control" placeholder="Con tu correo...">
                     </div>
                 </form>
             </div>
             <p class="pfooter">
                 Copyright &copy;
                 <script>document.write(new Date().getFullYear());</script> 
-                All rights reserved | This template is made with 
-                <i class="icon-heart text-success" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank"><span class="text-success">Tuto</span></a>
+                
             </p>
         </div>
     </aside>

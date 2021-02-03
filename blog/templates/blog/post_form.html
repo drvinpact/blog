@@ -8,14 +8,14 @@
         <div class="container">
             <div class="row d-flex contact-info">
                 <div class="col-md-12 mb-4">
-                    <h2 class="h3">{% if post.pk %}Update{% else %}New{% endif %} Post</h2>
+                    <h2 class="h3">{% if post.pk %}Editar{% else %}Nuevo{% endif %} Cuento</h2>
                 </div>
             </div>
 
             <div class="row d-flex">
                 <div class="col-lg-10 px-md-5 py-5">
     
-                    <form method="POST" novalidate>
+                    <form method="POST" enctype="multipart/form-data" novalidate>
                         {% csrf_token %}
                         <fieldset class="form-group">
 
@@ -24,7 +24,7 @@
                         </fieldset>
                         
                         <div class="form-group">
-                            <button class="btn btn-outline-success" type="submit">Save</button>
+                            <button class="btn btn-outline-yellow" type="submit">Guardar</button>
                         </div>
                     </form>
 

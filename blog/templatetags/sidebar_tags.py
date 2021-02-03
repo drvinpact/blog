@@ -18,8 +18,8 @@ def get_latest_posts():
 @register.simple_tag
 def get_popular_posts():
     qs = (Post.active.annotate(
-                        likes=(Count('votes', filter=Q(votes__like=True)) - Count('votes', filter=Q(votes__like=False)))
-                        ).order_by('-likes', '-created_at'))[:3]
+            likes=(Count('votes', filter=Q(votes__like=True)) - Count('votes', filter=Q(votes__like=False)))
+        ).order_by('-likes', '-created_at'))[:3]
     if qs.exists():
         return qs
     return []
