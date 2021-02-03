@@ -18,7 +18,7 @@
         <div id="post-detail" class="container">
 
             <div class="row d-flex">
-                <div class="col-lg-8 px-md-5 py-5">
+                <div class="col-xl-8 col-lg-12 col-md-12 col-sm-12 px-md-5 py-5">
                     <div class="row pt-md-4">
                         <div class="post-category">
                             <p><a href="{% url 'blog:post_by_category' post.category.name %}"><em>{{ post.category }}</em></a></p>
@@ -82,11 +82,11 @@
 
 
                     <div class="pt-4 mt-4">
-                        <div class="about-author profile d-flex p-4 bg-light col-lg-8">
-                            <div class="bio col-lg-4">
-                                <img src="{{ post.author.profile.image.url }}" alt="Imagen" class="img-fluid mb-4">
+                        <div class="about-author profile d-flex p-4 col-lg-12">
+                            <div class="bio col-sm-4">
+                                <img src="{{ post.author.profile.image.url }}" alt="Imagen" class="mb-4">
                             </div>
-                            <div class="desc col-lg-8">
+                            <div class="desc col-sm-8">
                                 <a href="{% url 'blog:user_profile' post.author %}"><h3>{{ post.author }}</h3></a>
                                 <p>{{ post.author.profile.bio}}</p>
                             </div>
@@ -146,7 +146,7 @@
                                 <h4 class="article-title">Escribe un Comentario</h4>
                                 {% if user.is_authenticated %}                                    
                                     <article class="media comment content-section mt-3">
-                                        <img class="rounded-circle article-img" src="{{ request.user.profile.image.url }}" />
+                                        <img class="comment-img" src="{{ request.user.profile.image.url }}" />
                                         <div class="media-body">
                                             <form method="POST">
                                                 {% csrf_token %}

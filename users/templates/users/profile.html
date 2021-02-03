@@ -16,14 +16,14 @@
                 <div class="col-lg-10 px-md-5 py-5">
 
                     <div class="row">
-                        <div class="about-author d-flex p-4 bg-light">
+                        <div class="about-author d-flex p-4">
                             <div class="bio mr-5">
-                                <img src="{{ user.profile.image.url }}" alt="Imagen" class="img-fluid mb-4">
+                                <img src="{{ user.profile.image.url }}" alt="Imagen" class="mb-4 profile-image">
                             </div>
                             <div class="desc">
-                                <h2 class="account-heading">{{ user.username }}</h2>
+                                <h2 class="text-yellow">{{ user.username }}</h2>
                                 <p class="text-secondary">{{ user.email }}</p>
-                                <p class="text-secondary">{{ user.profile.bio }}</p>
+                                <p class="text-secondary"><em>{{ user.profile.bio }}</em></p>
                             </div>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
                         </fieldset>
                         
                         <div class="form-group">
-                            <button class="btn btn-outline-yellow" type="submit">Editar</button>
+                            <button class="btn btn-outline-yellow" type="submit">Guardar</button>
                         </div>
                     </form>
                 </div>
@@ -56,3 +56,30 @@
     </section>
 
 {% endblock content %}
+
+
+{% block extra_scripts %}
+
+<script>
+
+    (function(){
+        const images = document.getElementsByClassName('profile-image')
+        const image_input = document.getElementById('id_image')
+
+        Array.from(images).forEach(function(element) {
+            element.addEventListener('click', event => {
+                image_input.click()
+            })
+        })
+
+        image_input.addEventListener('change', (event) => {
+            const files = image_input.files
+            if (files.length) {
+                images[0].src = window.URL.createObjectURL(files[0])
+            }
+        });
+    })()
+
+</script>
+
+{% endblock extra_scripts %}

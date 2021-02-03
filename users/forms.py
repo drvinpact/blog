@@ -21,7 +21,9 @@ class UserUpdateForm(ModelForm):
 
 class ProfileUpdateForm(ModelForm):
     is_public = forms.BooleanField(label='Público', required=False)
-    
+    image = forms.ImageField(label=('Imagen'),required=False, error_messages = {'invalid':("Solo imágenes")}, widget=forms.FileInput(attrs={
+        'class':'hidden',}))
+
     class Meta:
         model = Profile
         fields = ['bio', 'image', 'is_public']

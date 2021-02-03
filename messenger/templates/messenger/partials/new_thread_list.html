@@ -15,7 +15,7 @@
                     <a href="#" class="start-thread-btn" data-user-id="{{ user.pk }}">{{ user }}</a>												
                 </div>
                 <div class="bio">
-                    <p><span>{{ user.profile.bio | string_trunc:25 }}</span></p>
+                    <p class="text-muted"><span><em>{{ user.profile.bio }}</em></span></p>
                 </div>
             </div>            
         </li> 

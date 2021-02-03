@@ -4,7 +4,7 @@
     
     <section class="ftco-section ftco-no-pt ftco-no-pb">
 
-        <div class="clearfix users-container" style="background-image: linear-gradient(rgba(255,255,255,0.8), rgba(255,255,255,0.8)),url(/static/blog/img/bg_1.jpg);">
+        <div class="clearfix users-container" style="background-image: linear-gradient(rgba(255,255,255,0.8), rgba(255,255,255,0.8)),url(/static/blog/img/background.jpg);">
             <div class="row">
 
                 {% for item in obj %}
@@ -13,7 +13,7 @@
                         <div class="our-team">
                             <a href="{% url 'blog:user_profile' item %}">
                                 <div class="picture">
-                                    <img class="img-fluid" src="{{ item.profile.image.url }}">
+                                    <img src="{{ item.profile.image.url }}">
                                 </div>
                                 <div class="team-content">
                                     <h3 class="name">{{ item.username }}</h3>

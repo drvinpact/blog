@@ -2,14 +2,14 @@
 
 {% block content %}
     
-    <section class="ftco-section ftco-no-pt ftco-no-pb">
+    <section class="ftco-section ftco-no-pb">
 
         <div class="container">
 
             <div class="row d-flex">                
                 <div class="col-xl-8 py-5 px-md-5">
 
-                    <div class="row float-right">
+                    <div class="d-flex flex-row-reverse">
                         {% if list_type == '0' %}
                             <form method="POST" novalidate>
                                 {% csrf_token %}
@@ -122,20 +122,16 @@
                                                     </div>
                                                 </div>
                                                 <div class="meta-wrap d-md-flex align-items-center">                                                
-                                                    <div class="half">
-                                                        <p class="meta">
-                                                            <span><i class="far fa-eye"></i>{{ item.views }}</span>
-                                                            <span><i class="far fa-thumbs-up"></i>{{ item.get_likes }}</span>
-                                                            <span><i class="far fa-comments"></i>{{ item.get_comments }}</span>
-                                                        </p>                                                    
-                                                    </div>
-                                                    <div class="half order-md-last text-md-right">
-                                                        <p>
+                                                    <p class="meta d-flex align-items-center">
+                                                        <span><i class="far fa-eye"></i>{{ item.views }}</span>
+                                                        <span><i class="far fa-thumbs-up"></i>{{ item.get_likes }}</span>
+                                                        <span><i class="far fa-comments"></i>{{ item.get_comments }}</span>
+                                                        <span class="read-button">
                                                             <a href="{% url 'blog:post_detail' item.id %}" class="btn btn-outline-yellow p-3 px-xl-4 py-xl-3">
                                                                 Leer
                                                             </a>
-                                                        </p>
-                                                    </div>                                                
+                                                        </span>
+                                                    </p>                                                                                                                                                  
                                                 </div>
 
                                             </div>

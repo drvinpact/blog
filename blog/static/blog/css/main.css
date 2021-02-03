@@ -21,6 +21,7 @@
   --primary: #dfd259;
   --secondary: #6c757d;
   --bright: #d7c72f;
+  --opaque: #fdfdf7;
   --success: #28a745;
   --info: #17a2b8;
   --warning: #ffc107;
@@ -330,6 +331,10 @@ h6, .h6 {
   font-size: 1.25rem;
   font-weight: 300; }
 
+.hidden {
+  display: none !important;
+}
+
 .display-1 {
   font-size: 6rem;
   font-weight: 300;
@@ -399,6 +404,7 @@ mark,
   height: auto; }
 
 .img-thumbnail {
+  object-fit: cover;
   padding: 0.25rem;
   background-color: #fff;
   border: 1px solid #dee2e6;
@@ -459,7 +465,7 @@ pre {
       max-width: 540px; } }
   @media (min-width: 768px) {
     .container {
-      max-width: 720px; } }
+      max-width: 960px; } }
   @media (min-width: 992px) {
     .container {
       max-width: 960px; } }
@@ -4435,7 +4441,9 @@ input[type="button"].btn-block {
   flex: 1; }
 
 .comment img{
-  width: 60px;
+  width: 60px; 
+  height: 60px;     
+  border-radius: 50%;
   margin-right: 10px;
 }
 
@@ -4443,6 +4451,28 @@ input[type="button"].btn-block {
   width: 100px;
   margin-right: 10px;
 }
+
+.profile-image {
+  cursor: pointer;
+  display: block;
+  height: 150px;
+  width: 150px;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  -ms-border-radius: 50%;
+  border-radius: 50%; 
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+@media (max-width: 767.98px) {
+  .profile-image .img {
+    margin: 0 auto;
+    margin-bottom: 20px; 
+  }
+}
+
 
 .list-group {
   display: -webkit-box;
@@ -8696,7 +8726,9 @@ h1, h2, h3, h4, h5,
   margin-bottom: 6em; }
   .blog-entry-2 .img {
     display: block;
-    height: 400px; }
+    max-width: 600px;
+    height: 400px;
+    max-height: 500px; }
     .blog-entry-2 .img.img-2 {
       height: 300px; }
   .blog-entry-2 .text {
@@ -8802,17 +8834,33 @@ textarea.form-control {
   opacity: 0;
   visibility: hidden; }
 
+.about-author {
+  background-color: var(--opaque);
+  border-radius: 10px;
+}
+
 .about-author img {
+  display: block;
+  height: 100px;
+  width: 100px;
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   -ms-border-radius: 50%;
-  border-radius: 50%; }
+  border-radius: 50%; 
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;}
 
 .about-author .desc h3 {
   font-size: 20px; }
 
+.read-button {
+  position: absolute; 
+  right: 15px;
+}
+
 .ftco-section {
-  padding: 5em 0;
+  padding: 0;
   position: relative; }
   @media (max-width: 991.98px) {
     .ftco-section {
@@ -8981,8 +9029,8 @@ textarea.form-control {
   background-repeat: no-repeat;
   background-position: center center; }
 
-.bg-light {
-  background: #f8f9fa !important; }
+.bg-opaque {
+  background: var(--opaque) !important; }
 
 .bg-primary {
   background: var(--primary) !important; }
@@ -9265,6 +9313,10 @@ textarea.form-control {
   transform: translateY(-50%);
   color: rgba(255, 255, 255, 0.8); }
 
+.display-options{
+  right: 0px;
+}
+
 .sidebar-box {
   margin-bottom: 40px;
   padding: 0 25px;
@@ -9407,7 +9459,7 @@ textarea.form-control {
   width: 100%;
   height: 0;
   border-radius: 50%;
-  background-color: #4d9958;
+  background-color: var(--primary);
   position: absolute;
   bottom: 135%;
   right: 0;
@@ -9426,7 +9478,7 @@ textarea.form-control {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background-color: #4d9958;
+  background-color: var(--primary);
   position: absolute;
   top: 0;
   left: 0;
@@ -9435,7 +9487,7 @@ textarea.form-control {
 
 .our-team .picture img {
   width: 100%;
-  height: auto;
+  height: 100%;
   border-radius: 50%;
   transform: scale(1);
   transition: all 0.9s ease 0s;
@@ -9462,7 +9514,7 @@ textarea.form-control {
   width: 100%;
   padding: 0;
   margin: 0;
-  background-color: #4d9958;
+  background-color: var(--primary);
   position: absolute;
   bottom: -100px;
   left: 0;
@@ -9776,7 +9828,7 @@ textarea.form-control {
   border: none;
   cursor: pointer;
   font-weight: bold;
-  background: #f2f8f5;
+  background: var(--primary);
 }
 
 .chat .chat-message button:hover {
@@ -9829,8 +9881,14 @@ textarea.form-control {
   display: none;
 }
 
+#new-thread-list {
+  margin-top: 30px;
+  margin-right: 20px;
+}
+
 .contact-list {
   margin-top: 20px;
+  margin-right: 20px;
 }
 
 .contact-list .bio {
