@@ -15,14 +15,14 @@ class CommentNotification(models.Manager):
             user = parent.author
             if user.id==author.id:
                 return
-            action = 'replied'
-            html_message = "{} {} to your comment on {}"            
+            action = 'respondido'
+            html_message = "{} ha {} tu comentario en el cuento {}"            
         else:
             user = post.author
             if user.id==author.id:
                 return
-            action = 'commented'
-            html_message = "{} {} on your post {}"
+            action = 'comentado'
+            html_message = "{} ha {} tu cuento {}"
         
         author_name = author.username if author else obj.name
         message = html_message.format(author_name, action, post)
@@ -44,20 +44,20 @@ class VoteNotification(models.Manager):
         comment = obj.comment
         category = 'vote'
         author = obj.author        
-        action = 'likes' if obj.like else 'dislikes'
+        action = 'le agrada' if obj.like else 'no le agrada'
 
         if comment:
             user = comment.author
             post = comment.post  
             if not user or user.id==author.id:
                 return
-            html_message = "{} {} your comment on {}"            
+            html_message = "A {} {} tu comentario en el cuento {}"            
         else:
             post = obj.post
             user = post.author
             if user.id==author.id:
                 return
-            html_message = "{} {} your post {}"
+            html_message = "A {} {} tu cuento {}"
         
         message = html_message.format(author, action, post)
 
@@ -75,10 +75,10 @@ class VoteNotification(models.Manager):
 class MessageNotification(models.Manager):
     def createNotification(self, obj):
         category = 'message'
-        action = 'new message'
+        action = 'nuevo mensaje'
         thread = obj.thread
         users = thread.users.exclude(pk=obj.user.id)
-        html_message = "You have a {} from {}"
+        html_message = "Tienes un {} de {}"
 
         for user in users:
             message = html_message.format(action, obj.user)

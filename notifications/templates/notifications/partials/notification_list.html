@@ -5,7 +5,31 @@
 		{% for notification in notifications %}
 			<tr>
 				<td>
-					{% if notification.category == 'comment' or notification.category == 'vote' %}
+					{% if notification.category == 'comment' %}
+						{% if notification.author %}
+							<a href="{% url 'blog:user_profile' notification.author %}">
+								<img src='{{ notification.author.profile.image.url }}' class='avatar-notification' /> {{ notification.author }}
+							</a>
+						{% else %}
+							{{ notification.author_name }}
+						{% endif %}
+						
+						ha 
+						{{ notification.action }} 
+
+						{% if notification.comment %}
+							 tu comentario en  
+							<a href="{% url 'blog:post_detail' notification.post.id %}?comment_id={{ notification.comment.id }}">
+								<i>{{ notification.post }}</i>
+							</a>
+						{% else %}
+							 tu cuento 
+							<a href="{% url 'blog:post_detail' notification.post.id %}">
+								<i>{{ notification.post }}</i>
+							</a>
+						{% endif %}						
+					{% elif notification.category == 'vote' %}
+						A 
 						{% if notification.author %}
 							<a href="{% url 'blog:user_profile' notification.author %}">
 								<img src='{{ notification.author.profile.image.url }}' class='avatar-notification' /> {{ notification.author }}
@@ -17,16 +41,16 @@
 						{{ notification.action }} 
 
 						{% if notification.comment %}
-							{% if notification.category == 'comment' %} to{% endif %} tu comentario en  
+							tu comentario en 
 							<a href="{% url 'blog:post_detail' notification.post.id %}?comment_id={{ notification.comment.id }}">
 								<i>{{ notification.post }}</i>
 							</a>
 						{% else %}
-							{% if notification.category == 'comment' %} on{% endif %}tu cuento 
+							 tu cuento 
 							<a href="{% url 'blog:post_detail' notification.post.id %}">
 								<i>{{ notification.post }}</i>
 							</a>
-						{% endif %}						
+						{% endif %}		
 					{% elif notification.category == 'message' %}
 						Tienes 
 						<form class="messenger-notification-form" method="POST" action="{% url 'messenger:messenger' %}">

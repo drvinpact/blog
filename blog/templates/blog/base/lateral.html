@@ -7,27 +7,47 @@
 {% block content %}
 
     <a href="#" class="js-colorlib-nav-toggle colorlib-nav-toggle"><i></i></a>
-    <aside id="colorlib-aside" role="complementary" class="js-fullheight">        
+    <aside id="colorlib-aside" role="complementary" class="js-fullheight">     
+        
+        <div class="profile-box d-flex justify-content-end">
+            
+            {% if user.is_authenticated %}
+                <ul class="nav navbar-nav ml-md--auto">
+                    <li class="dropdown"> 
+                        
+                        <a href="#" class="nav-link profile-link" id="profileDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span>{{ user }}</span>
+                            <img src="{{ user.profile.image.url }}" class="avatar-panel" alt="Profile" />
+                        </a>
+                        
+                        <div class="dropdown-menu account-menu" aria-labelledby="profileDropdown">
+                            <a href="{% url 'profile' %}" class="dropdown-item">Perfil</a>
+                            <a href="{% url 'notifications:list' %}" class="dropdown-item">Notificaciones</a>
+                            <a href="{% url 'messenger:messenger' %}" class="dropdown-item">Mensajes</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item logout" href="{% url 'logout' %}">                                
+                                salir <span class="fas fa-sign-out"></span>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            {% else %}
+                <div class="mt-4">
+                    <a href="{% url 'login' %}">
+                        entrar <span class="fas fa-sign-in-alt"></span>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
         <nav id="colorlib-main-menu" role="navigation">
             <ul>
                 <li class="{% if request.path == '/' %}colorlib-active{%endif%}">
                     <a href="{% url 'blog:home' %}">Cuentos</a>
                 </li>        
                 {% if user.is_authenticated %}                    
-                    <li class="nav-dropdown {% if request.path == '/posts/' %}colorlib-active{%endif%}">
-                        <div class="nav-link-dropdown collapsed text-truncate" href="#submenu1" data-toggle="collapse" data-target="#submenu1">
-                            <a href="{% url 'blog:posts' %}">Mis Cuentos</a></span>
-                        </div>
-                        <div class="collapse {% if request.path == '/posts/' or request.path == '/deleted-posts/' or request.path == '/posts/new/'%}show{%endif%}" id="submenu1" aria-expanded="false">
-                            <ul class="flex-column pl-4 pt-2 nav">
-                                <li class="{% if request.path == '/posts/new/' %}colorlib-active{%endif%}">
-                                    <a class="pt-0" href="{% url 'blog:post_new' %}">Publicar</a>
-                                </li>                            
-                                <li class="{% if request.path == '/deleted-posts/' %}colorlib-active{%endif%}">
-                                    <a class="pt-0" href="{% url 'blog:posts_deleted' %}">Desechados</a>
-                                </li>                            
-                            </ul>
-                        </div>
+                    <li class="{% if request.path == '/posts/' %}colorlib-active{%endif%}">
+                        <a href="{% url 'blog:posts' %}">Mis Cuentos</a>                          
                     </li>
                     <li class="{% if request.path == '/bookmarks/' %}colorlib-active{%endif%}">
                         <a href="{% url 'blog:bookmarks' %}">Marca Páginas</a>
@@ -46,12 +66,12 @@
         </nav>
 
         <div class="colorlib-footer">
-            <h1 id="colorlib-logo" class="mb-5">
+            <h1 id="colorlib-logo" class="mb-2">
                 <a href="{% url 'blog:home' %}" style="background-image: url(/static/blog/img/back.jpg);">
-                    Blog <span>Cuentos</span>
+                    Blog <span>Fome</span>
                 </a>
             </h1>
-            <div class="mb-4">
+            <div class="mb-4 ">
                 <h3>Suscríbete a nuestro blog</h3>
                 <form action="#" class="colorlib-subscribe-form">
                     <div class="form-group d-flex">

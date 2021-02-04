@@ -21,14 +21,14 @@
                                 </div>
                             </a>
                             <ul class="social">
-                                <li><a href="{% url 'blog:user_profile' item %}" class="fa fa-user-circle" aria-hidden="true"></a></li>
-                                <li><a href="{% url 'blog:user_posts' item %}" class="fa fa-book" aria-hidden="true"></a></li>
+                                <li><a href="{% url 'blog:user_profile' item %}" class="fas fa-user-circle" aria-hidden="true"></a></li>
+                                <li><a href="{% url 'blog:user_posts' item %}" class="fas fa-books" aria-hidden="true"></a></li>
                                 <li>
                                     <form method="POST" action="{% url 'messenger:messenger' %}">
                                         {% csrf_token %}
                                         <input type="hidden" name="user_id" value="{{ item.id }}" />
                                         <button class="btn btn-sm" type="submit">
-                                            <span class="fa fa-commenting"></span>
+                                            <span class="fas fa-comment-lines"></span>
                                         </button>
                                     </form>
                                 </li>
