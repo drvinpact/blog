@@ -65,82 +65,82 @@
 
 
 {% block extra_scripts %}
-<script>
-	(function() {
+    <script>
+        (function() {
 
-    const send_email_url = "{% url 'blog:send_email' %}"
-    const send_btn = document.getElementById("send");
+            const send_email_url = "{% url 'blog:send_email' %}"
+            const send_btn = document.getElementById("send");
 
-    send_btn.addEventListener("click", function(event) {
-      event.preventDefault()
+            send_btn.addEventListener("click", function(event) {
+            event.preventDefault()
 
-      // TODO: spinner
-			
-      const name_input = document.getElementById("name")
-      const name = name_input.value
+            // TODO: spinner
+                    
+            const name_input = document.getElementById("name")
+            const name = name_input.value
 
-      const email_input = document.getElementById("email")
-      const email = email_input.value
+            const email_input = document.getElementById("email")
+            const email = email_input.value
 
-      const subject_input = document.getElementById("subject")
-      const subject = subject_input.value
+            const subject_input = document.getElementById("subject")
+            const subject = subject_input.value
 
-      const content_input = document.getElementById("content")
-      const content = content_input.value
+            const content_input = document.getElementById("content")
+            const content = content_input.value
 
-      if(email === ""){
-        email_input.classList.add("input-error");
-      }else{
-        email_input.classList.remove("input-error");
-      }
-      if(subject === ""){
-        subject_input.classList.add("input-error");        
-      }else{
-        subject_input.classList.remove("input-error");
-      }
-      if(content === ""){
-        content_input.classList.add("input-error");
-      }else{
-        content_input.classList.remove("input-error");
-      }
-
-      if(email && subject && content){
-        fetch(send_email_url, {
-                credentials: 'include',
-                method: 'POST',
-                headers: {
-                "X-CSRFToken": getCookie("csrftoken"),
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                name, 
-                email,
-                subject,
-                content
-            })
-        }).then(
-            response => response.json()
-        ).then(function(data) {
-            if(data.success){
-                console.log("OK")
-                name_input.value = ""
-                email_input.value = ""
-                subject_input.value = ""
-                content_input.value = ""
-
-                // TODO: success message
+            if(email === ""){
+                email_input.classList.add("input-error");
             }else{
-                console.log("NOTOK")
-                // TODO: success message
-            }          
-        })      
-      }
+                email_input.classList.remove("input-error");
+            }
+            if(subject === ""){
+                subject_input.classList.add("input-error");        
+            }else{
+                subject_input.classList.remove("input-error");
+            }
+            if(content === ""){
+                content_input.classList.add("input-error");
+            }else{
+                content_input.classList.remove("input-error");
+            }
 
-    })
+            if(email && subject && content){
+                fetch(send_email_url, {
+                        credentials: 'include',
+                        method: 'POST',
+                        headers: {
+                        "X-CSRFToken": getCookie("csrftoken"),
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        name, 
+                        email,
+                        subject,
+                        content
+                    })
+                }).then(
+                    response => response.json()
+                ).then(function(data) {
+                    if(data.success){
+                        console.log("OK")
+                        name_input.value = ""
+                        email_input.value = ""
+                        subject_input.value = ""
+                        content_input.value = ""
 
-  })()
-	
-</script>
+                        // TODO: success message
+                    }else{
+                        console.log("NOTOK")
+                        // TODO: success message
+                    }          
+                })      
+            }
+
+        })
+
+    })()
+        
+    </script>
 
 {% endblock extra_scripts %}
