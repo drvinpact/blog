@@ -14,6 +14,12 @@ from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
+from .utils import api_response
+import requests
+import time
+import json
+from .constants import contact_template_slug, newsletter_template_slug, email_sender_url
+
 from .signals import add_view
 
 class BaseListView(ListView):
@@ -226,6 +232,64 @@ def contact(request):
     return render(request, template_name, {'title': 'Contact'})
 
 """ AJAX """
+
+
+def send_email(request):
+    json_response = {'success': False}
+
+    data = json.loads(request.body.decode("utf-8"))
+
+    if('subject' not in data): 
+        json_response['msg'] = 'El campo \'subject\' no puede estar vacío' 
+        return api_response(json_response)
+    elif('email' not in data): 
+        json_response['msg'] = 'El campo \'email\' no puede estar vacío' 
+        return api_response(json_response)
+    elif('content' not in data): 
+        json_response['msg'] = 'El campo \'content\' no puede estar vacío' 
+        return api_response(json_response)
+
+    name = data['name']
+    email = data['email']
+    subject = data['subject']
+    content = data['content']
+
+    attempt_num = 0
+    while attempt_num < 1:       
+        body = {'name': name, 'from': email, 'subject': subject, 'content': content, 'template_slug': contact_template_slug, 'type': 'contact'}
+        response = requests.post(email_sender_url, data = json.dumps(body))
+        if response.status_code == 200:
+            data = response.json()
+            return JsonResponse(data)
+        else:
+            attempt_num += 1
+            time.sleep(5) 
+
+    return JsonResponse(json_response)
+
+def subscribe_newsletter(request):
+    json_response = {'success': False}
+
+    data = json.loads(request.body.decode("utf-8"))
+
+    if('email' not in data): 
+        json_response['msg'] = 'El campo \'email\' no puede estar vacío' 
+        return api_response(json_response)
+   
+    email = data['email']    
+   
+    attempt_num = 0
+    while attempt_num < 1:       
+        body = {'from': email, 'template_slug': newsletter_template_slug, 'type': 'newsletter'}
+        response = requests.post(email_sender_url, data = json.dumps(body))
+        if response.status_code == 200:
+            data = response.json()
+            return JsonResponse(data)
+        else:
+            attempt_num += 1
+            time.sleep(5) 
+
+    return JsonResponse(json_response)
 
 def ajax_form(request):
     if request.method == "GET":

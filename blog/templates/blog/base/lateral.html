@@ -74,16 +74,17 @@
             <div class="mb-4 ">
                 <h3>Suscríbete a nuestro blog</h3>
                 <form action="#" class="colorlib-subscribe-form">
+                    {% csrf_token %}
+
                     <div class="form-group d-flex">
-                        <div class="icon"><span class="icon-paper-plane"></span></div>
-                        <input type="text" class="form-control" placeholder="Con tu correo...">
+                        <div class="icon" id="newsletter_btn"><span class="icon-paper-plane"></span></div>
+                        <input type="text" id="newsletter_email" name="newsletter_email" class="form-control" placeholder="Con tu correo...">
                     </div>
                 </form>
             </div>
             <p class="pfooter">
                 Copyright &copy;
-                <script>document.write(new Date().getFullYear());</script> 
-                
+                <script>document.write(new Date().getFullYear());</script>                 
             </p>
         </div>
     </aside>
@@ -96,6 +97,8 @@
     (function() {
 
         const nav_dropdown = document.querySelectorAll('.nav-dropdown')
+        const subscribe_newsletter_url = "{% url 'blog:subscribe_newsletter' %}"
+        const newsletter_btn = document.getElementById("newsletter_btn");
 
         nav_dropdown.forEach(element => element.addEventListener('mouseenter', event => {
             const element = event.target            
@@ -108,6 +111,50 @@
             const id = element.getElementsByClassName('nav-link-dropdown')[0].getAttribute('data-target')
             document.querySelector(id).classList.remove('show')
         }))
+
+        newsletter_btn.addEventListener("click", function(event) {
+            event.preventDefault()
+
+            // TODO: spinner
+
+            const email_input = document.getElementById("newsletter_email")
+            const email = email_input.value
+
+            if(email === ""){
+                email_input.classList.add("input-error");
+            }else{
+                email_input.classList.remove("input-error");
+            }
+            
+            if(email){
+                fetch(subscribe_newsletter_url, {
+                    credentials: 'include',
+                    method: 'POST',
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken"),
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email
+                    })
+                }).then(
+                    response => response.json()
+                ).then(function(data) {
+                    if(data.success){
+                        console.log("OK")
+                        email_input.value = ""
+
+                        // TODO: success message
+                    }else{
+                        console.log("NOTOK")
+                        // TODO: success message
+                    }          
+                })      
+            }
+
+        })
+
 
     })()
 </script>

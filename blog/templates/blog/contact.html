@@ -9,54 +9,138 @@
                     <h2 class="h3">Información de Contacto</h2>
                 </div>
                 <div class="w-100"></div>
-                <div class="col-lg-6 col-xl-3 d-flex mb-4">
+                <div class="col-lg-6 d-flex mb-4">
                     <div class="info bg-light p-4">
                         <p><span>Dirección:</span> Calle Lanuza 32, Málaga.</p>
                     </div>
                 </div>
-                <div class="col-lg-6 col-xl-3 d-flex mb-4">
+                <div class="col-lg-6 d-flex mb-4">
                     <div class="info bg-light p-4">
                         <p><span>Teléfono:</span> <a href="tel://1234567920">+34 678 159 962</a></p>
                     </div>
                 </div>
-                <div class="col-lg-6 col-xl-3 d-flex mb-4">
+                <div class="col-lg-6 d-flex mb-4">
                     <div class="info bg-light p-4">
-                        <p><span>Email:</span> <a href="mailto:info@yoursite.com">danielreyesveas@reciclatusanimales.com</a></p>
+                        <p><span>Email:</span> <a href="mailto:info@yoursite.com">admin@reciclatusanimales.com</a></p>
                     </div>
                 </div>
-                <div class="col-lg-6 col-xl-3 d-flex mb-4">
+                <div class="col-lg-6 d-flex mb-4">
                     <div class="info bg-light p-4">
-                        <p><span>Web</span> <a href="#">reciclatusanimales.com</a></p>
+                        <p><span>Web:</span> <a href="#">reciclatusanimales.com</a></p>
                     </div>
                 </div>
             </div>
             <div class="row block-9">
                 <div class="col-lg-6 d-flex">
 
-                    <form action="#" class="bg-light p-5 contact-form">
+                    <form class="bg-light p-5 contact-form" novalidate>
+                        {% csrf_token %}
+
                         <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Nombre">
+                            <input type="text" id="name" class="form-control" placeholder="Nombre">
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Correo">
+                            <input type="text" id="email" class="form-control" placeholder="Correo">
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Asunto">
+                            <input type="text" id="subject" class="form-control" placeholder="Asunto">
                         </div>
                         <div class="form-group">
-                            <textarea name="" id="" cols="30" rows="7" class="form-control" placeholder="Mensaje"></textarea>
+                            <textarea name="content" id="content" cols="30" rows="7" class="form-control" placeholder="Mensaje"></textarea>
                         </div>
                         <div class="form-group">
-                            <input type="submit" value="Send Message" class="btn btn-primary py-3 px-5">
+                            <input type="submit" value="Enviar" id="send" class="btn btn-primary py-3 px-5">
                         </div>
                     </form>
                 </div>
 
                 <div class="col-lg-6 d-flex">
-                    <div id="map" class="bg-light"></div>
+                    <iframe src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=es&amp;q=Calle%20Lanuza%2032,%20M%C3%A1laga+(Hemiola)&amp;t=&amp;z=15&amp;ie=UTF8&amp;iwloc=B&amp;output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
                 </div>
             </div>
         </div>
     </section>
 
 {% endblock %}
+
+
+{% block extra_scripts %}
+<script>
+	(function() {
+
+    const send_email_url = "{% url 'blog:send_email' %}"
+    const send_btn = document.getElementById("send");
+
+    send_btn.addEventListener("click", function(event) {
+      event.preventDefault()
+
+      // TODO: spinner
+			
+      const name_input = document.getElementById("name")
+      const name = name_input.value
+
+      const email_input = document.getElementById("email")
+      const email = email_input.value
+
+      const subject_input = document.getElementById("subject")
+      const subject = subject_input.value
+
+      const content_input = document.getElementById("content")
+      const content = content_input.value
+
+      if(email === ""){
+        email_input.classList.add("input-error");
+      }else{
+        email_input.classList.remove("input-error");
+      }
+      if(subject === ""){
+        subject_input.classList.add("input-error");        
+      }else{
+        subject_input.classList.remove("input-error");
+      }
+      if(content === ""){
+        content_input.classList.add("input-error");
+      }else{
+        content_input.classList.remove("input-error");
+      }
+
+      if(email && subject && content){
+        fetch(send_email_url, {
+                credentials: 'include',
+                method: 'POST',
+                headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name, 
+                email,
+                subject,
+                content
+            })
+        }).then(
+            response => response.json()
+        ).then(function(data) {
+            if(data.success){
+                console.log("OK")
+                name_input.value = ""
+                email_input.value = ""
+                subject_input.value = ""
+                content_input.value = ""
+
+                // TODO: success message
+            }else{
+                console.log("NOTOK")
+                // TODO: success message
+            }          
+        })      
+      }
+
+    })
+
+  })()
+	
+</script>
+
+{% endblock extra_scripts %}

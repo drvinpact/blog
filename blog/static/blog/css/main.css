@@ -9630,6 +9630,14 @@ textarea.form-control {
   text-transform: uppercase;  
 }
 
+.input-error {
+  border: 1px solid red !important;
+}
+
+#newsletter_btn {
+  cursor: pointer;
+}
+
 /* MESSENGER */
 
 .messenger {

@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,12 +24,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '9*8v(g9un=w+uj3tzt^dxbbrhpg*#^!+(+-bb4_e4#mvm=or(0'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = (env('ENVIRONMENT') == 'development')
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
 
 
 # Application definition
@@ -96,11 +100,11 @@ WSGI_APPLICATION = 'blogApp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'blog_nono',
-        'USER': 'postgres',
-        'PASSWORD': 'daPV96G7N3b$',
-        'HOST': '107.6.142.229',
-        'PORT': '5432',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
     }
 }
 
@@ -140,7 +144,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-SESSION_COOKIE_AGE = 36000
+SESSION_COOKIE_AGE = 1209600
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'blog/static')
@@ -153,12 +157,7 @@ LOGIN_REDIRECT_URL = 'blog:home'
 LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = 'blog:home'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'reciclatusanimales@gmail.com'
-EMAIL_HOST_PASSWORD = 'cyhnbolcznswholo'
+EMAIL_SENDER_API = env('EMAIL_SENDER_API')
 
 # AWS_ACCESS_KEY_ID = 'AKIAZLDXZTNTCHELILSA'
 # AWS_SECRET_ACCESS_KEY = '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'
