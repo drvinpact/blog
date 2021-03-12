@@ -9,8 +9,6 @@ from django.db.models import Q
 
 from taggit.managers import TaggableManager
 
-from mptt.models import MPTTModel, TreeForeignKey
-
 class Category(models.Model):
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)

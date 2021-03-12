@@ -26,15 +26,12 @@ INSTALLED_APPS = [
     'notifications.apps.NotificationsConfig',
     'users.apps.UsersConfig',
 
-    'storages',
-
     'django_summernote',
     'taggit',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
