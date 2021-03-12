@@ -15,7 +15,6 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from .utils import api_response
-import requests
 import time
 import json
 from .constants import contact_template_slug, newsletter_template_slug, email_sender_url, email_sender_api_key

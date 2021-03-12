@@ -18,16 +18,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
     'crispy_forms',
+    'django_summernote',
+    'taggit',
 
     'blog.apps.BlogConfig',
     'errors.apps.ErrorsConfig',
     'messenger.apps.MessengerConfig',
     'notifications.apps.NotificationsConfig',
     'users.apps.UsersConfig',
-
-    'django_summernote',
-    'taggit',
 ]
 
 MIDDLEWARE = [

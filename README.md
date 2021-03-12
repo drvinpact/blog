@@ -1,6 +1,5 @@
 # 📚 Cuenteros
 
-<br />
 Cuenteros is a [Django](https://www.djangoproject.com/) community app.
 It started as a simple blog idea to share tales o short stories, but it ending up becoming so much than that.
 
