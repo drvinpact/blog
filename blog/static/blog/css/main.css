@@ -8319,12 +8319,12 @@ h1, h2, h3, h4, h5,
     display: block;
     width: 100%;
     font-weight: normal;
-    font-size: 64px;
+    font-size: 55px;
     line-height: 1;
     font-family: "Abril Fatface", cursive; }
     @media (max-width: 1199.98px) {
       #colorlib-aside #colorlib-logo {
-        font-size: 55px; } }
+        font-size: 45px; } }
     #colorlib-aside #colorlib-logo span {
       display: block; }
     @media (max-width: 991.98px) {
@@ -9125,6 +9125,16 @@ textarea.form-control {
 .contact-section .contact-form {
   width: 100%; }
 
+  .contact-message {
+    visibility: hidden;
+    color: #32D190;
+    margin: 15px;
+    font-size: 14px;
+    text-align: right;
+    font-weight: 700;
+    text-transform: uppercase;  
+}
+
 .block-9 .form-control {
   outline: none !important;
   -webkit-box-shadow: none !important;
@@ -9636,6 +9646,16 @@ textarea.form-control {
 
 #newsletter_btn {
   cursor: pointer;
+}
+
+.newsletter-message {
+  display: none;
+  color: #32D190;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;  
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 /* MESSENGER */

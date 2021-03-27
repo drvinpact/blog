@@ -48,8 +48,9 @@
                         <div class="form-group">
                             <textarea name="content" id="content" cols="30" rows="7" class="form-control" placeholder="Mensaje"></textarea>
                         </div>
+                        <div class="contact-message" id="message">📚 Tu mensaje ha sido enviado, muy pronto te responderemos.</div>
                         <div class="form-group">
-                            <input type="submit" value="Enviar" id="send" class="btn btn-primary py-3 px-5">
+                            <input type="submit" value="Enviar" id="send" class="btn btn-primary py-2 px-3 float-right">
                         </div>
                     </form>
                 </div>
@@ -72,40 +73,41 @@
             const send_btn = document.getElementById("send");
 
             send_btn.addEventListener("click", function(event) {
-            event.preventDefault()
+                event.preventDefault()
+                document.getElementById("message").style.visibility = "hidden";
 
-            // TODO: spinner
-                    
-            const name_input = document.getElementById("name")
-            const name = name_input.value
+                // TODO: spinner
+                        
+                const name_input = document.getElementById("name")
+                const name = name_input.value
 
-            const email_input = document.getElementById("email")
-            const email = email_input.value
+                const email_input = document.getElementById("email")
+                const email = email_input.value
 
-            const subject_input = document.getElementById("subject")
-            const subject = subject_input.value
+                const subject_input = document.getElementById("subject")
+                const subject = subject_input.value
 
-            const content_input = document.getElementById("content")
-            const content = content_input.value
+                const content_input = document.getElementById("content")
+                const content = content_input.value
 
-            if(email === ""){
-                email_input.classList.add("input-error");
-            }else{
-                email_input.classList.remove("input-error");
-            }
-            if(subject === ""){
-                subject_input.classList.add("input-error");        
-            }else{
-                subject_input.classList.remove("input-error");
-            }
-            if(content === ""){
-                content_input.classList.add("input-error");
-            }else{
-                content_input.classList.remove("input-error");
-            }
+                if(email === ""){
+                    email_input.classList.add("input-error");
+                }else{
+                    email_input.classList.remove("input-error");
+                }
+                if(subject === ""){
+                    subject_input.classList.add("input-error");        
+                }else{
+                    subject_input.classList.remove("input-error");
+                }
+                if(content === ""){
+                    content_input.classList.add("input-error");
+                }else{
+                    content_input.classList.remove("input-error");
+                }
 
-            if(email && subject && content){
-                fetch(send_email_url, {
+                if(email && subject && content){
+                    fetch(send_email_url, {
                         credentials: 'include',
                         method: 'POST',
                         headers: {
@@ -113,33 +115,33 @@
                         "Accept": "application/json",
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({
-                        name, 
-                        email,
-                        subject,
-                        content
-                    })
-                }).then(
-                    response => response.json()
-                ).then(function(data) {
-                    if(data.success){
-                        console.log("OK")
-                        name_input.value = ""
-                        email_input.value = ""
-                        subject_input.value = ""
-                        content_input.value = ""
+                        body: JSON.stringify({
+                            name, 
+                            email,
+                            subject,
+                            content
+                        })
+                    }).then(
+                        response => response.json()
+                    ).then(function(data) {
+                        if(data.success){
+                            console.log("OK")
+                            name_input.value = ""
+                            email_input.value = ""
+                            subject_input.value = ""
+                            content_input.value = ""
 
-                        // TODO: success message
-                    }else{
-                        console.log("NOTOK")
-                        // TODO: success message
-                    }          
-                })      
-            }
+                            document.getElementById("message").style.visibility = "visible";
+                        }else{
+                            console.log("NOTOK")
+                            // TODO: success message
+                        }          
+                    })      
+                }
 
-        })
+            })
 
-    })()
+        })()
         
     </script>
 
