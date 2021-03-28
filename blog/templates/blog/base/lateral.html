@@ -76,8 +76,13 @@
                 <form action="#" class="colorlib-subscribe-form">
                     {% csrf_token %}
 
-                    <div class="newsletter-message" id="newsletter-message">📚 Gracias por suscribirte.</div>
-                    <div class="form-group d-flex" id="newsletter_inputs">
+                    <div class="newsletter-message" id="newsletter-message">                            
+                        <span id="newsletter-success-message" class="success-message">📚 Gracias por suscribirte.</span>
+                        <span id="newsletter-error-message" class="error-message">🔥 Se produjo un error, vuelve a intentarlo por favor.</span> 
+                    </div>
+                    <span class="newsletter-spinner" id="newsletter-spinner"></span>
+
+                    <div class="form-group newsletter_inputs" id="newsletter_inputs">
                         <div class="icon" id="newsletter_btn"><span class="icon-paper-plane"></span></div>
                         <input type="text" id="newsletter_email" name="newsletter_email" class="form-control" placeholder="Con tu correo...">
                     </div>
@@ -116,7 +121,10 @@
         newsletter_btn.addEventListener("click", function(event) {
             event.preventDefault()
 
-            // TODO: spinner
+            document.getElementById("newsletter-message").style.visibility = "hidden";
+            document.getElementById("newsletter-error-message").style.display = "none";
+            document.getElementById("newsletter-success-message").style.display = "none";
+            document.getElementById("newsletter-spinner").style.display = "none";
 
             const email_input = document.getElementById("newsletter_email")
             const email = email_input.value
@@ -128,6 +136,8 @@
             }
             
             if(email){
+                document.getElementById("newsletter-spinner").style.display = "inline-block";
+                document.getElementById("newsletter_inputs").style.display = "none";
                 fetch(subscribe_newsletter_url, {
                     credentials: 'include',
                     method: 'POST',
@@ -145,12 +155,14 @@
                     if(data.success){                        
                         email_input.value = ""
 
-                        document.getElementById("newsletter-inputs").style.display = "none";
-                        document.getElementById("newsletter-message").style.display = "block";
+                        document.getElementById("newsletter-error-message").style.display = "none";
+                        document.getElementById("newsletter-success-message").style.display = "block";                        
                     }else{
-                        console.log("NOTOK")
-                        // TODO: success message
+                        document.getElementById("newsletter-error-message").style.display = "block";
+                        document.getElementById("newsletter-success-message").style.display = "none";                        
                     }          
+                    document.getElementById("newsletter-spinner").style.display = "none";
+                    document.getElementById("newsletter-message").style.visibility = "visible";
                 })      
             }
 

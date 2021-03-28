@@ -48,10 +48,17 @@
                         <div class="form-group">
                             <textarea name="content" id="content" cols="30" rows="7" class="form-control" placeholder="Mensaje"></textarea>
                         </div>
-                        <div class="contact-message" id="message">📚 Tu mensaje ha sido enviado, muy pronto te responderemos.</div>
-                        <div class="form-group">
-                            <input type="submit" value="Enviar" id="send" class="btn btn-primary py-2 px-3 float-right">
+                        <div class="contact-message" id="message">
+                            <span id="success-message" class="success-message">📚 Tu mensaje ha sido enviado, muy pronto te responderemos.</span>
+                            <span id="error-message" class="error-message">🔥 Se produjo un error, vuelve a intentarlo por favor.</span>                                  
                         </div>
+                        <div class="form-group">
+                            <button id="send" class="btn btn-primary py-2 px-3 float-right contact-btn">
+                                <span class="btn-spinner" id="btn-spinner"></span>
+                                <span id="btn-text">Enviar</span>
+                            </button>
+                        </div>
+                        
                     </form>
                 </div>
 
@@ -74,7 +81,9 @@
 
             send_btn.addEventListener("click", function(event) {
                 event.preventDefault()
-                document.getElementById("message").style.visibility = "hidden";
+                document.getElementById("message").style.visibility = "hidden";                
+                document.getElementById("success-message").style.display = "none";
+                document.getElementById("btn-spinner").style.display = "none";
 
                 // TODO: spinner
                         
@@ -107,6 +116,9 @@
                 }
 
                 if(email && subject && content){
+                    document.getElementById("btn-spinner").style.display = "inline-block";
+                    document.getElementById("btn-text").style.display = "none";
+                    document.getElementById("send").style.pointerEvents = "none";
                     fetch(send_email_url, {
                         credentials: 'include',
                         method: 'POST',
@@ -125,17 +137,21 @@
                         response => response.json()
                     ).then(function(data) {
                         if(data.success){
-                            console.log("OK")
                             name_input.value = ""
                             email_input.value = ""
                             subject_input.value = ""
                             content_input.value = ""
 
-                            document.getElementById("message").style.visibility = "visible";
+                            document.getElementById("error-message").style.display = "none";
+                            document.getElementById("success-message").style.display = "block";
                         }else{
-                            console.log("NOTOK")
-                            // TODO: success message
-                        }          
+                            document.getElementById("error-message").style.display = "block";
+                            document.getElementById("success-message").style.display = "none";            
+                        } 
+                        document.getElementById("message").style.visibility = "visible";          
+                        document.getElementById("btn-spinner").style.display = "none";
+                        document.getElementById("btn-text").style.display = "block"; 
+                        document.getElementById("send").style.pointerEvents = "auto";
                     })      
                 }
 
