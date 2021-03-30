@@ -1,10 +1,12 @@
 {% load static %}
-
-<ul class="list">
+<div class="new-thread-back" id="new-thread-back">
+    <i class="fas fa-chevron-left"></i>   
+</div>
+<ul class="new-thread-list">
 							
     {% for user in users %}
 
-        <li class="clearfix contact-list">
+        <li class="clearfix contact-list start-thread-btn" data-user-id="{{ user.pk }}">
             {% if user.profile.image %}
                 <img src="{{ user.profile.image.url }}" alt="avatar" class="avatar"/>
             {% else %}
@@ -12,7 +14,7 @@
             {% endif %}
             <div class="about">
                 <div class="name">
-                    <a href="#" class="start-thread-btn" data-user-id="{{ user.pk }}">{{ user }}</a>												
+                    <a href="#">{{ user }}</a>												
                 </div>
                 <div class="bio">
                     <p class="text-muted"><span><em>{{ user.profile.bio }}</em></span></p>

@@ -4,24 +4,17 @@
 
 {% block content %}
     <div class="messenger clearfix">
-        <div class="row">
+        <div class="chat-screen">
             
-            <div class="col-md-4 chat-container">
+            <div class="col-md-4 lateral-chat" id="lateral-chat">
                 <div class="people-list js-fullheight" id="people-list">
-                    <!-- <div class="search d-none">
-                        <input type="text" placeholder="search" />
-                        <i class="fa fa-search"></i>
-					</div> -->
 					
-					
-					<div class="new-thread-container">
-						<a href="#" id="new-thread">
-							<span class="icon-message"></span>
-						</a>
-					</div>
-
 					<div id="chat-list" class="chat-list">					
-						
+						<div class="new-thread-container">
+							<a href="#" id="new-thread">
+								<span class="icon-message"></span>
+							</a>
+						</div>
 						{% include 'messenger/partials/thread_list.html' %}
 
 					</div>
@@ -29,23 +22,23 @@
                 </div>        
 			</div>
 			
-			<div class="col-md-8 chat-container">
+			<div class="col-md-8 chat-container send-back" id="chat-container">
 				
-				<div id="background">
+				<div id="background" class="background">
 					<div class="img d-flex align-self-stretch align-items-center js-fullheight" style="background-image:url(/static/blog/img/background.jpg);">
 					</div>
 				</div>
 
                 <div id="chat" class="chat">
-					<div id="chat-detail"></div>                                        
+					<div id="chat-detail" class="chat-detail"></div>                                        
                     <div class="chat-message clearfix">
-                        <textarea name="message-to-send" class="form-control mb-2" id="message-to-send" placeholder="Escribe tu mensaje" rows="3"></textarea>                        
-                        <button id="send" class="btn btn-primary btn-sm" data-thread-id="{{ thread_id }}" disabled>Enviar</button>
+                        <textarea name="message-to-send" class="form-control" id="message-to-send" placeholder="Escribe tu mensaje" rows="2"></textarea>                        
+                        <button id="send" class="btn btn-primary btn-sm btn-disabled" data-thread-id="{{ thread_id }}">Enviar</button>
                     </div>
                 
 				</div>
 
-				<div id="new-thread-list">NUEVO</div>
+				<div id="new-thread-list"></div>
             
             </div>
 
@@ -70,7 +63,7 @@
 		const new_thread = document.getElementById("new-thread");
 		const content_input = document.getElementById("message-to-send");
 		const start_new_thread = Number("{{ new_thread }}")
-		const redirect_thread = Number("{{ redirect_thread }}")
+		const redirect_thread = Number("{{ redirect_thread }}")		
 
 		if(start_new_thread) {
 			startThread(start_new_thread)
@@ -85,27 +78,51 @@
 			thread.scrollTop = thread.scrollHeight
 		}
 
-		function addEvents() {
-			var thread_btn = document.querySelectorAll(".thread-btn")
+		function addBackEvent(){
+			const thread_back_btn = document.getElementById("thread-back")
+			thread_back_btn.addEventListener("click", function() {
+				document.getElementById('send').setAttribute('data-thread-id', 0)
+				document.getElementById("lateral-chat").classList.remove("send-back")
+				document.getElementById("chat-container").classList.add("send-back")
+				document.getElementById("chat").style.display = "none"
+				document.getElementById("background").classList.remove("hidden")
+				document.getElementById("new-thread-list").style.display = "block"
+				document.querySelectorAll(".active-chat").forEach(el=>el.classList.remove("active-chat"))
+			})
+		
+		}
 
-			thread_btn.forEach(element => element.addEventListener('click', event => {
-				event.preventDefault()
-				var element = event.target
-				var thread_id = element.getAttribute('data-thread-id')
-				document.getElementById('send').setAttribute('data-thread-id', thread_id)
-				threadDetail(Number(thread_id))
-			}))		
+		function addEvents() {
+			const thread_btn = document.querySelectorAll(".thread-list")			
+			thread_btn.forEach(function(element) {	
+				element.addEventListener('click', event => {
+					const thread_id = element.getAttribute('data-thread-id')
+					document.getElementById('send').setAttribute('data-thread-id', thread_id)
+					threadDetail(Number(thread_id))
+				})
+			})	
 		}
 		
 		function addStartThreadEvents() {
-			var start_thread_btn = document.querySelectorAll(".start-thread-btn")
-
-			start_thread_btn.forEach(element => element.addEventListener('click', event => {
-				event.preventDefault()
-				var element = event.target
-				var user_id = element.getAttribute('data-user-id')				
-				startThread(Number(user_id))
-			}))		
+			const start_thread_btn = document.querySelectorAll(".start-thread-btn")
+			const new_thread_back_btn = document.getElementById("new-thread-back")
+			new_thread_back_btn.addEventListener("click", function() {				
+				document.getElementById("new-thread").style.display = "block"
+				document.getElementById("chat-container").classList.add("send-back")
+				document.getElementById("new-thread-list").style.display = "none"
+				document.getElementById("lateral-chat").classList.remove("send-back")
+				document.getElementById("background").classList.add("hidden")
+			})
+			console.log(start_thread_btn)
+			start_thread_btn.forEach(function(element) {
+				console.log(element)
+				element.addEventListener('click', event => {
+					console.log(element)
+					event.preventDefault()
+					const user_id = element.getAttribute('data-user-id')				
+					startThread(Number(user_id))
+				})
+			})
 		}
 
 		function threadDetail(thread_id) {
@@ -124,9 +141,12 @@
 				response => response.json()
 			).then(function(data) {
 				if(data.success) {
+					document.getElementById("new-thread").style.display = "block"
+					document.getElementById("lateral-chat").classList.add("send-back")
+					document.getElementById("chat-container").classList.remove("send-back")
 					updateHtml("chat-detail", data.html)
 					document.getElementById("chat").style.display = "block"
-					document.getElementById("background").style.display = "none"
+					document.getElementById("background").classList.add("hidden")
 					document.getElementById("new-thread-list").style.display = "none"
 					document.querySelectorAll(".active-chat").forEach(el=>el.classList.remove("active-chat"))
 					if(!data.new) {
@@ -138,17 +158,18 @@
 							badges[0].classList.add("d-none")
 						}
 						ScrollBottomInThread()
-					}									
+					}	
+					addBackEvent()								
 				}				
 			})
 		}
 
 		function addMessage() {			
-			var thread_id = document.getElementById('send').getAttribute('data-thread-id')
-			var content = content_input.value
+			const thread_id = document.getElementById('send').getAttribute('data-thread-id')
+			const content = content_input.value
 
 			content_input.value = ''
-			send_btn.disabled = true
+			send_btn.classList.add("btn-disabled")
 
 			fetch(add_message_url, {
 				credentials: 'include',
@@ -169,13 +190,13 @@
 					if (data.first){
 						updateHtml("chat-list", data.html_list)
 					}
-					var message = document.createElement("li")					
+					const message = document.createElement("li")					
 					message.innerHTML = '<div class="message-data"><span class="message-data-name"><i class="fa fa-circle online"></i> Me</span><span class="message-data-time">' + formatDatetime(data.created_at) + '</span></div><div class="message my-message">' + decodeURIComponent(content) + '</div>'
 					document.getElementById("thread-list").appendChild(message)
 					document.getElementById("messages-count").innerHTML = data.total
-					var thread_list = document.querySelector("#thread_" + thread_id)
-					var last_message = thread_list.querySelector(".last-message")
-					var last_time_message = thread_list.querySelector(".last-time-message")
+					const thread_list = document.querySelector("#thread_" + thread_id)
+					const last_message = thread_list.querySelector(".last-message")
+					const last_time_message = thread_list.querySelector(".last-time-message")
 					last_message.innerHTML = string_trunc(content)
 					last_time_message.innerHTML = formatDate(data.created_at)
 					document.getElementById("last-update").setAttribute('value', data.last_update)
@@ -200,9 +221,13 @@
 				response => response.json()
 			).then(function(data) {
 				if(data.success) {
+					document.getElementById("lateral-chat").classList.add("send-back")
+					document.getElementById("chat-container").classList.remove("send-back")
 					document.getElementById("chat").style.display = "none"
-					document.getElementById("background").style.display = "none"
+					document.querySelectorAll(".active-chat").forEach(el=>el.classList.remove("active-chat"))
+					document.getElementById("background").classList.add("hidden")
 					updateHtml("new-thread-list", data.html)
+					document.getElementById("new-thread").style.display = "none"
 					document.getElementById("new-thread-list").style.display = "block"
 					addStartThreadEvents()
 				} else {
@@ -212,7 +237,7 @@
 		})
 
 		send_btn.addEventListener("click", function() {
-			var content = content_input.value
+			const content = content_input.value
 			if(content.length > 0){				
 				addMessage()				
 			}
@@ -220,9 +245,9 @@
 
 		content_input.addEventListener("keyup", function(e){            
 			if(!this.checkValidity() || !this.value){
-			    send_btn.disabled = true
+			    send_btn.classList.add("btn-disabled")
 			}else{
-                send_btn.disabled = false
+                send_btn.classList.remove("btn-disabled")
                 if(e.keyCode==13){
                     send_btn.click()
                 }

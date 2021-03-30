@@ -13,9 +13,9 @@
             </div>
 
             <div class="row">
-                <div class="col-lg-6 d-flex">
+                <div class="col-lg-9">
 
-                    <form method="POST" class="bg-light contact-form" novalidate>
+                    <form method="POST" class="contact-form" novalidate>
                         {% csrf_token %}
                         <fieldset class="form-group">
                             {{ form | crispy }}

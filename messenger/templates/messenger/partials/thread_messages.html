@@ -1,6 +1,9 @@
-<div class="chat-header clearfix">
+<div class="chat-header">
     {% for thread_user in thread.users.all %}
-        {% if thread_user.pk != user.pk %}       
+        {% if thread_user.pk != user.pk %}    
+            <div class="thread-back" id="thread-back">
+                <i class="fas fa-chevron-left"></i>   
+            </div>
             <img src="{{ thread_user.profile.image.url }}" class="avatar" alt="avatar" />
             <div class="chat-about">
                 <div class="chat-with">
