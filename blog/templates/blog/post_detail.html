@@ -82,11 +82,11 @@
 
 
                 <div class="pt-4 mt-4">
-                    <div class="about-author profile d-flex p-4 col-lg-12">
-                        <div class="bio col-sm-4">
+                    <div class="about-author profile d-flex pt-2 pb-2 col-lg-12">
+                        <div class="bio col-4 col-md-2 p-1">
                             <img src="{{ post.author.profile.image.url }}" alt="Imagen" class="mb-4">
                         </div>
-                        <div class="desc col-sm-8">
+                        <div class="desc col-8 col-md-10 p-1">
                             <a href="{% url 'blog:user_profile' post.author %}"><h3>{{ post.author }}</h3></a>
                             <p>{{ post.author.profile.bio}}</p>
                         </div>

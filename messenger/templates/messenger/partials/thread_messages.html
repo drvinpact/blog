@@ -23,7 +23,7 @@
             {% if user.pk == message.user.pk %}
             <li>
                 <div class="message-data">
-                    <span class="message-data-name"><i class="fa fa-circle online"></i> Yo</span>
+                    <span class="message-data-name"><i class="fa fa-circle me"></i> Yo</span>
                     <span class="message-data-time">{{ message.created_at | date:'M. d, Y, H:i' }}</span>
                 </div>
                 <div class="message my-message">
@@ -34,7 +34,7 @@
             <li class="clearfix">
                 <div class="message-data align-right">
                     <span class="message-data-time">{{ message.created_at | date:'M. d, Y, H:i' }}</span> &nbsp; &nbsp;
-                    <span class="message-data-name">{{ message.user }}</span> <i class="fa fa-circle me"></i>                        
+                    <span class="message-data-name">{{ message.user }}</span> <i class="fa fa-circle online"></i>                        
                 </div>
                 <div class="message other-message float-right">
                     {{ message.content }}

@@ -8737,13 +8737,21 @@ h1, h2, h3, h4, h5,
         .blog-entry .text .meta-wrap .meta span a:hover {
           color: var(--primary); }
 
+.post-img-container{
+  max-width: 600px;
+  height: auto;
+}
 .blog-entry-2 {
   margin-bottom: 6em; }
-  .blog-entry-2 .img {
+  .blog-entry-2 .post-img {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    border-radius: 7px;
     display: block;
-    max-width: 600px;
-    height: 400px;
-    max-height: 800px; }
+    object-fit: contain;
+    width: 100%;
+    height: auto; }
     .blog-entry-2 .img.img-2 {
       height: 300px; }
   .blog-entry-2 .text {
@@ -8862,17 +8870,41 @@ textarea.form-control {
   border-radius: 10px;
 }
 
+
 .about-author img {
   display: block;
-  height: 100px;
-  width: 100px;
+  height: 60px;
+  width: 60px;
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   -ms-border-radius: 50%;
   border-radius: 50%; 
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center center;}
+  background-position: center center;
+}
+
+.about-author p {
+  font-size: 12px;
+}
+
+.about-author .bio {
+  margin-right: 5px;
+}
+
+@media (min-width: 768px){
+  .about-author img {
+    width: 100px;
+    height: 100px;
+    margin-right: 20px;
+  }
+  .about-author p {
+    font-size: 15px;
+  }
+  .about-author .bio {
+    margin-right: 20px;
+  }
+}
 
 .about-author .desc h3 {
   font-size: 20px; }
@@ -9048,6 +9080,7 @@ textarea.form-control {
 .blog-img,
 .insta-img,
 .user-img {
+  border-radius: 5px;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center; }
@@ -10126,17 +10159,12 @@ textarea.form-control {
   
 .chat .chat-history .my-message {  
   border-radius: 7px 7px 7px 0;
-  background: #86BB71;
+  background: var(--primary);
 }
   
 .chat .chat-history .other-message {
   border-radius: 7px 7px 0 7px;
-  background: #94C2ED;
-}
-
-.chat .chat-history .other-message:after {
-  border-bottom-color: #94C2ED;
-  left: 87%;                        
+  background: #86BB71;
 }
 
 .chat .chat-message {
@@ -10200,7 +10228,7 @@ textarea.form-control {
 }
 
 .me {
-  color: #94C2ED;
+  color: var(--primary);
 }
 
 .align-left {
