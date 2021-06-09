@@ -1,4 +1,4 @@
-Django==2.2.19
+Django==2.2.22
 django-crispy-forms==1.11.1
 django-environ==0.4.5
 django-summernote==0.8.11.6
